@@ -126,10 +126,13 @@ function isNormalizedQuestionnaire(
 
 function createRenderer(template: string): Handlebars.TemplateDelegate {
   const engine = Handlebars.create()
+  engine.registerPartial('root', ROOT_TEMPLATE)
   engine.registerPartial('section', SECTION_TEMPLATE)
   engine.registerPartial('question', QUESTION_TEMPLATE)
+  engine.registerPartial('style', BASE_STYLE)
+  engine.registerPartial('script', BASE_SCRIPT)
 
-  const source = template.trim().length > 0 ? template : ROOT_TEMPLATE
+  const source = template.trim().length > 0 ? template : '{{> root}}'
   return engine.compile(source)
 }
 

@@ -6,17 +6,7 @@ Feature: Generate questionnaire HTML page
       """
     And HTML template:
       """
-      <html>
-      <head><title>{{questionnaire.title}}</title></head>
-      <body>
-      <form>
-      <p>{{questionnaire.description}}</p>
-      {{#each questionnaire.sections}}
-      {{> section}}
-      {{/each}}
-      </form>
-      </body>
-      </html>
+      {{> root}}
       """
     When the questionnaire HTML page is generated
     Then the result is a standalone HTML page

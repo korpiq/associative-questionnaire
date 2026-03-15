@@ -1,5 +1,8 @@
 <html>
-<head><title>{{questionnaire.title}}</title></head>
+<head>
+<title>{{questionnaire.title}}</title>
+{{> style}}
+</head>
 <body>
 <form>
 {{#if questionnaire.description}}
@@ -9,5 +12,6 @@
 {{> section}}
 {{/each}}
 </form>
+{{> script}}
 </body>
 </html>

@@ -33,3 +33,9 @@ The generator produces the standalone questionnaire HTML page that users actuall
 ## Example
 
 See `docs/examples/basic/README.md` for a runnable example with a questionnaire JSON file, template HTML file, and a command that writes a generated questionnaire page.
+
+## Snippet overrides
+
+The generator registers default `handlebars` partials named `root`, `section`, `question`, `style`, and `script`.
+
+An HTML template can override any of them with inline partials and then render `{{> root}}`.

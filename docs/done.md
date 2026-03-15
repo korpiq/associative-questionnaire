@@ -38,3 +38,6 @@
 
 13. Added the default associative linker snippet.
     Implemented drag and keyboard association toggling in the default script snippet, updated the associative markup and styles, and verified the behavior with generated-HTML browser tests.
+
+14. Enabled snippet overrides from the HTML template.
+    Registered all generator snippets as named partials, documented the override pattern, and verified inline partial overrides for section, question, style, and script snippets.
