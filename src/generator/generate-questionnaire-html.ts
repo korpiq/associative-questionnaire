@@ -7,6 +7,7 @@ import {
   type NormalizedMultiChoiceQuestion,
   type NormalizedQuestion,
   type NormalizedQuestionnaire,
+  type NormalizedSection,
   type NormalizedSingleChoiceQuestion,
   normalizeQuestionnaire
 } from '../schema/normalize-questionnaire'
@@ -60,15 +61,16 @@ function renderAssociativeGroup(title: string, phrases: Array<{ id: string; text
   const items = phrases
     .map(
       (phrase) => `
-<div class="phrase" data-phrase-id="${phrase.id}">
+<button type="button" class="phrase" data-phrase-id="${phrase.id}" data-side="${title.toLowerCase()}" aria-label="${phrase.id} ${phrase.text}">
+<span class="phrase-key">${phrase.id}</span>
 <span>${phrase.text}</span>
-</div>
+</button>
 `.trim()
     )
     .join('')
 
   return `
-<div class="phrase-list">
+<div class="phrase-list" data-side="${title.toLowerCase()}">
 <h4>${title}</h4>
 ${items}
 </div>
@@ -78,6 +80,7 @@ ${items}
 function renderAssociativeContent(question: NormalizedAssociativeQuestion): string {
   return `
 <div class="associative-groups" data-question-type="associative">
+<input type="hidden" name="${question.id}" value="[]" data-associations-input="${question.id}">
 ${renderAssociativeGroup('Left', question.content.left)}
 ${renderAssociativeGroup('Right', question.content.right)}
 </div>

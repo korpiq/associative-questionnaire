@@ -1,3 +1,171 @@
 <script>
-document.documentElement.dataset.questionnaireReady = 'true';
+(function () {
+  document.documentElement.dataset.questionnaireReady = 'true';
+
+  function readAssociations(input) {
+    try {
+      return JSON.parse(input.value || '[]');
+    } catch (_error) {
+      return [];
+    }
+  }
+
+  function writeAssociations(input, associations) {
+    input.value = JSON.stringify(associations);
+  }
+
+  function hasAssociation(associations, left, right) {
+    return associations.some(function (association) {
+      return association.left === left && association.right === right;
+    });
+  }
+
+  function toggleAssociation(input, left, right) {
+    var associations = readAssociations(input);
+
+    if (hasAssociation(associations, left, right)) {
+      associations = associations.filter(function (association) {
+        return !(association.left === left && association.right === right);
+      });
+    } else {
+      associations.push({ left: left, right: right });
+    }
+
+    writeAssociations(input, associations);
+  }
+
+  function findPhrase(root, side, id) {
+    return root.querySelector('.phrase[data-side="' + side + '"][data-phrase-id="' + id + '"]');
+  }
+
+  function updatePhraseState(root, input, pendingPhrase) {
+    var associations = readAssociations(input);
+
+    root.querySelectorAll('.phrase[data-side][data-phrase-id]').forEach(function (phrase) {
+      phrase.classList.remove('is-pending');
+      phrase.classList.remove('is-linked');
+
+      if (pendingPhrase && pendingPhrase === phrase) {
+        phrase.classList.add('is-pending');
+      }
+
+      var phraseId = phrase.getAttribute('data-phrase-id');
+      var side = phrase.getAttribute('data-side');
+      var linked = associations.some(function (association) {
+        return side === 'left'
+          ? association.left === phraseId
+          : association.right === phraseId;
+      });
+
+      if (linked) {
+        phrase.classList.add('is-linked');
+      }
+    });
+  }
+
+  function setupAssociativeGroups(root) {
+    var input = root.querySelector('input[data-associations-input]');
+
+    if (!input) {
+      return;
+    }
+
+    var pendingPhrase = null;
+    var dragSource = null;
+    var dragTarget = null;
+
+    function clearDrag() {
+      dragSource = null;
+      dragTarget = null;
+    }
+
+    function connect(sourcePhrase, targetPhrase) {
+      var sourceSide = sourcePhrase.getAttribute('data-side');
+      var sourceId = sourcePhrase.getAttribute('data-phrase-id');
+      var targetId = targetPhrase.getAttribute('data-phrase-id');
+      var left = sourceSide === 'left' ? sourceId : targetId;
+      var right = sourceSide === 'left' ? targetId : sourceId;
+
+      toggleAssociation(input, left, right);
+      pendingPhrase = null;
+      updatePhraseState(root, input, pendingPhrase);
+    }
+
+    root.querySelectorAll('.phrase[data-side][data-phrase-id]').forEach(function (phrase) {
+      phrase.addEventListener('mousedown', function () {
+        dragSource = phrase;
+        dragTarget = null;
+      });
+
+      phrase.addEventListener('mouseenter', function () {
+        if (
+          dragSource &&
+          dragSource !== phrase &&
+          dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
+        ) {
+          dragTarget = phrase;
+        }
+      });
+
+      phrase.addEventListener('mouseup', function () {
+        if (
+          dragSource &&
+          dragTarget &&
+          dragTarget === phrase &&
+          dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
+        ) {
+          connect(dragSource, phrase);
+        }
+
+        clearDrag();
+      });
+
+      phrase.addEventListener('click', function () {
+        if (dragSource || dragTarget) {
+          return;
+        }
+
+        if (!pendingPhrase) {
+          pendingPhrase = phrase;
+          updatePhraseState(root, input, pendingPhrase);
+          return;
+        }
+
+        if (pendingPhrase === phrase || pendingPhrase.getAttribute('data-side') === phrase.getAttribute('data-side')) {
+          pendingPhrase = phrase;
+          updatePhraseState(root, input, pendingPhrase);
+          return;
+        }
+
+        connect(pendingPhrase, phrase);
+      });
+
+      phrase.addEventListener('keydown', function (event) {
+        var side = phrase.getAttribute('data-side');
+        var key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
+        var target = null;
+
+        if (side === 'left' && /^[A-Z]$/.test(key)) {
+          target = findPhrase(root, 'right', key);
+        }
+
+        if (side === 'right' && /^[0-9]$/.test(key)) {
+          target = findPhrase(root, 'left', key);
+        }
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        connect(phrase, target);
+      });
+    });
+
+    document.addEventListener('mouseup', clearDrag);
+    updatePhraseState(root, input, pendingPhrase);
+  }
+
+  document.querySelectorAll('.associative-groups[data-question-type="associative"]').forEach(setupAssociativeGroups);
+})();
 </script>

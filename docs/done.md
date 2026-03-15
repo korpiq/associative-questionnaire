@@ -35,3 +35,6 @@
 
 12. Extracted generator snippets to separate files.
     Moved the root, section, question, style, and script snippets out of the generator source and loaded them from `src/generator/snippets/`.
+
+13. Added the default associative linker snippet.
+    Implemented drag and keyboard association toggling in the default script snippet, updated the associative markup and styles, and verified the behavior with generated-HTML browser tests.
