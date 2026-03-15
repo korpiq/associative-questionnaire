@@ -29,3 +29,7 @@ The generator produces the standalone questionnaire HTML page that users actuall
 - Browser JavaScript must stay compatible with major desktop and mobile browsers.
 - The resulting page should be concise, straightforward, and smooth to use.
 - The generated page is the application surface that later submits answers to the CGI saver.
+
+## Example
+
+See `docs/examples/basic/README.md` for a runnable example with a questionnaire JSON file, template HTML file, and a command that writes a generated questionnaire page.

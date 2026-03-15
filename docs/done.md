@@ -26,3 +26,6 @@
 
 9. Implemented the first standalone HTML generator slice.
    Added `generateQuestionnaireHtml`, rendered the supported question types from the normalized questionnaire structure, and verified it against the generator feature spec.
+
+10. Added a runnable generator example under `docs/examples/basic`.
+    Included example questionnaire and template inputs, a README with the exact generator command, and a CLI entrypoint that writes a generated HTML file.
