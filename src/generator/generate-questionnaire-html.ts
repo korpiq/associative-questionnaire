@@ -1,14 +1,50 @@
+import Handlebars from 'handlebars'
+
 import {
   type NormalizedAssociativeQuestion,
   type NormalizedFreeTextQuestion,
   type NormalizedMultiChoiceQuestion,
   type NormalizedQuestion,
   type NormalizedQuestionnaire,
-  type NormalizedSection,
   type NormalizedSingleChoiceQuestion,
   normalizeQuestionnaire
 } from '../schema/normalize-questionnaire'
 import type { Questionnaire } from '../schema/questionnaire'
+
+const ROOT_TEMPLATE = `
+<html>
+<head><title>{{questionnaire.title}}</title></head>
+<body>
+<form>
+{{#if questionnaire.description}}
+<p>{{questionnaire.description}}</p>
+{{/if}}
+{{#each questionnaire.sections}}
+{{> section}}
+{{/each}}
+</form>
+</body>
+</html>
+`.trim()
+
+const SECTION_TEMPLATE = `
+<section data-section="{{id}}">
+<h2>{{title}}</h2>
+<p>{{description}}</p>
+<div data-questions>
+{{#each questions}}
+{{> question}}
+{{/each}}
+</div>
+</section>
+`.trim()
+
+const QUESTION_TEMPLATE = `
+<article data-question="{{id}}">
+<h3>{{title}}</h3>
+<div data-content>{{{contentHtml}}}</div>
+</article>
+`.trim()
 
 const BASE_STYLE = `
 <style>
@@ -27,26 +63,6 @@ const BASE_SCRIPT = `
 document.documentElement.dataset.questionnaireReady = 'true';
 </script>
 `.trim()
-
-function replaceTokens(template: string, values: Record<string, string>): string {
-  return template.replace(/{{\s*([^}]+)\s*}}/g, (_match, token) => values[token] ?? '')
-}
-
-function readTemplateBlock(template: string, id: string): string {
-  const pattern = new RegExp(`<template\\s+id="${id}">([\\s\\S]*?)<\\/template>`)
-  const match = template.match(pattern)
-
-  if (!match) {
-    throw new Error(`Template block "${id}" is required`)
-  }
-
-  return match[1] ?? ''
-}
-
-function removeTemplateBlock(template: string, id: string): string {
-  const pattern = new RegExp(`<template\\s+id="${id}">[\\s\\S]*?<\\/template>`)
-  return template.replace(pattern, '')
-}
 
 function renderSingleChoiceContent(question: NormalizedSingleChoiceQuestion): string {
   const options = question.content
@@ -123,27 +139,6 @@ function renderQuestionContent(question: NormalizedQuestion): string {
   }
 }
 
-function renderQuestion(question: NormalizedQuestion, questionTemplate: string): string {
-  return replaceTokens(questionTemplate, {
-    'question.id': question.id,
-    'question.title': question.title,
-    'question.content': renderQuestionContent(question)
-  })
-}
-
-function renderSection(section: NormalizedSection, sectionTemplate: string, questionTemplate: string): string {
-  const renderedQuestions = section.questions
-    .map((question) => renderQuestion(question, questionTemplate))
-    .join('')
-
-  return replaceTokens(sectionTemplate, {
-    'section.id': section.id,
-    'section.title': section.title,
-    'section.description': section.description ?? '',
-    'section.questions': renderedQuestions
-  })
-}
-
 function ensureStandaloneDocument(html: string): string {
   let standalone = html
 
@@ -162,26 +157,47 @@ function ensureStandaloneDocument(html: string): string {
   return standalone
 }
 
-function injectQuestionnaireDescription(html: string, description?: string): string {
-  if (!description || html.includes(description)) {
-    return html
-  }
-
-  if (html.includes('{{questionnaire.description}}')) {
-    return html.replace('{{questionnaire.description}}', description)
-  }
-
-  if (html.includes('<form>')) {
-    return html.replace('<form>', `<form>\n<p>${description}</p>`)
-  }
-
-  return html.replace('<body>', `<body>\n<p>${description}</p>`)
-}
-
 function isNormalizedQuestionnaire(
   questionnaire: Questionnaire | NormalizedQuestionnaire
 ): questionnaire is NormalizedQuestionnaire {
   return Array.isArray(questionnaire.sections)
+}
+
+function createRenderer(template: string): Handlebars.TemplateDelegate {
+  const engine = Handlebars.create()
+  engine.registerPartial('section', SECTION_TEMPLATE)
+  engine.registerPartial('question', QUESTION_TEMPLATE)
+
+  const source = template.trim().length > 0 ? template : ROOT_TEMPLATE
+  return engine.compile(source)
+}
+
+type GeneratorQuestionView = NormalizedQuestion & {
+  contentHtml: string
+}
+
+type GeneratorSectionView = Omit<NormalizedSection, 'questions'> & {
+  questions: GeneratorQuestionView[]
+}
+
+type GeneratorQuestionnaireView = Omit<NormalizedQuestionnaire, 'sections'> & {
+  sections: GeneratorSectionView[]
+}
+
+function toGeneratorView(questionnaire: NormalizedQuestionnaire): GeneratorQuestionnaireView {
+  return {
+    title: questionnaire.title,
+    ...(questionnaire.description ? { description: questionnaire.description } : {}),
+    sections: questionnaire.sections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      ...(section.description ? { description: section.description } : {}),
+      questions: section.questions.map((question) => ({
+        ...question,
+        contentHtml: renderQuestionContent(question)
+      }))
+    }))
+  }
 }
 
 export function generateQuestionnaireHtml(
@@ -191,24 +207,10 @@ export function generateQuestionnaireHtml(
   const normalized = isNormalizedQuestionnaire(questionnaire)
     ? questionnaire
     : normalizeQuestionnaire(questionnaire)
-
-  const sectionTemplate = readTemplateBlock(template, 'section')
-  const questionTemplate = readTemplateBlock(template, 'question')
-  const renderedSections = normalized.sections
-    .map((section) => renderSection(section, sectionTemplate, questionTemplate))
-    .join('')
-
-  let html = template
-  html = replaceTokens(html, {
-    'questionnaire.title': normalized.title,
-    'questionnaire.description': normalized.description ?? ''
+  const render = createRenderer(template)
+  const html = render({
+    questionnaire: toGeneratorView(normalized)
   })
-  html = html.replace(
-    new RegExp(`<template\\s+id="section">[\\s\\S]*?<\\/template>`),
-    renderedSections
-  )
-  html = removeTemplateBlock(html, 'question')
-  html = injectQuestionnaireDescription(html, normalized.description)
 
   return ensureStandaloneDocument(html)
 }

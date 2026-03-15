@@ -29,3 +29,6 @@
 
 10. Added a runnable generator example under `docs/examples/basic`.
     Included example questionnaire and template inputs, a README with the exact generator command, and a CLI entrypoint that writes a generated HTML file.
+
+11. Switched the generator to a template engine.
+    Replaced the manual HTML token replacement flow with `handlebars` rendering while keeping the generator feature and runnable example working.

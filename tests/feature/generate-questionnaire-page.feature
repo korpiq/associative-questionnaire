@@ -10,19 +10,10 @@ Feature: Generate questionnaire HTML page
       <head><title>{{questionnaire.title}}</title></head>
       <body>
       <form>
-      <template id="section">
-      <section data-section="{{section.id}}">
-      <h2>{{section.title}}</h2>
-      <p>{{section.description}}</p>
-      <div data-questions>{{section.questions}}</div>
-      </section>
-      </template>
-      <template id="question">
-      <article data-question="{{question.id}}">
-      <h3>{{question.title}}</h3>
-      <div data-content>{{question.content}}</div>
-      </article>
-      </template>
+      <p>{{questionnaire.description}}</p>
+      {{#each questionnaire.sections}}
+      {{> section}}
+      {{/each}}
       </form>
       </body>
       </html>
