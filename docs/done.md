@@ -32,3 +32,6 @@
 
 11. Switched the generator to a template engine.
     Replaced the manual HTML token replacement flow with `handlebars` rendering while keeping the generator feature and runnable example working.
+
+12. Extracted generator snippets to separate files.
+    Moved the root, section, question, style, and script snippets out of the generator source and loaded them from `src/generator/snippets/`.

@@ -1,0 +1,13 @@
+<html>
+<head><title>{{questionnaire.title}}</title></head>
+<body>
+<form>
+{{#if questionnaire.description}}
+<p>{{questionnaire.description}}</p>
+{{/if}}
+{{#each questionnaire.sections}}
+{{> section}}
+{{/each}}
+</form>
+</body>
+</html>

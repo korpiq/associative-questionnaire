@@ -1,4 +1,5 @@
 import Handlebars from 'handlebars'
+import { readFileSync } from 'node:fs'
 
 import {
   type NormalizedAssociativeQuestion,
@@ -11,58 +12,15 @@ import {
 } from '../schema/normalize-questionnaire'
 import type { Questionnaire } from '../schema/questionnaire'
 
-const ROOT_TEMPLATE = `
-<html>
-<head><title>{{questionnaire.title}}</title></head>
-<body>
-<form>
-{{#if questionnaire.description}}
-<p>{{questionnaire.description}}</p>
-{{/if}}
-{{#each questionnaire.sections}}
-{{> section}}
-{{/each}}
-</form>
-</body>
-</html>
-`.trim()
+function readSnippet(filename: string): string {
+  return readFileSync(new URL(`./snippets/${filename}`, import.meta.url), 'utf8').trim()
+}
 
-const SECTION_TEMPLATE = `
-<section data-section="{{id}}">
-<h2>{{title}}</h2>
-<p>{{description}}</p>
-<div data-questions>
-{{#each questions}}
-{{> question}}
-{{/each}}
-</div>
-</section>
-`.trim()
-
-const QUESTION_TEMPLATE = `
-<article data-question="{{id}}">
-<h3>{{title}}</h3>
-<div data-content>{{{contentHtml}}}</div>
-</article>
-`.trim()
-
-const BASE_STYLE = `
-<style>
-body { font-family: sans-serif; margin: 2rem auto; max-width: 60rem; padding: 0 1rem; }
-form { display: grid; gap: 1.5rem; }
-section, article { display: grid; gap: 0.75rem; }
-.question-options, .associative-groups { display: grid; gap: 0.5rem; }
-.associative-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.phrase-list { display: grid; gap: 0.5rem; }
-.phrase { border: 1px solid #bbb; border-radius: 0.5rem; padding: 0.75rem; }
-</style>
-`.trim()
-
-const BASE_SCRIPT = `
-<script>
-document.documentElement.dataset.questionnaireReady = 'true';
-</script>
-`.trim()
+const ROOT_TEMPLATE = readSnippet('root.hbs')
+const SECTION_TEMPLATE = readSnippet('section.hbs')
+const QUESTION_TEMPLATE = readSnippet('question.hbs')
+const BASE_STYLE = readSnippet('base-style.html')
+const BASE_SCRIPT = readSnippet('base-script.html')
 
 function renderSingleChoiceContent(question: NormalizedSingleChoiceQuestion): string {
   const options = question.content
