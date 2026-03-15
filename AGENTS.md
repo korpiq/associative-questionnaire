@@ -7,7 +7,10 @@
 - Keep `TODO.md` ordered by dependencies so tasks that depend on earlier work appear later in the list.
 - Whenever a task has been verified as accomplished, move it from `TODO.md` to `docs/done.md`.
 - Remind the team to focus on finishing half-accomplished tasks when discussion or work deviates from them.
+- Use [README.md](/home/kato/omat/associative-questionnaire/README.md) as the high-level project contract and keep it aligned with the current testing guidance in `docs/testing.md`.
 - Only treat behavior described in `tests/feature/*.feature` as supported functionality.
 - Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
 - Do not use `.js` file extensions in TypeScript import specifiers in this repository.
 - Prefer concise YAML doc strings in Gherkin steps when tests need to show structured input, output, or validation errors.
+- After each verified TODO step, commit it before starting the next one.
+- Commit messages must use a single-line task topic, then a blank line, then concise lines describing decisions, concrete actions, and any later follow-up ideas.
