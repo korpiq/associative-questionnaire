@@ -10,3 +10,4 @@ export type {
   NormalizedQuestionnaire,
   NormalizedSection
 } from './schema/normalize-questionnaire'
+export { generateQuestionnaireHtml } from './generator/generate-questionnaire-html'

@@ -23,3 +23,6 @@
 
 8. Normalized keyed questionnaire collections into a stable internal representation.
    Added `normalizeQuestionnaire` to restore ids from object keys and preserve source order for sections, questions, choices, and associative phrases.
+
+9. Implemented the first standalone HTML generator slice.
+   Added `generateQuestionnaireHtml`, rendered the supported question types from the normalized questionnaire structure, and verified it against the generator feature spec.
