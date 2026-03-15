@@ -14,3 +14,6 @@
 
 5. Changed questionnaire sections and questions to keyed objects in the schema contract.
    Removed separate `id` fields from section and question payloads, updated schema validation examples, and aligned `README.md` with the new JSON shape.
+
+6. Documented the planned generator usage in `docs/generator.md`.
+   Captured the current purpose, inputs, output, generation flow, and constraints, and linked the document from `README.md`.

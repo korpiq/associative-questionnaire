@@ -57,6 +57,8 @@ Parameters
 Outputs
 - HTML questionnaire generated from HTML template by Questionnaire content.
 
+See `docs/generator.md` for the current planned usage flow and constraints.
+
 ### Questionnaire results saver CGI script
 
 Results saver CGI script
