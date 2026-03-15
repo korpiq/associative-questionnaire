@@ -7,7 +7,7 @@ import { parseQuestionnaire } from '../../../src'
 
 const feature = await loadFeature('tests/feature/schema-validation.feature')
 
-describeFeature(feature, ({ Scenario }) => {
+describeFeature(feature, ({ Scenario, defineSteps }) => {
   let questionnaireInput: unknown
   let parseResult: unknown
   let parseError: ZodError | null
@@ -19,13 +19,7 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('Valid questionnaire content is accepted', ({ Given, When, Then }) => {
-    Given('questionnaire content:', (_ctx, docString) => {
-      questionnaireInput = parseYamlDocString(docString)
-      parseResult = undefined
-      parseError = null
-    })
-
+  defineSteps(({ When }) => {
     When('the questionnaire content is parsed with the schema', () => {
       try {
         parseResult = parseQuestionnaire(questionnaireInput)
@@ -34,6 +28,14 @@ describeFeature(feature, ({ Scenario }) => {
         parseResult = undefined
         parseError = error as ZodError
       }
+    })
+  })
+
+  Scenario('Valid questionnaire content is accepted', ({ Given, Then }) => {
+    Given('questionnaire content:', (_ctx, docString) => {
+      questionnaireInput = parseYamlDocString(docString)
+      parseResult = undefined
+      parseError = null
     })
 
     Then('the parsed questionnaire is:', (_ctx, docString) => {
@@ -44,21 +46,11 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
-  Scenario('Invalid associative questionnaire content is rejected', ({ Given, When, Then, And }) => {
+  Scenario('Invalid associative questionnaire content is rejected', ({ Given, Then, And }) => {
     Given('questionnaire content:', (_ctx, docString) => {
       questionnaireInput = parseYamlDocString(docString)
       parseResult = undefined
       parseError = null
-    })
-
-    When('the questionnaire content is parsed with the schema', () => {
-      try {
-        parseResult = parseQuestionnaire(questionnaireInput)
-        parseError = null
-      } catch (error) {
-        parseResult = undefined
-        parseError = error as ZodError
-      }
     })
 
     Then('the questionnaire content is rejected', () => {
