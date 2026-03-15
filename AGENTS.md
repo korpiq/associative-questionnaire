@@ -10,3 +10,4 @@
 - Only treat behavior described in `tests/feature/*.feature` as supported functionality.
 - Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
 - Do not use `.js` file extensions in TypeScript import specifiers in this repository.
+- Prefer concise YAML doc strings in Gherkin steps when tests need to show structured input, output, or validation errors.
