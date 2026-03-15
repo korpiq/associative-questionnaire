@@ -11,3 +11,6 @@
 
 4. Documented the project testing method in `docs/testing.md`.
    Captured the Gherkin-plus-`vitest-cucumber` workflow, shared-step usage, YAML doc string style, verification commands, and linked it from `README.md`.
+
+5. Changed questionnaire sections and questions to keyed objects in the schema contract.
+   Removed separate `id` fields from section and question payloads, updated schema validation examples, and aligned `README.md` with the new JSON shape.

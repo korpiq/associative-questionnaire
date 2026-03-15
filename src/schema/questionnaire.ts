@@ -21,7 +21,6 @@ const letterKeyedTextSchema = z.record(
 )
 
 export const singleChoiceQuestionSchema = z.object({
-  id: identifierSchema,
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   type: z.literal('single-choice'),
@@ -36,7 +35,6 @@ export const singleChoiceQuestionSchema = z.object({
 })
 
 export const multiChoiceQuestionSchema = z.object({
-  id: identifierSchema,
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   type: z.literal('multi-choice'),
@@ -51,14 +49,12 @@ export const multiChoiceQuestionSchema = z.object({
 })
 
 export const freeTextQuestionSchema = z.object({
-  id: identifierSchema,
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   type: z.literal('free-text')
 })
 
 export const associativeQuestionSchema = z.object({
-  id: identifierSchema,
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   type: z.literal('associative'),
@@ -92,22 +88,15 @@ export const questionSchema = z.discriminatedUnion('type', [
   associativeQuestionSchema
 ])
 
-const questionListSchema = z.union([
-  z.array(questionSchema),
-  keyedRecordSchema(questionSchema)
-])
+const questionListSchema = keyedRecordSchema(questionSchema)
 
 export const sectionSchema = z.object({
-  id: identifierSchema,
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   questions: questionListSchema.optional()
 })
 
-const sectionListSchema = z.union([
-  z.array(sectionSchema),
-  keyedRecordSchema(sectionSchema)
-])
+const sectionListSchema = keyedRecordSchema(sectionSchema)
 
 export const questionnaireSchema = z.object({
   title: htmlTextSchema,

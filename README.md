@@ -19,12 +19,14 @@ Scripts outside browser (generator reporter) can be implemented in Typescript fo
 
 Text in questionnaire content may be markdown and/or HTML to allow images and nice layout.
 
-Lists can be arrays or objects with single word keys to identify each value. Presentation follows order of items in the list.
+Section and question lists in questionnaire JSON are objects keyed by identifier. Presentation follows object key order in the source JSON.
 
 - section list
+  - identifier key for each section
   - title text
   - optional description text
   - optional question list
+    - identifier key for each question
     - title text
     - optional description text
     - question type
