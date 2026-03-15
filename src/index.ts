@@ -1,3 +1,6 @@
-export function createProjectMarker(): string {
-  return 'associative-questionnaire'
-}
+export {
+  answerFileSchema,
+  parseAnswerFile,
+  parseQuestionnaire,
+  questionnaireSchema
+} from './schema/questionnaire.js'

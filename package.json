@@ -13,8 +13,12 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@amiceli/vitest-cucumber": "^6.3.0",
     "@types/node": "^24.0.0",
     "typescript": "^5.8.0",
-    "vitest": "^3.1.0"
+    "vitest": "^4.0.4"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
   }
 }
