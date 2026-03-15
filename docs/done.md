@@ -17,3 +17,6 @@
 
 6. Documented the planned generator usage in `docs/generator.md`.
    Captured the current purpose, inputs, output, generation flow, and constraints, and linked the document from `README.md`.
+
+7. Added the first generator feature specification slice.
+   Defined a standalone-page generation scenario with one section and one question of each supported type in `tests/feature/generate-questionnaire-page.feature`.
