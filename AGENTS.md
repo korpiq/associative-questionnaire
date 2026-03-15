@@ -9,3 +9,4 @@
 - Remind the team to focus on finishing half-accomplished tasks when discussion or work deviates from them.
 - Only treat behavior described in `tests/feature/*.feature` as supported functionality.
 - Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
+- Do not use `.js` file extensions in TypeScript import specifiers in this repository.

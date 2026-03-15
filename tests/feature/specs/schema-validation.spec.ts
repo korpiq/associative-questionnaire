@@ -2,7 +2,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { expect } from 'vitest'
 import { ZodError } from 'zod'
 
-import { parseQuestionnaire } from '../../../src/index.js'
+import { parseQuestionnaire } from '../../../src'
 
 const feature = await loadFeature('tests/feature/schema-validation.feature')
 

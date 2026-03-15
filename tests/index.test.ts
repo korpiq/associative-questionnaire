@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { parseQuestionnaire } from '../src/index.js'
+import { parseQuestionnaire } from '../src'
 
 describe('project bootstrap', () => {
   it('loads TypeScript sources under Node 20 settings', () => {

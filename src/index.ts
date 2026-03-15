@@ -3,4 +3,4 @@ export {
   parseAnswerFile,
   parseQuestionnaire,
   questionnaireSchema
-} from './schema/questionnaire.js'
+} from './schema/questionnaire'
