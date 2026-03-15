@@ -33,8 +33,38 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     return phrase
   }
 
-  defineSteps(({ Given, When, Then }) => {
-    Given('generated questionnaire HTML with one associative question', () => {
+  function setRect(
+    element: Element,
+    rect: { left: number; top: number; width: number; height: number }
+  ): void {
+    Object.defineProperty(element, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        right: rect.left + rect.width,
+        bottom: rect.top + rect.height,
+        x: rect.left,
+        y: rect.top,
+        toJSON: () => rect
+      })
+    })
+  }
+
+  function getLiveLine(): SVGLineElement {
+    const line = dom.window.document.querySelector<SVGLineElement>('[data-live-line]')
+
+    if (!line) {
+      throw new Error('Live line was not found')
+    }
+
+    return line
+  }
+
+  defineSteps(({ Given, When, Then, And }) => {
+    Given('generated questionnaire HTML with one associative question and fixed phrase positions', () => {
       const questionnaire = parseQuestionnaire({
         title: 'Association example',
         sections: {
@@ -62,7 +92,53 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       dom = new JSDOM(html, {
         runScripts: 'dangerously'
       })
+
+      const root = dom.window.document.querySelector('.associative-groups')
+      const left = getPhrase('left', '1')
+      const right = getPhrase('right', 'A')
+
+      if (!root) {
+        throw new Error('Associative root was not found')
+      }
+
+      setRect(root, { left: 0, top: 0, width: 900, height: 240 })
+      setRect(left, { left: 40, top: 60, width: 120, height: 40 })
+      setRect(right, { left: 740, top: 60, width: 120, height: 40 })
     })
+
+    When('left phrase {string} starts dragging to point {int} {int}', (_ctx, leftId, x, y) => {
+      const left = getPhrase('left', leftId)
+
+      left.dispatchEvent(
+        new dom.window.MouseEvent('mousedown', {
+          bubbles: true,
+          clientX: 100,
+          clientY: 80
+        })
+      )
+      dom.window.document.dispatchEvent(
+        new dom.window.MouseEvent('mousemove', {
+          bubbles: true,
+          clientX: x,
+          clientY: y
+        })
+      )
+    })
+
+    Then(
+      'the live associative line starts at left phrase {string} and ends at point {int} {int}',
+      (_ctx, leftId, x, y) => {
+        const line = getLiveLine()
+
+        expect(line.hasAttribute('hidden')).toBe(false)
+        expect(line.getAttribute('x1')).toBe('100')
+        expect(line.getAttribute('y1')).toBe('80')
+        expect(line.getAttribute('x2')).toBe(String(x))
+        expect(line.getAttribute('y2')).toBe(String(y))
+        expect(getPhrase('left', leftId).classList.contains('is-pending')).toBe(true)
+      }
+    )
+
     When('left phrase {string} is dragged to right phrase {string}', (_ctx, leftId, rightId) => {
       const left = getPhrase('left', leftId)
       const right = getPhrase('right', rightId)
@@ -90,6 +166,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
     Then('associative answer {string} is empty', (_ctx, questionId) => {
       expect(readAnswer(questionId)).toEqual([])
+    })
+
+    And('{int} stored associative lines are visible', (_ctx, expectedCount) => {
+      expect(dom.window.document.querySelectorAll('[data-stored-line]')).toHaveLength(expectedCount)
     })
 
     When('left phrase {string} is focused and key {string} is pressed', (_ctx, leftId, key) => {

@@ -41,3 +41,6 @@
 
 14. Enabled snippet overrides from the HTML template.
     Registered all generator snippets as named partials, documented the override pattern, and verified inline partial overrides for section, question, style, and script snippets.
+
+15. Added visual line drawing for associative links.
+    Positioned phrase groups on the outer thirds, kept the center open for SVG link lines, rendered a live drag line during linking, and kept stored lines visible until the same link was recreated to undo it.

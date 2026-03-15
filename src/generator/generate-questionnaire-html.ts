@@ -80,6 +80,10 @@ ${items}
 function renderAssociativeContent(question: NormalizedAssociativeQuestion): string {
   return `
 <div class="associative-groups" data-question-type="associative">
+<svg class="associative-lines" aria-hidden="true">
+<g data-stored-lines></g>
+<line data-live-line hidden></line>
+</svg>
 <input type="hidden" name="${question.id}" value="[]" data-associations-input="${question.id}">
 ${renderAssociativeGroup('Left', question.content.left)}
 ${renderAssociativeGroup('Right', question.content.right)}

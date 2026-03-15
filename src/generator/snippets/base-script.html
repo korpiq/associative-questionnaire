@@ -63,6 +63,90 @@
     });
   }
 
+  function updateSvgViewBox(root) {
+    var svg = root.querySelector('.associative-lines');
+    var rect = root.getBoundingClientRect();
+
+    if (!svg || !rect.width || !rect.height) {
+      return;
+    }
+
+    svg.setAttribute('viewBox', '0 0 ' + rect.width + ' ' + rect.height);
+  }
+
+  function toRelativePoint(root, clientX, clientY) {
+    var rect = root.getBoundingClientRect();
+
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  function getPhrasePoint(root, phrase) {
+    var rect = phrase.getBoundingClientRect();
+
+    return toRelativePoint(root, rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }
+
+  function hideLiveLine(root) {
+    var line = root.querySelector('[data-live-line]');
+
+    if (!line) {
+      return;
+    }
+
+    line.setAttribute('hidden', 'hidden');
+  }
+
+  function updateLiveLine(root, from, to) {
+    var line = root.querySelector('[data-live-line]');
+
+    if (!line) {
+      return;
+    }
+
+    updateSvgViewBox(root);
+    line.removeAttribute('hidden');
+    line.setAttribute('class', 'associative-line associative-line-live');
+    line.setAttribute('x1', String(from.x));
+    line.setAttribute('y1', String(from.y));
+    line.setAttribute('x2', String(to.x));
+    line.setAttribute('y2', String(to.y));
+  }
+
+  function redrawStoredLines(root, input) {
+    var container = root.querySelector('[data-stored-lines]');
+
+    if (!container) {
+      return;
+    }
+
+    updateSvgViewBox(root);
+    container.innerHTML = '';
+
+    readAssociations(input).forEach(function (association) {
+      var leftPhrase = findPhrase(root, 'left', association.left);
+      var rightPhrase = findPhrase(root, 'right', association.right);
+
+      if (!leftPhrase || !rightPhrase) {
+        return;
+      }
+
+      var from = getPhrasePoint(root, leftPhrase);
+      var to = getPhrasePoint(root, rightPhrase);
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
+      line.setAttribute('data-stored-line', association.left + ':' + association.right);
+      line.setAttribute('class', 'associative-line');
+      line.setAttribute('x1', String(from.x));
+      line.setAttribute('y1', String(from.y));
+      line.setAttribute('x2', String(to.x));
+      line.setAttribute('y2', String(to.y));
+      container.appendChild(line);
+    });
+  }
+
   function setupAssociativeGroups(root) {
     var input = root.querySelector('input[data-associations-input]');
 
@@ -73,10 +157,12 @@
     var pendingPhrase = null;
     var dragSource = null;
     var dragTarget = null;
+    var skipNextClick = false;
 
     function clearDrag() {
       dragSource = null;
       dragTarget = null;
+      hideLiveLine(root);
     }
 
     function connect(sourcePhrase, targetPhrase) {
@@ -89,12 +175,16 @@
       toggleAssociation(input, left, right);
       pendingPhrase = null;
       updatePhraseState(root, input, pendingPhrase);
+      redrawStoredLines(root, input);
     }
 
     root.querySelectorAll('.phrase[data-side][data-phrase-id]').forEach(function (phrase) {
-      phrase.addEventListener('mousedown', function () {
+      phrase.addEventListener('mousedown', function (event) {
         dragSource = phrase;
         dragTarget = null;
+        pendingPhrase = phrase;
+        updatePhraseState(root, input, pendingPhrase);
+        updateLiveLine(root, getPhrasePoint(root, phrase), toRelativePoint(root, event.clientX, event.clientY));
       });
 
       phrase.addEventListener('mouseenter', function () {
@@ -115,12 +205,18 @@
           dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
         ) {
           connect(dragSource, phrase);
+          skipNextClick = true;
         }
 
         clearDrag();
       });
 
       phrase.addEventListener('click', function () {
+        if (skipNextClick) {
+          skipNextClick = false;
+          return;
+        }
+
         if (dragSource || dragTarget) {
           return;
         }
@@ -162,8 +258,17 @@
       });
     });
 
+    document.addEventListener('mousemove', function (event) {
+      if (!dragSource) {
+        return;
+      }
+
+      updateLiveLine(root, getPhrasePoint(root, dragSource), toRelativePoint(root, event.clientX, event.clientY));
+    });
     document.addEventListener('mouseup', clearDrag);
     updatePhraseState(root, input, pendingPhrase);
+    redrawStoredLines(root, input);
+    hideLiveLine(root);
   }
 
   document.querySelectorAll('.associative-groups[data-question-type="associative"]').forEach(setupAssociativeGroups);
