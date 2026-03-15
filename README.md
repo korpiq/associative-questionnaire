@@ -6,7 +6,14 @@ Client-side scripting must be kept to minimum and done in javascript compatible 
 
 ## Design
 
-Scripts outside browser (generator, reporter) can be implemented in Typescript for nodejs version 20.
+1. Generator that produces a standalone HTML page from a HTML template and questionnaire JSON.
+   - should generate a concise and straightforward HTML page that contains all styles and javascript necessary for a smooth, progressive user experience.
+2. CGI script that stores the results of any questionnaire forms to JSON files on same server.
+3. Reporter that produces a statistical report from a questionnaire and associated answer files.
+
+The actual application seen by users is the generated HTML page that stores the answers via the CGI script.
+
+Scripts outside browser (generator reporter) can be implemented in Typescript for nodejs version 20. CGI script must be plain javascript.
 
 ### Questionnaire content as JSON data structure
 
@@ -131,5 +138,13 @@ describeFeature(feature, ({ Scenario }) => {
 
 })
 ```
+
+## Data integrity
+
+We use Zod schemas to verify data integrity.
+
+## Anonymity
+
+We avoid doing anything identifying the users. A questionnaire may or may not contains questions to identify users.
 
 Note that each step must do exactly what its Gherkin description says. If not otherwise applicable, they must populate a shared variable that is then used in a later step to actually execute the setup built by earlier steps.
