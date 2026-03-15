@@ -1,7 +1,19 @@
 # TODO
 
-1. Build the CGI saver after the generator and finalized answer format.
+1. Use a template engine in the generator to make the rendering code shorter and more maintainable.
+   Keep the existing generator behavior working while moving the HTML assembly away from manual string replacement.
+
+2. Extract generator HTML snippets to separate snippet files.
+   Treat the snippets as reusable template-engine partials instead of hardcoded strings in the generator.
+
+3. Add a default snippet that provides the associative-question linking JavaScript described under "Association linker" in `README.md`.
+   The generated page should include the default linker behavior even before per-template overrides are introduced.
+
+4. Make it possible to override each snippet in the HTML template.
+   Template authors should be able to replace default snippet partials from within the template file.
+
+5. Build the CGI saver after the generator and finalized answer format.
    It should validate and persist the same answer structure the rest of the system expects.
 
-2. Build the reporter last.
+6. Build the reporter last.
    It should consume the validated questionnaire content and saved answer files to produce totals, percentages, grouped statistics, and graphs.
