@@ -105,6 +105,8 @@ Only features described there are considered as supported.
 
 Tests are written with `@amiceli/vitest-cucumber` under `tests/feature/specs` in files associated with the feature specification files by name.
 
+See `docs/testing.md` for the current project testing method and step-structure conventions.
+
 Tests are written as `@amiceli/vitest-cucumber` says:
 
 ```typescript

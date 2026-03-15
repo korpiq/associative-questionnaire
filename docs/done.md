@@ -8,3 +8,6 @@
 
 3. Reused identical schema parsing `When` steps through `@amiceli/vitest-cucumber` shared steps.
    Centralized the repeated execution step with `defineSteps` so scenarios keep one source of truth for the parse action.
+
+4. Documented the project testing method in `docs/testing.md`.
+   Captured the Gherkin-plus-`vitest-cucumber` workflow, shared-step usage, YAML doc string style, verification commands, and linked it from `README.md`.
