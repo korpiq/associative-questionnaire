@@ -20,3 +20,6 @@
 
 7. Added the first generator feature specification slice.
    Defined a standalone-page generation scenario with one section and one question of each supported type in `tests/feature/generate-questionnaire-page.feature`.
+
+8. Normalized keyed questionnaire collections into a stable internal representation.
+   Added `normalizeQuestionnaire` to restore ids from object keys and preserve source order for sections, questions, choices, and associative phrases.
