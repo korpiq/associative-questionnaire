@@ -163,11 +163,13 @@
     var pendingPhrase = null;
     var dragSource = null;
     var dragTarget = null;
+    var dragging = false;
     var skipNextClick = false;
 
     function clearDrag() {
       dragSource = null;
       dragTarget = null;
+      dragging = false;
       hideLiveLine(root);
     }
 
@@ -188,13 +190,23 @@
       phrase.addEventListener('mousedown', function (event) {
         dragSource = phrase;
         dragTarget = null;
-        pendingPhrase = phrase;
-        updatePhraseState(root, input, pendingPhrase);
+        dragging = true;
+
+        if (
+          !pendingPhrase ||
+          pendingPhrase === phrase ||
+          pendingPhrase.getAttribute('data-side') === phrase.getAttribute('data-side')
+        ) {
+          pendingPhrase = phrase;
+          updatePhraseState(root, input, pendingPhrase);
+        }
+
         updateLiveLine(root, getPhrasePoint(root, phrase), toRelativePoint(root, event.clientX, event.clientY));
       });
 
       phrase.addEventListener('mouseenter', function () {
         if (
+          dragging &&
           dragSource &&
           dragSource !== phrase &&
           dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
@@ -205,6 +217,7 @@
 
       phrase.addEventListener('mouseup', function () {
         if (
+          dragging &&
           dragSource &&
           dragTarget &&
           dragTarget === phrase &&

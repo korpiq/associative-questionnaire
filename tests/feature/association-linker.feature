@@ -22,3 +22,17 @@ Feature: Association linker
     Then associative answer "matches" contains pair "1" "A"
     And the live associative line is hidden
     And 1 stored associative lines are visible
+
+  Scenario: Tapping one phrase and then the opposite side toggles an association
+    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    When left phrase "1" is tapped
+    Then left phrase "1" is marked pending
+    When right phrase "A" is tapped
+    Then associative answer "matches" contains pair "1" "A"
+    And the live associative line is hidden
+    And 1 stored associative lines are visible
+    When left phrase "1" is tapped again
+    And right phrase "A" is tapped again
+    Then associative answer "matches" is empty
+    And the live associative line is hidden after tapping the link again
+    And 0 stored associative lines are visible

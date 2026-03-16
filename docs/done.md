@@ -44,3 +44,6 @@
 
 15. Added visual line drawing for associative links.
     Positioned phrase groups on the outer thirds, kept the center open for SVG link lines, rendered a live drag line during linking, and kept stored lines visible until the same link was recreated to undo it.
+
+16. Fixed mobile tap linking for associative phrases.
+    Deferred drag activation until pointer movement so taps no longer overwrite the pending phrase, added Gherkin coverage for tap-to-link toggling, and verified that stored lines still update correctly.

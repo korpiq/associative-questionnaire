@@ -22,6 +22,14 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     right.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
   }
 
+  function tapPhrase(side: 'left' | 'right', phraseId: string): void {
+    const phrase = getPhrase(side, phraseId)
+
+    phrase.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
+    phrase.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+    phrase.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }))
+  }
+
   function expectLiveLineFromLeftPhraseToPoint(x: number, y: number): void {
     const line = getLiveLine()
 
@@ -214,6 +222,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expectPhrasePending(leftId)
     })
 
+    Then('left phrase {string} is marked pending', (_ctx, leftId) => {
+      expectPhrasePending(leftId)
+    })
+
     And('left phrase {string} remains marked pending', (_ctx, leftId) => {
       expectPhrasePending(leftId)
     })
@@ -249,6 +261,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expectLiveLineHidden()
     })
 
+    And('the live associative line is hidden after tapping the link again', () => {
+      expectLiveLineHidden()
+    })
+
     When('left phrase {string} is focused and key {string} is pressed', (_ctx, leftId, key) => {
       const left = getPhrase('left', leftId)
 
@@ -260,9 +276,35 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
         })
       )
     })
+
+    When('left phrase {string} is tapped', (_ctx, leftId) => {
+      tapPhrase('left', leftId)
+    })
+
+    When('left phrase {string} is tapped again', (_ctx, leftId) => {
+      tapPhrase('left', leftId)
+    })
+
+    When('right phrase {string} is tapped', (_ctx, rightId) => {
+      tapPhrase('right', rightId)
+    })
+
+    And('right phrase {string} is tapped', (_ctx, rightId) => {
+      tapPhrase('right', rightId)
+    })
+
+    When('right phrase {string} is tapped again', (_ctx, rightId) => {
+      tapPhrase('right', rightId)
+    })
+
+    And('right phrase {string} is tapped again', (_ctx, rightId) => {
+      tapPhrase('right', rightId)
+    })
   })
 
   Scenario('Dragging from one phrase to another toggles an association', () => {})
 
   Scenario('Keyboard linking toggles an association', () => {})
+
+  Scenario('Tapping one phrase and then the opposite side toggles an association', () => {})
 })

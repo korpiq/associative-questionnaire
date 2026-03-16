@@ -1,7 +1,5 @@
 # TODO
 
-- Associating phrases on the left and right in "matches" type questions works on desktop but not in mobile. Make tapping a phrase on one side and then another on the other side link/unlink them.
-
 - Dragging lines to associate phrases on the left and right in "matches" type questions works on desktop but not in mobile. Make pressing down on a phrase and then dragging in mobile drag line like it does on desktop.
 
 - Make an example showing how to override each of our HTML snippets.
