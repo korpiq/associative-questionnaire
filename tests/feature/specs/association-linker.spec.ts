@@ -17,17 +17,74 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     const left = getPhrase('left', leftId)
     const right = getPhrase('right', rightId)
 
-    left.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
-    right.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }))
-    right.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+    dispatchPointerEvent(left, 'pointerdown', { clientX: 100, clientY: 80, pointerId: 1, pointerType: 'mouse' })
+    dispatchPointerEvent(dom.window.document, 'pointermove', {
+      clientX: 800,
+      clientY: 80,
+      pointerId: 1,
+      pointerType: 'mouse'
+    })
+    dispatchPointerEvent(dom.window.document, 'pointerup', {
+      clientX: 800,
+      clientY: 80,
+      pointerId: 1,
+      pointerType: 'mouse'
+    })
   }
 
   function tapPhrase(side: 'left' | 'right', phraseId: string): void {
     const phrase = getPhrase(side, phraseId)
 
-    phrase.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
-    phrase.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+    dispatchPointerEvent(phrase, 'pointerdown', { clientX: 100, clientY: 80, pointerId: 1, pointerType: 'touch' })
+    dispatchPointerEvent(dom.window.document, 'pointerup', {
+      clientX: 100,
+      clientY: 80,
+      pointerId: 1,
+      pointerType: 'touch'
+    })
     phrase.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }))
+  }
+
+  function touchDragPhraseToPhrase(leftId: string, rightId: string): void {
+    const left = getPhrase('left', leftId)
+    const right = getPhrase('right', rightId)
+    const rect = right.getBoundingClientRect()
+
+    dispatchPointerEvent(left, 'pointerdown', { clientX: 100, clientY: 80, pointerId: 7, pointerType: 'touch' })
+    dispatchPointerEvent(dom.window.document, 'pointermove', {
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+      pointerId: 7,
+      pointerType: 'touch'
+    })
+    dispatchPointerEvent(dom.window.document, 'pointerup', {
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+      pointerId: 7,
+      pointerType: 'touch'
+    })
+  }
+
+  function dispatchPointerEvent(
+    target: Document | Element,
+    type: string,
+    init: { clientX: number; clientY: number; pointerId: number; pointerType: string }
+  ): void {
+    const event = new dom.window.MouseEvent(type, {
+      bubbles: true,
+      clientX: init.clientX,
+      clientY: init.clientY
+    })
+
+    Object.defineProperty(event, 'pointerId', {
+      configurable: true,
+      value: init.pointerId
+    })
+    Object.defineProperty(event, 'pointerType', {
+      configurable: true,
+      value: init.pointerType
+    })
+    target.dispatchEvent(event)
   }
 
   function expectLiveLineFromLeftPhraseToPoint(x: number, y: number): void {
@@ -158,25 +215,39 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       setRect(right, { left: 740, top: 60, width: 120, height: 40 })
       setRect(leftHandle, { left: 153, top: 73, width: 14, height: 14 })
       setRect(rightHandle, { left: 733, top: 73, width: 14, height: 14 })
+
+      Object.defineProperty(dom.window.document, 'elementFromPoint', {
+        configurable: true,
+        value: (x: number, y: number): Element | null => {
+          const phrases = Array.from(
+            dom.window.document.querySelectorAll<HTMLElement>('.phrase[data-side][data-phrase-id]')
+          )
+
+          return (
+            phrases.find((phrase) => {
+              const rect = phrase.getBoundingClientRect()
+              return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+            }) ?? null
+          )
+        }
+      })
     })
 
     When('left phrase {string} starts dragging to point {int} {int}', (_ctx, leftId, x, y) => {
       const left = getPhrase('left', leftId)
 
-      left.dispatchEvent(
-        new dom.window.MouseEvent('mousedown', {
-          bubbles: true,
-          clientX: 100,
-          clientY: 80
-        })
-      )
-      dom.window.document.dispatchEvent(
-        new dom.window.MouseEvent('mousemove', {
-          bubbles: true,
-          clientX: x,
-          clientY: y
-        })
-      )
+      dispatchPointerEvent(left, 'pointerdown', {
+        clientX: 100,
+        clientY: 80,
+        pointerId: 1,
+        pointerType: 'mouse'
+      })
+      dispatchPointerEvent(dom.window.document, 'pointermove', {
+        clientX: x,
+        clientY: y,
+        pointerId: 1,
+        pointerType: 'mouse'
+      })
     })
 
     When(
@@ -185,20 +256,18 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
         const left = getPhrase('left', leftId)
         const handle = getHandle('left', leftId)
 
-        handle.dispatchEvent(
-          new dom.window.MouseEvent('mousedown', {
-            bubbles: true,
-            clientX: 160,
-            clientY: 80
-          })
-        )
-        dom.window.document.dispatchEvent(
-          new dom.window.MouseEvent('mousemove', {
-            bubbles: true,
-            clientX: x,
-            clientY: y
-          })
-        )
+        dispatchPointerEvent(handle, 'pointerdown', {
+          clientX: 160,
+          clientY: 80,
+          pointerId: 1,
+          pointerType: 'mouse'
+        })
+        dispatchPointerEvent(dom.window.document, 'pointermove', {
+          clientX: x,
+          clientY: y,
+          pointerId: 1,
+          pointerType: 'mouse'
+        })
 
         expect(left.classList.contains('is-pending')).toBe(true)
       }
@@ -265,6 +334,14 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expectLiveLineHidden()
     })
 
+    And('the live associative line is hidden after touch drag', () => {
+      expectLiveLineHidden()
+    })
+
+    And('the live associative line is hidden after touch drag is undone', () => {
+      expectLiveLineHidden()
+    })
+
     When('left phrase {string} is focused and key {string} is pressed', (_ctx, leftId, key) => {
       const left = getPhrase('left', leftId)
 
@@ -300,6 +377,14 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     And('right phrase {string} is tapped again', (_ctx, rightId) => {
       tapPhrase('right', rightId)
     })
+
+    When('left phrase {string} is touch-dragged to right phrase {string}', (_ctx, leftId, rightId) => {
+      touchDragPhraseToPhrase(leftId, rightId)
+    })
+
+    When('left phrase {string} is touch-dragged again to right phrase {string}', (_ctx, leftId, rightId) => {
+      touchDragPhraseToPhrase(leftId, rightId)
+    })
   })
 
   Scenario('Dragging from one phrase to another toggles an association', () => {})
@@ -307,4 +392,6 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   Scenario('Keyboard linking toggles an association', () => {})
 
   Scenario('Tapping one phrase and then the opposite side toggles an association', () => {})
+
+  Scenario('Touch dragging from one phrase to another toggles an association', () => {})
 })

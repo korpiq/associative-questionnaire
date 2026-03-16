@@ -36,3 +36,14 @@ Feature: Association linker
     Then associative answer "matches" is empty
     And the live associative line is hidden after tapping the link again
     And 0 stored associative lines are visible
+
+  Scenario: Touch dragging from one phrase to another toggles an association
+    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    When left phrase "1" is touch-dragged to right phrase "A"
+    Then associative answer "matches" contains pair "1" "A"
+    And the live associative line is hidden after touch drag
+    And 1 stored associative lines are visible
+    When left phrase "1" is touch-dragged again to right phrase "A"
+    Then associative answer "matches" is empty
+    And the live associative line is hidden after touch drag is undone
+    And 0 stored associative lines are visible

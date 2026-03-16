@@ -1,7 +1,5 @@
 # TODO
 
-- Dragging lines to associate phrases on the left and right in "matches" type questions works on desktop but not in mobile. Make pressing down on a phrase and then dragging in mobile drag line like it does on desktop.
-
 - Make an example showing how to override each of our HTML snippets.
 
 - Rework Gherkin scenarios to avoid repeated step text where the parser rejects repetition.

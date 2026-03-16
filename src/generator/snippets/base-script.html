@@ -93,6 +93,42 @@
     return toRelativePoint(root, rect.left + rect.width / 2, rect.top + rect.height / 2);
   }
 
+  function getEventPoint(event) {
+    return {
+      x: typeof event.clientX === 'number' ? event.clientX : 0,
+      y: typeof event.clientY === 'number' ? event.clientY : 0
+    };
+  }
+
+  function findPhraseAtPoint(root, clientX, clientY) {
+    if (root.ownerDocument && typeof root.ownerDocument.elementFromPoint === 'function') {
+      var element = root.ownerDocument.elementFromPoint(clientX, clientY);
+      var phrase = element && element.closest ? element.closest('.phrase[data-side][data-phrase-id]') : null;
+
+      if (phrase && root.contains(phrase)) {
+        return phrase;
+      }
+    }
+
+    var phrases = root.querySelectorAll('.phrase[data-side][data-phrase-id]');
+
+    for (var index = 0; index < phrases.length; index += 1) {
+      var candidate = phrases[index];
+      var rect = candidate.getBoundingClientRect();
+
+      if (
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom
+      ) {
+        return candidate;
+      }
+    }
+
+    return null;
+  }
+
   function hideLiveLine(root) {
     var line = root.querySelector('[data-live-line]');
 
@@ -164,12 +200,14 @@
     var dragSource = null;
     var dragTarget = null;
     var dragging = false;
+    var dragPointerId = null;
     var skipNextClick = false;
 
     function clearDrag() {
       dragSource = null;
       dragTarget = null;
       dragging = false;
+      dragPointerId = null;
       hideLiveLine(root);
     }
 
@@ -187,10 +225,11 @@
     }
 
     root.querySelectorAll('.phrase[data-side][data-phrase-id]').forEach(function (phrase) {
-      phrase.addEventListener('mousedown', function (event) {
+      phrase.addEventListener('pointerdown', function (event) {
         dragSource = phrase;
         dragTarget = null;
         dragging = true;
+        dragPointerId = typeof event.pointerId === 'number' ? event.pointerId : null;
 
         if (
           !pendingPhrase ||
@@ -201,33 +240,11 @@
           updatePhraseState(root, input, pendingPhrase);
         }
 
+        if (typeof phrase.setPointerCapture === 'function' && typeof event.pointerId === 'number') {
+          phrase.setPointerCapture(event.pointerId);
+        }
+
         updateLiveLine(root, getPhrasePoint(root, phrase), toRelativePoint(root, event.clientX, event.clientY));
-      });
-
-      phrase.addEventListener('mouseenter', function () {
-        if (
-          dragging &&
-          dragSource &&
-          dragSource !== phrase &&
-          dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
-        ) {
-          dragTarget = phrase;
-        }
-      });
-
-      phrase.addEventListener('mouseup', function () {
-        if (
-          dragging &&
-          dragSource &&
-          dragTarget &&
-          dragTarget === phrase &&
-          dragSource.getAttribute('data-side') !== phrase.getAttribute('data-side')
-        ) {
-          connect(dragSource, phrase);
-          skipNextClick = true;
-        }
-
-        clearDrag();
       });
 
       phrase.addEventListener('click', function () {
@@ -277,15 +294,51 @@
       });
     });
 
-    document.addEventListener('mousemove', function (event) {
-      if (!dragSource) {
+    document.addEventListener('pointermove', function (event) {
+      var hoveredPhrase;
+      var point;
+
+      if (!dragSource || (dragPointerId !== null && event.pointerId !== dragPointerId)) {
         return;
       }
 
-      updateLiveLine(root, getPhrasePoint(root, dragSource), toRelativePoint(root, event.clientX, event.clientY));
+      point = getEventPoint(event);
+      hoveredPhrase = findPhraseAtPoint(root, point.x, point.y);
+      dragTarget = null;
+
+      if (
+        hoveredPhrase &&
+        hoveredPhrase !== dragSource &&
+        dragSource.getAttribute('data-side') !== hoveredPhrase.getAttribute('data-side')
+      ) {
+        dragTarget = hoveredPhrase;
+      }
+
+      updateLiveLine(root, getPhrasePoint(root, dragSource), toRelativePoint(root, point.x, point.y));
     });
-    document.addEventListener('mouseup', clearDrag);
-    window.addEventListener('mouseup', clearDrag);
+
+    document.addEventListener('pointerup', function (event) {
+      if (!dragSource || (dragPointerId !== null && event.pointerId !== dragPointerId)) {
+        return;
+      }
+
+      if (dragging && dragTarget) {
+        connect(dragSource, dragTarget);
+        skipNextClick = true;
+      }
+
+      clearDrag();
+    });
+
+    document.addEventListener('pointercancel', function (event) {
+      if (!dragSource || (dragPointerId !== null && event.pointerId !== dragPointerId)) {
+        return;
+      }
+
+      clearDrag();
+    });
+
+    window.addEventListener('pointerup', clearDrag);
     window.addEventListener('blur', clearDrag);
     updatePhraseState(root, input, pendingPhrase);
     redrawStoredLines(root, input);

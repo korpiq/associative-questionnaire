@@ -47,3 +47,6 @@
 
 16. Fixed mobile tap linking for associative phrases.
     Deferred drag activation until pointer movement so taps no longer overwrite the pending phrase, added Gherkin coverage for tap-to-link toggling, and verified that stored lines still update correctly.
+
+17. Enabled mobile drag linking for associative phrases.
+    Switched the drag interaction to pointer events, prevented touch scrolling from stealing phrase drags, added touch-drag Gherkin coverage, and kept desktop drag and tap-to-link behavior working.
