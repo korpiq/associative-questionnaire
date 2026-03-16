@@ -1,7 +1,5 @@
 # TODO
 
-- Make an example showing how to override each of our HTML snippets.
-
 - Rework Gherkin scenarios to avoid repeated step text where the parser rejects repetition.
   Prefer clearer scenario structure over repeated identical lines once the current implementation work is stable.
 

@@ -32,7 +32,8 @@ The generator produces the standalone questionnaire HTML page that users actuall
 
 ## Example
 
-See `docs/examples/basic/README.md` for a runnable example with a questionnaire JSON file, template HTML file, and a command that writes a generated questionnaire page.
+See `docs/examples/basic/README.md` for a runnable default-template example.
+See `docs/examples/snippet-overrides/README.md` for a runnable example that overrides every built-in snippet partial.
 
 ## Snippet overrides
 

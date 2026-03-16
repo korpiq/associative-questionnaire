@@ -1,0 +1,36 @@
+{
+  "title": "Snippet override example",
+  "description": "Demonstrates overriding every built-in generator snippet in one template.",
+  "sections": {
+    "basics": {
+      "title": "Basics",
+      "description": "Each question is rendered through the overridden question partial.",
+      "questions": {
+        "favorite-color": {
+          "title": "Favorite color",
+          "type": "single-choice",
+          "content": {
+            "red": "Red",
+            "blue": "Blue"
+          }
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "free-text"
+        },
+        "matches": {
+          "title": "Associate phrases",
+          "type": "associative",
+          "content": {
+            "left": {
+              "1": "Calm"
+            },
+            "right": {
+              "A": "Blue"
+            }
+          }
+        }
+      }
+    }
+  }
+}

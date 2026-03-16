@@ -50,3 +50,6 @@
 
 17. Enabled mobile drag linking for associative phrases.
     Switched the drag interaction to pointer events, prevented touch scrolling from stealing phrase drags, added touch-drag Gherkin coverage, and kept desktop drag and tap-to-link behavior working.
+
+18. Added a runnable example that overrides every generator snippet.
+    Documented a full `root`/`section`/`question`/`style`/`script` override example under `docs/examples/snippet-overrides`, verified it by generating the standalone page, and kept TODO tracking aligned.
