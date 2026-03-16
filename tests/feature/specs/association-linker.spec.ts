@@ -172,6 +172,20 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expect(dom.window.document.querySelectorAll('[data-stored-line]')).toHaveLength(expectedCount)
     })
 
+    And('the live associative line is hidden', () => {
+      const line = getLiveLine()
+
+      expect(line.hasAttribute('hidden')).toBe(true)
+      expect(line.style.display).toBe('none')
+    })
+
+    And('the live associative line is hidden after the link is undone', () => {
+      const line = getLiveLine()
+
+      expect(line.hasAttribute('hidden')).toBe(true)
+      expect(line.style.display).toBe('none')
+    })
+
     When('left phrase {string} is focused and key {string} is pressed', (_ctx, leftId, key) => {
       const left = getPhrase('left', leftId)
 

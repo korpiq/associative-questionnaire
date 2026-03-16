@@ -97,6 +97,7 @@
     }
 
     line.setAttribute('hidden', 'hidden');
+    line.style.display = 'none';
   }
 
   function updateLiveLine(root, from, to) {
@@ -108,6 +109,7 @@
 
     updateSvgViewBox(root);
     line.removeAttribute('hidden');
+    line.style.display = '';
     line.setAttribute('class', 'associative-line associative-line-live');
     line.setAttribute('x1', String(from.x));
     line.setAttribute('y1', String(from.y));
@@ -266,6 +268,8 @@
       updateLiveLine(root, getPhrasePoint(root, dragSource), toRelativePoint(root, event.clientX, event.clientY));
     });
     document.addEventListener('mouseup', clearDrag);
+    window.addEventListener('mouseup', clearDrag);
+    window.addEventListener('blur', clearDrag);
     updatePhraseState(root, input, pendingPhrase);
     redrawStoredLines(root, input);
     hideLiveLine(root);
