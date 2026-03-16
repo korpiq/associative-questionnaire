@@ -81,6 +81,8 @@ Outputs
 - percentages
 - graphs in e.g. mermaid
 
+See `docs/system-design.md` for the current combined deployment and runtime design of generated pages, the CGI saver, and the reporter.
+
 ### HTML template snippets
 
 Utility snippets to include in the HTML template for representation of different parts.

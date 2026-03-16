@@ -53,3 +53,6 @@
 
 18. Added a runnable example that overrides every generator snippet.
     Documented a full `root`/`section`/`question`/`style`/`script` override example under `docs/examples/snippet-overrides`, verified it by generating the standalone page, and kept TODO tracking aligned.
+
+19. Added a combined system design document for generated pages, the CGI saver, and the reporter.
+    Captured the shared deployment model for VPS and container targets, proposed static and runtime directory layouts, defined the cross-component submission and reporting flow, and identified the submit-action and questionnaire-name tasks that should be completed before the CGI and reporter work.
