@@ -58,10 +58,13 @@ function renderFreeTextContent(question: NormalizedFreeTextQuestion): string {
 }
 
 function renderAssociativeGroup(title: string, phrases: Array<{ id: string; text: string }>): string {
+  const side = title.toLowerCase()
+  const handleClass = side === 'left' ? 'phrase-handle phrase-handle-right' : 'phrase-handle phrase-handle-left'
   const items = phrases
     .map(
       (phrase) => `
-<button type="button" class="phrase" data-phrase-id="${phrase.id}" data-side="${title.toLowerCase()}" aria-label="${phrase.id} ${phrase.text}">
+<button type="button" class="phrase" data-phrase-id="${phrase.id}" data-side="${side}" aria-label="${phrase.id} ${phrase.text}">
+<span class="${handleClass}" aria-hidden="true"></span>
 <span class="phrase-key">${phrase.id}</span>
 <span>${phrase.text}</span>
 </button>
@@ -70,7 +73,7 @@ function renderAssociativeGroup(title: string, phrases: Array<{ id: string; text
     .join('')
 
   return `
-<div class="phrase-list" data-side="${title.toLowerCase()}">
+<div class="phrase-list" data-side="${side}">
 <h4>${title}</h4>
 ${items}
 </div>

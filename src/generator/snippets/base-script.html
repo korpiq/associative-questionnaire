@@ -84,7 +84,11 @@
   }
 
   function getPhrasePoint(root, phrase) {
-    var rect = phrase.getBoundingClientRect();
+    var side = phrase.getAttribute('data-side');
+    var handle = phrase.querySelector(
+      side === 'left' ? '.phrase-handle-right' : '.phrase-handle-left'
+    );
+    var rect = handle ? handle.getBoundingClientRect() : phrase.getBoundingClientRect();
 
     return toRelativePoint(root, rect.left + rect.width / 2, rect.top + rect.height / 2);
   }

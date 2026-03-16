@@ -96,14 +96,18 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       const root = dom.window.document.querySelector('.associative-groups')
       const left = getPhrase('left', '1')
       const right = getPhrase('right', 'A')
+      const leftHandle = left.querySelector('.phrase-handle-right')
+      const rightHandle = right.querySelector('.phrase-handle-left')
 
-      if (!root) {
+      if (!root || !leftHandle || !rightHandle) {
         throw new Error('Associative root was not found')
       }
 
       setRect(root, { left: 0, top: 0, width: 900, height: 240 })
       setRect(left, { left: 40, top: 60, width: 120, height: 40 })
       setRect(right, { left: 740, top: 60, width: 120, height: 40 })
+      setRect(leftHandle, { left: 152, top: 74, width: 12, height: 12 })
+      setRect(rightHandle, { left: 736, top: 74, width: 12, height: 12 })
     })
 
     When('left phrase {string} starts dragging to point {int} {int}', (_ctx, leftId, x, y) => {
@@ -131,7 +135,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
         const line = getLiveLine()
 
         expect(line.hasAttribute('hidden')).toBe(false)
-        expect(line.getAttribute('x1')).toBe('100')
+        expect(line.getAttribute('x1')).toBe('158')
         expect(line.getAttribute('y1')).toBe('80')
         expect(line.getAttribute('x2')).toBe(String(x))
         expect(line.getAttribute('y2')).toBe(String(y))
