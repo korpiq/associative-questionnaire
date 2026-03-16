@@ -65,8 +65,10 @@ function renderAssociativeGroup(title: string, phrases: Array<{ id: string; text
       (phrase) => `
 <button type="button" class="phrase" data-phrase-id="${phrase.id}" data-side="${side}" aria-label="${phrase.id} ${phrase.text}">
 <span class="${handleClass}" aria-hidden="true"></span>
+<span class="phrase-box">
 <span class="phrase-key">${phrase.id}</span>
 <span>${phrase.text}</span>
+</span>
 </button>
 `.trim()
     )

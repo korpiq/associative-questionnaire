@@ -1,13 +1,17 @@
 Feature: Association linker
   Scenario: Dragging from one phrase to another toggles an association
     Given generated questionnaire HTML with one associative question and fixed phrase positions
-    When left phrase "1" starts dragging to point 240 120
+    When the right-side handle of left phrase "1" starts dragging to point 240 120
     Then the live associative line starts at left phrase "1" and ends at point 240 120
-    When left phrase "1" is dragged to right phrase "A"
+    And left phrase "1" is marked pending
+    When left phrase "1" starts dragging to point 240 120
+    Then the live associative line again starts at left phrase "1" and ends at point 240 120
+    And left phrase "1" remains marked pending
+    When left phrase "1" box is dragged to right phrase "A"
     Then associative answer "matches" contains pair "1" "A"
     And the live associative line is hidden
     And 1 stored associative lines are visible
-    When left phrase "1" is dragged again to right phrase "A"
+    When left phrase "1" box is dragged again to right phrase "A"
     Then associative answer "matches" is empty
     And the live associative line is hidden after the link is undone
     And 0 stored associative lines are visible

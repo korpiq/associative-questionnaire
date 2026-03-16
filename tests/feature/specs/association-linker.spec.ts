@@ -9,6 +9,36 @@ const feature = await loadFeature('tests/feature/association-linker.feature')
 describeFeature(feature, ({ Scenario, defineSteps }) => {
   let dom: JSDOM
 
+  function expectPhrasePending(leftId: string): void {
+    expect(getPhrase('left', leftId).classList.contains('is-pending')).toBe(true)
+  }
+
+  function dragPhraseToPhrase(leftId: string, rightId: string): void {
+    const left = getPhrase('left', leftId)
+    const right = getPhrase('right', rightId)
+
+    left.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
+    right.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }))
+    right.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+  }
+
+  function expectLiveLineFromLeftPhraseToPoint(x: number, y: number): void {
+    const line = getLiveLine()
+
+    expect(line.hasAttribute('hidden')).toBe(false)
+    expect(line.getAttribute('x1')).toBe('160')
+    expect(line.getAttribute('y1')).toBe('80')
+    expect(line.getAttribute('x2')).toBe(String(x))
+    expect(line.getAttribute('y2')).toBe(String(y))
+  }
+
+  function expectLiveLineHidden(): void {
+    const line = getLiveLine()
+
+    expect(line.hasAttribute('hidden')).toBe(true)
+    expect(line.style.display).toBe('none')
+  }
+
   function readAnswer(questionId: string): Array<{ left: string; right: string }> {
     const input = dom.window.document.querySelector<HTMLInputElement>(
       `input[data-associations-input="${questionId}"]`
@@ -31,6 +61,18 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     }
 
     return phrase
+  }
+
+  function getHandle(side: 'left' | 'right', phraseId: string): HTMLElement {
+    const phrase = getPhrase(side, phraseId)
+    const selector = side === 'left' ? '.phrase-handle-right' : '.phrase-handle-left'
+    const handle = phrase.querySelector<HTMLElement>(selector)
+
+    if (!handle) {
+      throw new Error(`Handle for phrase "${phraseId}" on side "${side}" was not found`)
+    }
+
+    return handle
   }
 
   function setRect(
@@ -96,8 +138,8 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       const root = dom.window.document.querySelector('.associative-groups')
       const left = getPhrase('left', '1')
       const right = getPhrase('right', 'A')
-      const leftHandle = left.querySelector('.phrase-handle-right')
-      const rightHandle = right.querySelector('.phrase-handle-left')
+      const leftHandle = getHandle('left', '1')
+      const rightHandle = getHandle('right', 'A')
 
       if (!root || !leftHandle || !rightHandle) {
         throw new Error('Associative root was not found')
@@ -129,36 +171,59 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       )
     })
 
-    Then(
-      'the live associative line starts at left phrase {string} and ends at point {int} {int}',
+    When(
+      'the right-side handle of left phrase {string} starts dragging to point {int} {int}',
       (_ctx, leftId, x, y) => {
-        const line = getLiveLine()
+        const left = getPhrase('left', leftId)
+        const handle = getHandle('left', leftId)
 
-        expect(line.hasAttribute('hidden')).toBe(false)
-        expect(line.getAttribute('x1')).toBe('160')
-        expect(line.getAttribute('y1')).toBe('80')
-        expect(line.getAttribute('x2')).toBe(String(x))
-        expect(line.getAttribute('y2')).toBe(String(y))
-        expect(getPhrase('left', leftId).classList.contains('is-pending')).toBe(true)
+        handle.dispatchEvent(
+          new dom.window.MouseEvent('mousedown', {
+            bubbles: true,
+            clientX: 160,
+            clientY: 80
+          })
+        )
+        dom.window.document.dispatchEvent(
+          new dom.window.MouseEvent('mousemove', {
+            bubbles: true,
+            clientX: x,
+            clientY: y
+          })
+        )
+
+        expect(left.classList.contains('is-pending')).toBe(true)
       }
     )
 
-    When('left phrase {string} is dragged to right phrase {string}', (_ctx, leftId, rightId) => {
-      const left = getPhrase('left', leftId)
-      const right = getPhrase('right', rightId)
+    Then(
+      'the live associative line starts at left phrase {string} and ends at point {int} {int}',
+      (_ctx, leftId, x, y) => {
+        expectLiveLineFromLeftPhraseToPoint(x, y)
+      }
+    )
 
-      left.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
-      right.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }))
-      right.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+    Then(
+      'the live associative line again starts at left phrase {string} and ends at point {int} {int}',
+      (_ctx, leftId, x, y) => {
+        expectLiveLineFromLeftPhraseToPoint(x, y)
+      }
+    )
+
+    And('left phrase {string} is marked pending', (_ctx, leftId) => {
+      expectPhrasePending(leftId)
     })
 
-    When('left phrase {string} is dragged again to right phrase {string}', (_ctx, leftId, rightId) => {
-      const left = getPhrase('left', leftId)
-      const right = getPhrase('right', rightId)
+    And('left phrase {string} remains marked pending', (_ctx, leftId) => {
+      expectPhrasePending(leftId)
+    })
 
-      left.dispatchEvent(new dom.window.MouseEvent('mousedown', { bubbles: true }))
-      right.dispatchEvent(new dom.window.MouseEvent('mouseenter', { bubbles: true }))
-      right.dispatchEvent(new dom.window.MouseEvent('mouseup', { bubbles: true }))
+    When('left phrase {string} box is dragged to right phrase {string}', (_ctx, leftId, rightId) => {
+      dragPhraseToPhrase(leftId, rightId)
+    })
+
+    When('left phrase {string} box is dragged again to right phrase {string}', (_ctx, leftId, rightId) => {
+      dragPhraseToPhrase(leftId, rightId)
     })
 
     Then('associative answer {string} contains pair {string} {string}', (_ctx, questionId, leftId, rightId) => {
@@ -177,17 +242,11 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
 
     And('the live associative line is hidden', () => {
-      const line = getLiveLine()
-
-      expect(line.hasAttribute('hidden')).toBe(true)
-      expect(line.style.display).toBe('none')
+      expectLiveLineHidden()
     })
 
     And('the live associative line is hidden after the link is undone', () => {
-      const line = getLiveLine()
-
-      expect(line.hasAttribute('hidden')).toBe(true)
-      expect(line.style.display).toBe('none')
+      expectLiveLineHidden()
     })
 
     When('left phrase {string} is focused and key {string} is pressed', (_ctx, leftId, key) => {
