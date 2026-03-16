@@ -12,5 +12,6 @@
 - Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
 - Do not use `.js` file extensions in TypeScript import specifiers in this repository.
 - Prefer concise YAML doc strings in Gherkin steps when tests need to show structured input, output, or validation errors.
-- After each verified TODO step, commit it before starting the next one.
+- When working interactively with user, do not commit until user accepts.
+- When told to do several TODO steps alone, commit after each verified TODO step before starting the next one.
 - Commit messages must use a single-line task topic, then a blank line, then concise lines describing decisions, concrete actions, and any later follow-up ideas.
