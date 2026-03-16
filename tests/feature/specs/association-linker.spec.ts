@@ -106,8 +106,8 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       setRect(root, { left: 0, top: 0, width: 900, height: 240 })
       setRect(left, { left: 40, top: 60, width: 120, height: 40 })
       setRect(right, { left: 740, top: 60, width: 120, height: 40 })
-      setRect(leftHandle, { left: 152, top: 74, width: 12, height: 12 })
-      setRect(rightHandle, { left: 736, top: 74, width: 12, height: 12 })
+      setRect(leftHandle, { left: 153, top: 73, width: 14, height: 14 })
+      setRect(rightHandle, { left: 733, top: 73, width: 14, height: 14 })
     })
 
     When('left phrase {string} starts dragging to point {int} {int}', (_ctx, leftId, x, y) => {
@@ -135,7 +135,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
         const line = getLiveLine()
 
         expect(line.hasAttribute('hidden')).toBe(false)
-        expect(line.getAttribute('x1')).toBe('158')
+        expect(line.getAttribute('x1')).toBe('160')
         expect(line.getAttribute('y1')).toBe('80')
         expect(line.getAttribute('x2')).toBe(String(x))
         expect(line.getAttribute('y2')).toBe(String(y))
