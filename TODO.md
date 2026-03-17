@@ -1,8 +1,5 @@
 # TODO
 
-- Implement CGI answer validation and respondent file naming.
-  Use the shared answer schema and compute one-way hashed filenames from the selected request headers.
-
 - Implement CGI runtime storage creation under the effective user home directory.
   It should create the runtime answers root and per-`surveyName` directories on demand.
 

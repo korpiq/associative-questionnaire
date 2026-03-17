@@ -74,3 +74,6 @@
 
 25. Implemented CGI request parsing for URL-encoded survey submissions.
     Added feature coverage for native `application/x-www-form-urlencoded` browser bodies, parsed repeated fields into the shared browser-field shape, and normalized the parsed body into the validated saved answer schema.
+
+26. Added saver-side answer validation and hashed respondent filenames.
+    Validated normalized answers against the survey definition before saving, added deterministic hashed respondent filenames from the selected CGI headers plus optional deployment salt, and verified both behaviors through feature coverage.

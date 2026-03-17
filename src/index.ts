@@ -6,6 +6,7 @@ export {
 } from './schema/survey'
 export { normalizeSurveyAnswerRequestBody } from './cgi/normalize-survey-answer-request-body'
 export { normalizeSurveyAnswerFields } from './cgi/normalize-survey-answer-fields'
+export { deriveRespondentAnswerFilename } from './cgi/derive-respondent-answer-filename'
 export { normalizeSurvey } from './schema/normalize-survey'
 export type {
   NormalizedQuestion,

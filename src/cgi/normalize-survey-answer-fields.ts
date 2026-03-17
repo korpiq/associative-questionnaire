@@ -18,6 +18,10 @@ function normalizeSingleChoiceAnswer(
     throw new Error(`Single-choice answer for question "${question.id}" must be one value`)
   }
 
+  if (!question.content.some((option) => option.id === fieldValue)) {
+    throw new Error(`Single-choice answer for question "${question.id}" must match a defined option`)
+  }
+
   return {
     type: 'single-choice',
     value: fieldValue
@@ -25,11 +29,20 @@ function normalizeSingleChoiceAnswer(
 }
 
 function normalizeMultiChoiceAnswer(
+  question: NormalizedMultiChoiceQuestion,
   fieldValue: string | string[]
 ): AnswerFile['answers'][string] {
+  const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue]
+
+  values.forEach((value) => {
+    if (!question.content.some((option) => option.id === value)) {
+      throw new Error(`Multi-choice answer for question "${question.id}" must match defined options`)
+    }
+  })
+
   return {
     type: 'multi-choice',
-    value: Array.isArray(fieldValue) ? fieldValue : [fieldValue]
+    value: values
   }
 }
 
@@ -63,9 +76,25 @@ function normalizeAssociativeAnswer(
     throw new Error(`Associative answer for question "${question.id}" must be valid JSON`)
   }
 
+  const associations = parsedValue as Array<{ left: string; right: string }>
+
+  associations.forEach((association) => {
+    if (!question.content.left.some((phrase) => phrase.id === association.left)) {
+      throw new Error(
+        `Associative answer for question "${question.id}" must match defined left-side phrases`
+      )
+    }
+
+    if (!question.content.right.some((phrase) => phrase.id === association.right)) {
+      throw new Error(
+        `Associative answer for question "${question.id}" must match defined right-side phrases`
+      )
+    }
+  })
+
   return {
     type: 'associative',
-    value: parsedValue as Array<{ left: string; right: string }>
+    value: associations
   }
 }
 
@@ -77,7 +106,7 @@ function normalizeQuestionAnswer(
     case 'single-choice':
       return normalizeSingleChoiceAnswer(question, fieldValue)
     case 'multi-choice':
-      return normalizeMultiChoiceAnswer(fieldValue)
+      return normalizeMultiChoiceAnswer(question, fieldValue)
     case 'free-text':
       return normalizeFreeTextAnswer(question, fieldValue)
     case 'associative':

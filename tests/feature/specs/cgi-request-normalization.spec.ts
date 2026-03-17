@@ -83,4 +83,36 @@ describeFeature(feature, ({ Scenario }) => {
       expect(normalizationError?.message).toBe(docString)
     })
   })
+
+  Scenario('Answers that do not match the survey definition are rejected', ({ Given, And, When, Then }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
+      formFieldsInput = {}
+      normalizationResult = undefined
+      normalizationError = null
+    })
+
+    And('browser form fields are:', (_ctx, docString) => {
+      formFieldsInput = parseYamlDocString(docString)
+    })
+
+    When('the browser form fields are normalized for saving', () => {
+      try {
+        normalizationResult = normalizeSurveyAnswerFields(parseSurvey(surveyInput), formFieldsInput)
+        normalizationError = null
+      } catch (error) {
+        normalizationResult = undefined
+        normalizationError = error as Error
+      }
+    })
+
+    Then('the browser form fields are rejected', () => {
+      expect(normalizationResult).toBeUndefined()
+      expect(normalizationError).toBeInstanceOf(Error)
+    })
+
+    And('the normalization error is:', (_ctx, docString) => {
+      expect(normalizationError?.message).toBe(docString)
+    })
+  })
 })

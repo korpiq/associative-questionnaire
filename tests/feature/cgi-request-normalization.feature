@@ -29,3 +29,19 @@ Feature: Normalize CGI request fields into saved survey answers
       """
       Associative answer for question "matches" must be valid JSON
       """
+
+  Scenario: Answers that do not match the survey definition are rejected
+    Given survey content:
+      """
+      {title: Example survey, sections: {basics: {title: Basics, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, hobbies: {title: Hobbies, type: multi-choice, content: {music: Music, sports: Sports}}, matches: {title: Associate phrases, type: associative, content: {left: {"1": Calm}, right: {A: Blue}}}}}}}
+      """
+    And browser form fields are:
+      """
+      {favorite-color: green, hobbies: [music, reading], matches: '[{"left":"9","right":"A"}]'}
+      """
+    When the browser form fields are normalized for saving
+    Then the browser form fields are rejected
+    And the normalization error is:
+      """
+      Single-choice answer for question "favorite-color" must match a defined option
+      """
