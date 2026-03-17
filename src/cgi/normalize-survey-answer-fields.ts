@@ -8,7 +8,7 @@ import {
   type NormalizedSingleChoiceQuestion
 } from '../schema/normalize-survey'
 
-type BrowserFormFields = Record<string, string | string[]>
+export type BrowserFormFields = Record<string, string | string[]>
 
 function normalizeSingleChoiceAnswer(
   question: NormalizedSingleChoiceQuestion,

@@ -1,8 +1,5 @@
 # TODO
 
-- Implement CGI request parsing and normalization for `application/x-www-form-urlencoded` submissions.
-  It should transform browser form fields into the validated saved answer structure.
-
 - Implement CGI answer validation and respondent file naming.
   Use the shared answer schema and compute one-way hashed filenames from the selected request headers.
 

@@ -71,3 +71,6 @@
 
 24. Added feature coverage for CGI answer normalization from browser form fields.
     Specified the supported single-choice, multi-choice, free-text, and associative field mapping into saved answer files, added a pure normalizer that derives answer types from the survey definition, and verified rejection of malformed associative JSON.
+
+25. Implemented CGI request parsing for URL-encoded survey submissions.
+    Added feature coverage for native `application/x-www-form-urlencoded` browser bodies, parsed repeated fields into the shared browser-field shape, and normalized the parsed body into the validated saved answer schema.
