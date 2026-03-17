@@ -1,8 +1,5 @@
 # TODO
 
-- Add feature coverage for CGI request normalization from browser form fields into the saved answer schema.
-  Cover single-choice, multi-choice, free-text, associative answers, and survey resolution without extra answer metadata in the POST body.
-
 - Implement CGI request parsing and normalization for `application/x-www-form-urlencoded` submissions.
   It should transform browser form fields into the validated saved answer structure.
 

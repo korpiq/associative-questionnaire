@@ -4,6 +4,7 @@ export {
   parseSurvey,
   surveySchema
 } from './schema/survey'
+export { normalizeSurveyAnswerFields } from './cgi/normalize-survey-answer-fields'
 export { normalizeSurvey } from './schema/normalize-survey'
 export type {
   NormalizedQuestion,

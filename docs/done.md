@@ -68,3 +68,6 @@
 
 23. Added generator submit support and derived survey names.
     Extended the generator feature coverage for submit buttons, POST form actions, and derived `surveyName`, propagated the filename-derived name through the generator and CLI, and updated the runnable docs examples to use the saver CGI form-action argument.
+
+24. Added feature coverage for CGI answer normalization from browser form fields.
+    Specified the supported single-choice, multi-choice, free-text, and associative field mapping into saved answer files, added a pure normalizer that derives answer types from the survey definition, and verified rejection of malformed associative JSON.
