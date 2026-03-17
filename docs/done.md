@@ -83,3 +83,6 @@
 
 28. Implemented shared saver-path answer persistence.
     Composed request-body parsing, survey-aware answer validation, respondent filename hashing, and runtime storage into one persistence function, and verified that repeat submissions from the same respondent replace the existing file for that survey.
+
+29. Added a manual saver helper and try-it-out guide.
+    Added a `manual:save` CLI helper for exercising the current saver path without a CGI wrapper, documented generator and saver tryout flows in `docs/try-it-out.md`, and linked the guide from the README.

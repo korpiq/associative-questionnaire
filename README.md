@@ -58,6 +58,7 @@ Outputs
 - HTML survey generated from HTML template by survey content.
 
 See `docs/generator.md` for the current planned usage flow and constraints.
+See `docs/try-it-out.md` for current manual tryout commands.
 
 ### Survey results saver CGI script
 
@@ -82,6 +83,7 @@ Outputs
 - graphs in e.g. mermaid
 
 See `docs/system-design.md` for the current combined deployment and runtime design of generated pages, the CGI saver, and the reporter.
+See `docs/try-it-out.md` for current manual generator and saver tryout commands.
 
 ### HTML template snippets
 
