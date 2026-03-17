@@ -1,8 +1,5 @@
 # TODO
 
-- Add deployment-time support for reporter protection secrets.
-  Generate a secret during deployment, inject it into the reporter CGI script, and store it locally in the deployment workspace.
-
 - Add feature coverage for protected survey upload and protected survey reporting.
   If a stored survey has `protected: true`, require a lowercase hex `sha256(surveyName + secret)` hash before allowing replacement or showing the report.
 

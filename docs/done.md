@@ -92,3 +92,6 @@
 
 31. Added reporter survey upload, runtime storage, and survey-name resolution.
     Covered runtime survey upload and later stored-survey resolution by `surveyName`, validated uploaded survey JSON before storing it under `~/.local/share/associative-survey/surveys`, and resolved the stored survey plus matching answer directory for later reporting work.
+
+32. Added deploy-time support for reporter protection secrets.
+    Added a deploy helper that generates a reporter protection secret, injects it into a reporter script template through a fixed placeholder, and stores the same secret under the local deployment workspace for later protected-survey access.
