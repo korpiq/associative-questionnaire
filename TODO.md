@@ -1,11 +1,5 @@
 # TODO
 
-- Add feature coverage for reporter survey upload and stored survey resolution by `surveyName`.
-  The reporter should accept survey JSON uploads by POST, derive `surveyName` from the uploaded filename, and later resolve stored surveys plus answers for that survey.
-
-- Implement reporter survey upload and storage.
-  It should validate uploaded survey JSON, create the runtime survey directory on demand, and store the survey JSON outside the public web root.
-
 - Add deployment-time support for reporter protection secrets.
   Generate a secret during deployment, inject it into the reporter CGI script, and store it locally in the deployment workspace.
 

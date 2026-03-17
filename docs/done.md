@@ -89,3 +89,6 @@
 
 30. Added saver CGI HTML responses with redirect and CSS overrides.
     Covered built-in success and failure pages plus the `ok`, `fail`, and `css` parameters in feature tests, and implemented a CGI-ready response builder that returns HTML by default and redirects with `303` when override URLs are provided.
+
+31. Added reporter survey upload, runtime storage, and survey-name resolution.
+    Covered runtime survey upload and later stored-survey resolution by `surveyName`, validated uploaded survey JSON before storing it under `~/.local/share/associative-survey/surveys`, and resolved the stored survey plus matching answer directory for later reporting work.
