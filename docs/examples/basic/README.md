@@ -12,7 +12,7 @@ This directory contains a minimal survey JSON file and HTML template for the cur
 From the repository root, run:
 
 ```bash
-npm run generate -- docs/examples/basic/survey.json docs/examples/basic/template.html associative-survey-example.html
+npm run generate -- docs/examples/basic/survey.json docs/examples/basic/template.html associative-survey-example.html https://example.test/cgi-bin/save-survey.js
 ```
 
 The command prints the output path after writing the generated HTML file.

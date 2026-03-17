@@ -18,7 +18,7 @@ This directory contains a runnable survey example that overrides every built-in 
 From the repository root, run:
 
 ```bash
-npm run generate -- docs/examples/snippet-overrides/survey.json docs/examples/snippet-overrides/template.html associative-survey-snippet-overrides.html
+npm run generate -- docs/examples/snippet-overrides/survey.json docs/examples/snippet-overrides/template.html associative-survey-snippet-overrides.html https://example.test/cgi-bin/save-survey.js
 ```
 
 The command prints the output path after writing the generated HTML file.

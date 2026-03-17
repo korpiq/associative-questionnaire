@@ -65,3 +65,6 @@
 
 22. Added optional correct-answer support to survey questions.
     Extended all question schema variants with optional `correct` definitions, validated that configured correct answers match the defined survey content, preserved them through normalization, and verified the change with schema, normalization, full-suite, and typecheck coverage.
+
+23. Added generator submit support and derived survey names.
+    Extended the generator feature coverage for submit buttons, POST form actions, and derived `surveyName`, propagated the filename-derived name through the generator and CLI, and updated the runnable docs examples to use the saver CGI form-action argument.

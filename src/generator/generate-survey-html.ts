@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars'
 import { readFileSync } from 'node:fs'
+import { basename, extname } from 'node:path'
 
 import {
   type NormalizedAssociativeQuestion,
@@ -22,6 +23,26 @@ const SECTION_TEMPLATE = readSnippet('section.hbs')
 const QUESTION_TEMPLATE = readSnippet('question.hbs')
 const BASE_STYLE = readSnippet('base-style.html')
 const BASE_SCRIPT = readSnippet('base-script.html')
+
+export function deriveSurveyName(surveyPath: string): string {
+  const filename = basename(surveyPath)
+  const extension = extname(filename)
+
+  return extension ? filename.slice(0, -extension.length) : filename
+}
+
+function buildFormAction(formAction: string, surveyName: string): string {
+  if (!formAction) {
+    return surveyName ? `?surveyName=${encodeURIComponent(surveyName)}` : ''
+  }
+
+  if (!surveyName) {
+    return formAction
+  }
+
+  const separator = formAction.includes('?') ? '&' : '?'
+  return `${formAction}${separator}surveyName=${encodeURIComponent(surveyName)}`
+}
 
 function renderSingleChoiceContent(question: NormalizedSingleChoiceQuestion): string {
   const options = question.content
@@ -155,6 +176,11 @@ type GeneratorSurveyView = Omit<NormalizedSurvey, 'sections'> & {
   sections: GeneratorSectionView[]
 }
 
+type GenerateSurveyOptions = {
+  surveyName?: string
+  formAction?: string
+}
+
 function toGeneratorView(survey: NormalizedSurvey): GeneratorSurveyView {
   return {
     title: survey.title,
@@ -173,12 +199,16 @@ function toGeneratorView(survey: NormalizedSurvey): GeneratorSurveyView {
 
 export function generateSurveyHtml(
   survey: Survey | NormalizedSurvey,
-  template: string
+  template: string,
+  options: GenerateSurveyOptions = {}
 ): string {
   const normalized = isNormalizedSurvey(survey) ? survey : normalizeSurvey(survey)
+  const surveyName = options.surveyName ?? ''
   const render = createRenderer(template)
   const html = render({
-    survey: toGeneratorView(normalized)
+    survey: toGeneratorView(normalized),
+    surveyName,
+    formAction: buildFormAction(options.formAction ?? '', surveyName)
   })
 
   return ensureStandaloneDocument(html)

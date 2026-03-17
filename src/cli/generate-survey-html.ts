@@ -1,34 +1,39 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 
-import { generateSurveyHtml } from '../generator/generate-survey-html'
+import { deriveSurveyName, generateSurveyHtml } from '../generator/generate-survey-html'
 import { parseSurvey } from '../schema/survey'
 
 function readArguments(): {
   surveyPath: string
   templatePath: string
   outputPath: string
+  formAction: string
 } {
-  const [surveyPath, templatePath, outputPath] = process.argv.slice(2)
+  const [surveyPath, templatePath, outputPath, formAction] = process.argv.slice(2)
 
-  if (!surveyPath || !templatePath || !outputPath) {
+  if (!surveyPath || !templatePath || !outputPath || !formAction) {
     throw new Error(
-      'Usage: npm run generate -- <survey.json> <template.html> <output.html>'
+      'Usage: npm run generate -- <survey.json> <template.html> <output.html> <form-action-url>'
     )
   }
 
   return {
     surveyPath,
     templatePath,
-    outputPath
+    outputPath,
+    formAction
   }
 }
 
 function main(): void {
-  const { surveyPath, templatePath, outputPath } = readArguments()
+  const { surveyPath, templatePath, outputPath, formAction } = readArguments()
   const survey = parseSurvey(JSON.parse(readFileSync(resolve(surveyPath), 'utf8')))
   const template = readFileSync(resolve(templatePath), 'utf8')
-  const html = generateSurveyHtml(survey, template)
+  const html = generateSurveyHtml(survey, template, {
+    surveyName: deriveSurveyName(surveyPath),
+    formAction
+  })
   const resolvedOutputPath = resolve(outputPath)
 
   mkdirSync(dirname(resolvedOutputPath), { recursive: true })

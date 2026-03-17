@@ -4,6 +4,8 @@ Feature: Generate survey HTML page
       """
       {title: Example survey, description: Example description, sections: {basics: {title: Basics, description: Basic prompts, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, hobbies: {title: Hobbies, type: multi-choice, content: {music: Music, sports: Sports}}, notes: {title: Notes, type: free-text}, matches: {title: Associate phrases, type: associative, content: {left: {"1": Calm}, right: {A: Blue}}}}}}}
       """
+    And the survey file path is "surveys/example-survey.json"
+    And the form action URL is "https://example.test/cgi-bin/save-survey.js"
     And HTML template:
       """
       {{> root}}
@@ -20,3 +22,7 @@ Feature: Generate survey HTML page
     And the result contains the associative question title "Associate phrases"
     And the result contains the associative left phrase "Calm"
     And the result contains the associative right phrase "Blue"
+    And the result posts to "https://example.test/cgi-bin/save-survey.js?surveyName=example-survey"
+    And the result uses method "post"
+    And the result exposes the survey name "example-survey"
+    And the result contains the submit button text "Submit survey"

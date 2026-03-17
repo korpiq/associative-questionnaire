@@ -10,4 +10,4 @@ export type {
   NormalizedSurvey,
   NormalizedSection
 } from './schema/normalize-survey'
-export { generateSurveyHtml } from './generator/generate-survey-html'
+export { deriveSurveyName, generateSurveyHtml } from './generator/generate-survey-html'

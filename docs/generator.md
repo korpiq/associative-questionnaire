@@ -8,20 +8,23 @@ The generator produces the standalone survey HTML page that users actually open 
 
 - A survey JSON file that follows the keyed-object schema described in `README.md`.
 - An HTML template file that contains the repeatable section, question, and content fragments.
+- A saver CGI form-action URL that the generated page posts to with native browser form submission.
 
 ## Output
 
 - One standalone HTML document generated from the survey JSON and template.
+- The generated page includes a POST form action that appends the derived `surveyName` from the survey filename.
 - The generated page must include the styles and browser-side JavaScript it needs, with no extra runtime dependency on a build step or framework.
 
 ## Expected flow
 
 1. Read and validate the survey JSON.
 2. Read the HTML template.
-3. Expand sections and questions in source order from the keyed objects.
-4. Render question content according to the question type.
-5. Inline the styles and browser JavaScript needed for progressive behavior.
-6. Emit the final HTML file.
+3. Derive `surveyName` from the survey JSON filename.
+4. Expand sections and questions in source order from the keyed objects.
+5. Render question content according to the question type.
+6. Inline the styles and browser JavaScript needed for progressive behavior.
+7. Emit the final HTML file with a submit button and POST form action ready for the shared CGI saver.
 
 ## Current constraints
 

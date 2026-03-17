@@ -2,12 +2,14 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 
-import { generateSurveyHtml, parseSurvey } from '../../../src'
+import { deriveSurveyName, generateSurveyHtml, parseSurvey } from '../../../src'
 
 const feature = await loadFeature('tests/feature/generate-survey-page.feature')
 
 describeFeature(feature, ({ Scenario }) => {
   let surveyInput: unknown
+  let surveyPath = ''
+  let formAction = ''
   let templateInput = ''
   let generatedHtml = ''
 
@@ -23,7 +25,17 @@ describeFeature(feature, ({ Scenario }) => {
     ({ Given, And, When, Then }) => {
       Given('survey content:', (_ctx, docString) => {
         surveyInput = parseYamlDocString(docString)
+        surveyPath = ''
+        formAction = ''
         generatedHtml = ''
+      })
+
+      And('the survey file path is {string}', (_ctx, inputPath) => {
+        surveyPath = inputPath
+      })
+
+      And('the form action URL is {string}', (_ctx, actionUrl) => {
+        formAction = actionUrl
       })
 
       And('HTML template:', (_ctx, docString) => {
@@ -32,7 +44,10 @@ describeFeature(feature, ({ Scenario }) => {
 
       When('the survey HTML page is generated', () => {
         const survey = parseSurvey(surveyInput)
-        generatedHtml = generateSurveyHtml(survey, templateInput)
+        generatedHtml = generateSurveyHtml(survey, templateInput, {
+          surveyName: deriveSurveyName(surveyPath),
+          formAction
+        })
       })
 
       Then('the result is a standalone HTML page', () => {
@@ -40,7 +55,7 @@ describeFeature(feature, ({ Scenario }) => {
         expect(generatedHtml).toContain('<html>')
         expect(generatedHtml).toContain('<style>')
         expect(generatedHtml).toContain('<script>')
-        expect(generatedHtml).toContain('<form>')
+        expect(generatedHtml).toContain('<form ')
       })
 
       And('the result contains the survey title {string}', (_ctx, title) => {
@@ -81,6 +96,22 @@ describeFeature(feature, ({ Scenario }) => {
 
       And('the result contains the associative right phrase {string}', (_ctx, phrase) => {
         expect(generatedHtml).toContain(phrase)
+      })
+
+      And('the result posts to {string}', (_ctx, actionUrl) => {
+        expect(generatedHtml).toContain(`action="${actionUrl}"`)
+      })
+
+      And('the result uses method {string}', (_ctx, method) => {
+        expect(generatedHtml).toContain(`method="${method}"`)
+      })
+
+      And('the result exposes the survey name {string}', (_ctx, surveyName) => {
+        expect(generatedHtml).toContain(`data-survey-name="${surveyName}"`)
+      })
+
+      And('the result contains the submit button text {string}', (_ctx, label) => {
+        expect(generatedHtml).toContain(label)
       })
     }
   )

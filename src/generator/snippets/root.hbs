@@ -4,13 +4,14 @@
 {{> style}}
 </head>
 <body>
-<form>
+<form method="post" action="{{{formAction}}}" data-survey-name="{{surveyName}}">
 {{#if survey.description}}
 <p>{{survey.description}}</p>
 {{/if}}
 {{#each survey.sections}}
 {{> section}}
 {{/each}}
+<button type="submit">Submit survey</button>
 </form>
 {{> script}}
 </body>

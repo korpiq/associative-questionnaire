@@ -1,13 +1,5 @@
 # TODO
 
-- Add feature coverage for generator output that includes a submit button, configurable form action, and derived `surveyName`.
-
-- Implement derived `surveyName` handling from the survey JSON filename and carry it through generated output.
-  The generated page should know which survey it belongs to without adding an explicit `surveyName` field to the JSON schema.
-
-- Add generator support for a submit button and configurable form action URL.
-  Keep the default generated page self-contained and ready to post directly to the shared CGI saver using native browser form encoding.
-
 - Add feature coverage for CGI request normalization from browser form fields into the saved answer schema.
   Cover single-choice, multi-choice, free-text, associative answers, and survey resolution without extra answer metadata in the POST body.
 
