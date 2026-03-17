@@ -76,10 +76,19 @@ export type ReporterQuestionStatistics =
 
 export function buildReporterStatistics(
   survey: Survey,
-  answerFiles: AnswerFile[]
+  answerFiles: AnswerFile[],
+  options: {
+    groupBy?: string[]
+    recipientCount?: number
+  } = {}
 ): {
   respondentCount: number
   questions: ReporterQuestionStatistics[]
+  groupedResults?: Array<{
+    key: string
+    respondentCount: number
+    recipientPercentage?: number
+  }>
 } {
   const normalizedSurvey = normalizeSurvey(survey)
   const respondentCount = answerFiles.length
@@ -90,7 +99,16 @@ export function buildReporterStatistics(
       section.questions.map((question) =>
         buildQuestionStatistics(question, answerFiles, respondentCount)
       )
-    )
+    ),
+    ...(options.groupBy && options.groupBy.length > 0
+      ? {
+          groupedResults: buildGroupedResults(
+            answerFiles,
+            options.groupBy,
+            options.recipientCount
+          )
+        }
+      : {})
   }
 }
 
@@ -320,4 +338,51 @@ function isExactPairSet(
     .sort()
 
   return leftSorted.every((value, index) => value === rightSorted[index])
+}
+
+function buildGroupedResults(
+  answerFiles: AnswerFile[],
+  groupBy: string[],
+  recipientCount?: number
+): Array<{
+  key: string
+  respondentCount: number
+  recipientPercentage?: number
+}> {
+  const counts = new Map<string, number>()
+
+  answerFiles.forEach((answerFile) => {
+    const key = groupBy
+      .map((questionId) => `${questionId}=${formatGroupedAnswerValue(answerFile.answers[questionId])}`)
+      .join('&')
+
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  })
+
+  return Array.from(counts.entries()).map(([key, count]) => ({
+    key,
+    respondentCount: count,
+    ...(recipientCount !== undefined
+      ? { recipientPercentage: percentage(count, recipientCount) }
+      : {})
+  }))
+}
+
+function formatGroupedAnswerValue(answer: AnswerFile['answers'][string] | undefined): string {
+  if (!answer) {
+    return '(missing)'
+  }
+
+  switch (answer.type) {
+    case 'single-choice':
+    case 'free-text':
+      return answer.value
+    case 'multi-choice':
+      return [...answer.value].sort().join('|')
+    case 'associative':
+      return answer.value
+        .map((pair) => `${pair.left}:${pair.right}`)
+        .sort()
+        .join('|')
+  }
 }

@@ -107,3 +107,6 @@
 
 36. Added reporter correctness statistics for questions with correct answers.
     Extended reporter statistics to compute correct and incorrect counts and percentages only for questions that define `correct` answers, covering single-choice, multi-choice, free-text, and associative correctness rules.
+
+37. Added grouped reporter statistics parameters.
+    Extended reporter statistics with caller-provided `groupBy` question identifiers and optional `recipientCount`, producing grouped respondent counts and recipient percentages alongside the existing report totals and per-question statistics.

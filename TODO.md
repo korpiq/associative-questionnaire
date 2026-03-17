@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter grouped statistics parameters.
-  Support caller-provided grouping inputs such as grouped-by question identifiers and optional recipient counts.
-
 - Implement reporter HTML output as a CGI page.
   Render one survey report page per requested `surveyName`.
 
