@@ -101,3 +101,6 @@
 
 34. Validated stored reporter answer files during survey resolution.
     Added reporter-resolution coverage for valid and invalid stored answer files, and extended stored reporter survey resolution to parse every saved answer file through the shared answer schema before later reporting code can use it.
+
+35. Added reporter totals and per-question statistics.
+    Computed respondent totals plus per-question counts and percentages for single-choice, multi-choice, free-text, and associative answers from the validated survey and saved answer files.

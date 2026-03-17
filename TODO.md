@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter totals and per-question statistics.
-  Start with counts and percentages using the validated survey definition and saved answers.
-
 - Implement reporter correctness statistics for questions that define correct answers.
   Show correct and incorrect answer counts and percentages only for questions that provide correct answers.
 

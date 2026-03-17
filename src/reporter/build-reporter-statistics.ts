@@ -1,0 +1,237 @@
+import type { AnswerFile, Survey } from '../schema/survey'
+import {
+  normalizeSurvey,
+  type NormalizedAssociativeQuestion,
+  type NormalizedFreeTextQuestion,
+  type NormalizedMultiChoiceQuestion,
+  type NormalizedQuestion,
+  type NormalizedSingleChoiceQuestion
+} from '../schema/normalize-survey'
+
+type CountEntry = {
+  count: number
+  percentage: number
+}
+
+type ReporterSingleChoiceStats = {
+  id: string
+  title: string
+  type: 'single-choice'
+  answeredCount: number
+  options: Array<{
+    id: string
+    text: string
+  } & CountEntry>
+}
+
+type ReporterMultiChoiceStats = {
+  id: string
+  title: string
+  type: 'multi-choice'
+  answeredCount: number
+  options: Array<{
+    id: string
+    text: string
+  } & CountEntry>
+}
+
+type ReporterFreeTextStats = {
+  id: string
+  title: string
+  type: 'free-text'
+  answeredCount: number
+  answers: Array<{
+    value: string
+  } & CountEntry>
+}
+
+type ReporterAssociativeStats = {
+  id: string
+  title: string
+  type: 'associative'
+  answeredCount: number
+  pairs: Array<{
+    key: string
+    left: string
+    right: string
+  } & CountEntry>
+}
+
+export type ReporterQuestionStatistics =
+  | ReporterSingleChoiceStats
+  | ReporterMultiChoiceStats
+  | ReporterFreeTextStats
+  | ReporterAssociativeStats
+
+export function buildReporterStatistics(
+  survey: Survey,
+  answerFiles: AnswerFile[]
+): {
+  respondentCount: number
+  questions: ReporterQuestionStatistics[]
+} {
+  const normalizedSurvey = normalizeSurvey(survey)
+  const respondentCount = answerFiles.length
+
+  return {
+    respondentCount,
+    questions: normalizedSurvey.sections.flatMap((section) =>
+      section.questions.map((question) =>
+        buildQuestionStatistics(question, answerFiles, respondentCount)
+      )
+    )
+  }
+}
+
+function percentage(count: number, total: number): number {
+  if (total === 0) {
+    return 0
+  }
+
+  return (count / total) * 100
+}
+
+function buildQuestionStatistics(
+  question: NormalizedQuestion,
+  answerFiles: AnswerFile[],
+  respondentCount: number
+): ReporterQuestionStatistics {
+  switch (question.type) {
+    case 'single-choice':
+      return buildSingleChoiceStatistics(question, answerFiles, respondentCount)
+    case 'multi-choice':
+      return buildMultiChoiceStatistics(question, answerFiles, respondentCount)
+    case 'free-text':
+      return buildFreeTextStatistics(question, answerFiles, respondentCount)
+    case 'associative':
+      return buildAssociativeStatistics(question, answerFiles, respondentCount)
+  }
+}
+
+function buildSingleChoiceStatistics(
+  question: NormalizedSingleChoiceQuestion,
+  answerFiles: AnswerFile[],
+  respondentCount: number
+): ReporterSingleChoiceStats {
+  const answers = answerFiles
+    .map((answerFile) => answerFile.answers[question.id])
+    .filter((answer) => answer?.type === 'single-choice')
+  const answeredCount = answers.length
+
+  return {
+    id: question.id,
+    title: question.title,
+    type: 'single-choice',
+    answeredCount,
+    options: question.content.map((option) => {
+      const count = answers.filter((answer) => answer.value === option.id).length
+
+      return {
+        id: option.id,
+        text: option.text,
+        count,
+        percentage: percentage(count, respondentCount)
+      }
+    })
+  }
+}
+
+function buildMultiChoiceStatistics(
+  question: NormalizedMultiChoiceQuestion,
+  answerFiles: AnswerFile[],
+  respondentCount: number
+): ReporterMultiChoiceStats {
+  const answers = answerFiles
+    .map((answerFile) => answerFile.answers[question.id])
+    .filter((answer) => answer?.type === 'multi-choice')
+  const answeredCount = answers.length
+
+  return {
+    id: question.id,
+    title: question.title,
+    type: 'multi-choice',
+    answeredCount,
+    options: question.content.map((option) => {
+      const count = answers.filter((answer) => answer.value.includes(option.id)).length
+
+      return {
+        id: option.id,
+        text: option.text,
+        count,
+        percentage: percentage(count, respondentCount)
+      }
+    })
+  }
+}
+
+function buildFreeTextStatistics(
+  question: NormalizedFreeTextQuestion,
+  answerFiles: AnswerFile[],
+  respondentCount: number
+): ReporterFreeTextStats {
+  const answers = answerFiles
+    .map((answerFile) => answerFile.answers[question.id])
+    .filter((answer) => answer?.type === 'free-text')
+  const answeredCount = answers.length
+  const counts = new Map<string, number>()
+
+  answers.forEach((answer) => {
+    counts.set(answer.value, (counts.get(answer.value) ?? 0) + 1)
+  })
+
+  return {
+    id: question.id,
+    title: question.title,
+    type: 'free-text',
+    answeredCount,
+    answers: Array.from(counts.entries()).map(([value, count]) => ({
+      value,
+      count,
+      percentage: percentage(count, respondentCount)
+    }))
+  }
+}
+
+function buildAssociativeStatistics(
+  question: NormalizedAssociativeQuestion,
+  answerFiles: AnswerFile[],
+  respondentCount: number
+): ReporterAssociativeStats {
+  const answers = answerFiles
+    .map((answerFile) => answerFile.answers[question.id])
+    .filter((answer) => answer?.type === 'associative')
+  const answeredCount = answers.length
+  const counts = new Map<string, { left: string; right: string; count: number }>()
+
+  answers.forEach((answer) => {
+    answer.value.forEach((pair) => {
+      const key = `${pair.left}:${pair.right}`
+      const current = counts.get(key)
+
+      if (current) {
+        current.count += 1
+        return
+      }
+
+      counts.set(key, {
+        left: pair.left,
+        right: pair.right,
+        count: 1
+      })
+    })
+  })
+
+  return {
+    id: question.id,
+    title: question.title,
+    type: 'associative',
+    answeredCount,
+    pairs: Array.from(counts.entries()).map(([key, entry]) => ({
+      key,
+      left: entry.left,
+      right: entry.right,
+      count: entry.count,
+      percentage: percentage(entry.count, respondentCount)
+    }))
+  }
+}
