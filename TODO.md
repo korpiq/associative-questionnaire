@@ -1,11 +1,5 @@
 # TODO
 
-- Add feature coverage for protected survey upload and protected survey reporting.
-  If a stored survey has `protected: true`, require a lowercase hex `sha256(surveyName + secret)` hash before allowing replacement or showing the report.
-
-- Implement protected survey upload and protected survey reporting.
-  Enforce the `hash` parameter for protected surveys when uploading a replacement survey JSON or showing its report.
-
 - Implement reporter survey resolution from stored survey JSON and runtime answer directories.
   It should validate the survey JSON and each answer file before reporting.
 

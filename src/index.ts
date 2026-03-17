@@ -10,6 +10,7 @@ export { deriveRespondentAnswerFilename } from './cgi/derive-respondent-answer-f
 export { ensureSurveyAnswerStorage } from './cgi/ensure-survey-answer-storage'
 export { renderSaverCgiResponse } from './cgi/render-saver-cgi-response'
 export { saveSurveyAnswerSubmission } from './cgi/save-survey-answer-submission'
+export { deriveProtectedSurveyAccessHash } from './reporter/derive-protected-survey-access-hash'
 export { resolveStoredReporterSurvey } from './reporter/resolve-stored-reporter-survey'
 export { prepareReporterProtectionSecret } from './reporter/prepare-reporter-protection-secret'
 export { storeUploadedReporterSurvey } from './reporter/store-uploaded-reporter-survey'

@@ -95,3 +95,6 @@
 
 32. Added deploy-time support for reporter protection secrets.
     Added a deploy helper that generates a reporter protection secret, injects it into a reporter script template through a fixed placeholder, and stores the same secret under the local deployment workspace for later protected-survey access.
+
+33. Enforced protected survey upload and report access through reporter hashes.
+    Added feature coverage for protected replacement uploads and protected report resolution, derived lowercase hex `sha256(surveyName + secret)` access hashes, and required the correct hash whenever a stored protected survey is replaced or resolved for reporting.
