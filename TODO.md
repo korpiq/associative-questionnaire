@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter survey resolution from stored survey JSON and runtime answer directories.
-  It should validate the survey JSON and each answer file before reporting.
-
 - Implement reporter totals and per-question statistics.
   Start with counts and percentages using the validated survey definition and saved answers.
 

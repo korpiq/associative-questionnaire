@@ -98,3 +98,6 @@
 
 33. Enforced protected survey upload and report access through reporter hashes.
     Added feature coverage for protected replacement uploads and protected report resolution, derived lowercase hex `sha256(surveyName + secret)` access hashes, and required the correct hash whenever a stored protected survey is replaced or resolved for reporting.
+
+34. Validated stored reporter answer files during survey resolution.
+    Added reporter-resolution coverage for valid and invalid stored answer files, and extended stored reporter survey resolution to parse every saved answer file through the shared answer schema before later reporting code can use it.

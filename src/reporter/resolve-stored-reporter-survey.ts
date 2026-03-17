@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { parseSurvey, type Survey } from '../schema/survey'
+import { parseAnswerFile, parseSurvey, type AnswerFile, type Survey } from '../schema/survey'
 
 import { deriveProtectedSurveyAccessHash } from './derive-protected-survey-access-hash'
 import { getReporterRuntimePaths } from './runtime-paths'
@@ -18,6 +18,7 @@ export function resolveStoredReporterSurvey(
   storedSurveyFilePath: string
   answerDirectoryPath: string
   answerFilePaths: string[]
+  validatedAnswerFiles: AnswerFile[]
 } {
   const { surveysRoot, answersRoot } = getReporterRuntimePaths(effectiveHomeDirectory)
   const storedSurveyFilePath = join(surveysRoot, `${surveyName}.json`)
@@ -38,11 +39,15 @@ export function resolveStoredReporterSurvey(
   const answerFilePaths = existsSync(answerDirectoryPath)
     ? readdirSync(answerDirectoryPath).map((filename) => join(answerDirectoryPath, filename))
     : []
+  const validatedAnswerFiles = answerFilePaths.map((answerFilePath) =>
+    parseAnswerFile(JSON.parse(readFileSync(answerFilePath, 'utf8')))
+  )
 
   return {
     survey,
     storedSurveyFilePath,
     answerDirectoryPath,
-    answerFilePaths
+    answerFilePaths,
+    validatedAnswerFiles
   }
 }
