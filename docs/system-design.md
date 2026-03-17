@@ -16,7 +16,7 @@ The design targets two deployment styles:
 - Allow old questionnaire pages to be removed without disturbing saved answers of other questionnaires.
 - Use one shared CGI script to receive submissions from all questionnaire pages.
 - Use one reporter command to show statistics for a named survey.
-- Keep survey definitions available to the reporter alongside collected answers.
+- Keep survey definitions stored server-side for the reporter without exposing them publicly.
 - Let the CGI create its own runtime data directories under the effective user home directory visible to the web server process.
 
 ## Non-goals
@@ -47,6 +47,7 @@ Responsibilities:
 - include a submit button
 - set the form submission target URL so the page can post to the shared CGI saver
 - include the derived `surveyName` in the generated page so the CGI and reporter can resolve the right files
+- submit only answer fields in the native browser form encoding
 
 ### 2. Shared CGI saver
 
@@ -56,13 +57,13 @@ Input:
 
 Output:
 
-- one JSON answer file per logical respondent per questionnaire
+- one JSON answer file per logical respondent per survey
 
 Responsibilities:
 
 - accept submissions for all deployed questionnaires through one endpoint
 - validate the incoming answer payload against the same answer schema used elsewhere in the project
-- resolve the target questionnaire storage directory
+- resolve the target survey storage directory
 - create missing runtime directories under the CGI process home directory
 - write or replace the answer JSON file for that respondent key
 - return an HTML success or failure response suitable for simple browser form submission
@@ -83,7 +84,7 @@ Response model:
 Input:
 
 - survey name (`surveyName`)
-- questionnaire JSON definition
+- stored survey JSON definition
 - stored answer JSON files for that survey
 
 Output:
@@ -94,8 +95,9 @@ Responsibilities:
 
 - load the questionnaire definition for the requested survey
 - load and validate all answer files for that survey
-- calculate counts, percentages, grouped statistics, and later graphs
+- calculate counts, percentages, grouped statistics, correctness statistics, and later graphs
 - report invalid or unreadable answer files clearly
+- accept survey JSON uploads via POST so a survey definition can be created or updated without making the JSON file public
 
 Implementation target:
 
@@ -111,13 +113,13 @@ These files are copied during deployment and may be replaced or removed later:
 
 - generated questionnaire HTML pages
 - the shared CGI script
-- survey JSON definitions used by the reporter
 - the reporter program and its support files
 
 ### Runtime data
 
 These files are created by the CGI at runtime and must not depend on the deploy path being writable:
 
+- stored survey JSON files
 - answer JSON files
 - runtime-created survey answer directories
 
@@ -137,9 +139,6 @@ app/
     questionnaires/
       team-fit.html
       onboarding.html
-    definitions/
-      team-fit.json
-      onboarding.json
     cgi-bin/
       save-questionnaire.js
       report-questionnaire.js
@@ -148,7 +147,6 @@ app/
 Notes:
 
 - `public/questionnaires/` holds the generated standalone pages.
-- `public/definitions/` holds the survey JSON files and keeps them easy for the reporter to resolve.
 - `public/cgi-bin/` holds the shared CGI entrypoint.
 - `public/cgi-bin/report-questionnaire.js` is the shared web/CGI reporter entrypoint.
 
@@ -158,6 +156,9 @@ Example under the CGI user home directory:
 
 ```text
 ~/.local/share/associative-questionnaire/
+  surveys/
+    team-fit.json
+    onboarding.json
   answers/
     team-fit/
       4d4c0c....json
@@ -170,6 +171,7 @@ Why this layout:
 
 - it works when the deployed application directory is read-only
 - it avoids assuming the `ssh` deploy user home matches the web server process home
+- it keeps survey JSON files off the public web root
 - it keeps answer files grouped by survey name
 
 ## Survey identity
@@ -190,15 +192,39 @@ Properties:
 
 This avoids adding a separate name field to the questionnaire schema.
 
+## Survey definition schema
+
+Survey JSON continues to define the survey structure and content.
+
+Required and optional survey-level fields:
+
+- title
+- optional description
+- optional `protected: true`
+- sections
+
+Question-level correctness support:
+
+- any question may optionally define correct answers
+- questions without correct answers are still valid and report only response statistics
+- questions with correct answers also report correct and incorrect answer counts and percentages
+
+Expected correctness shapes:
+
+- single-choice: one correct option id
+- multi-choice: one exact set of correct option ids
+- free-text: optional list of accepted exact answers or normalized answers
+- associative: exact set of correct left/right pairs
+
+The exact schema shape should be finalized in implementation and tests, but correctness must be optional per question.
+
 ## Submission flow
 
 1. A user opens a generated questionnaire HTML page.
 2. The page renders the questionnaire and includes a submit button.
 3. The form posts to the configured CGI URL.
 4. The submission includes:
-   - survey name (`surveyName`)
-   - questionnaire title
-   - answers keyed by question id
+   - answer fields only
 5. The CGI validates the payload.
 6. The CGI computes a respondent file key from selected request headers.
 7. The CGI creates `~/.local/share/associative-questionnaire/answers/<surveyName>/` if needed.
@@ -209,27 +235,26 @@ This avoids adding a separate name field to the questionnaire schema.
 
 The CGI should support simple HTML response customization without requiring JavaScript clients.
 
-Optional request parameters:
+Optional request query parameters (URLs):
 
-- success redirect URL
-- failure redirect URL
-- CSS URL for the built-in CGI pages
+- `ok`
+- `fail`
+- `css`
 
 Behavior:
 
-- if a success redirect URL is provided, successful submissions redirect there instead of showing the built-in success page
-- if a failure redirect URL is provided, failed submissions redirect there instead of showing the built-in failure page
+- if `ok` is provided, successful submissions redirect there instead of showing the built-in success page
+- if `fail` is provided, failed submissions redirect there instead of showing the built-in failure page
 - if no redirect override is provided, the CGI serves its own built-in HTML page
-- if a CSS URL is provided and the CGI serves a built-in page, that page links to the custom stylesheet
+- if `css` is provided and the CGI serves a built-in page, that page links to the custom stylesheet
 
 ## Submission payload
 
 The browser form should submit `application/x-www-form-urlencoded`, which fits CGI well and works without extra client dependencies.
 
-The generator should emit hidden fields for:
+The POST body sent to the CGI saver should contain only the answer fields in the native format produced by the browser form.
 
-- `surveyName`
-- `questionnaireTitle`
+The survey identity is resolved by the CGI from the request target, such as the saver CGI path or query string configured into the generated survey page.
 
 Answer encoding by question type:
 
@@ -238,7 +263,7 @@ Answer encoding by question type:
 - free-text: plain string
 - associative: hidden input already carrying JSON for the left/right pairs
 
-The CGI should normalize the form fields into the existing `answerFileSchema` shape before validation and storage.
+The CGI should normalize the form fields into the saved answer schema before validation and storage.
 
 ## Saved answer file format
 
@@ -291,12 +316,33 @@ Result:
 ## Reporter flow
 
 1. Operator opens the reporter page with the desired `surveyName`.
-2. Reporter resolves `public/definitions/<surveyName>.json`.
+2. Reporter resolves the stored survey JSON from `~/.local/share/associative-questionnaire/surveys/<surveyName>.json`.
 3. Reporter resolves `~/.local/share/associative-questionnaire/answers/<surveyName>/`.
 4. Reporter validates the questionnaire JSON.
 5. Reporter validates each answer file.
-6. Reporter computes totals, per-question breakdowns, optional grouped statistics, and later graphs.
+6. Reporter computes totals, per-question breakdowns, correctness statistics for questions that define correct answers, optional grouped statistics, and later graphs.
 7. Reporter renders an HTML report page with statistics and graphics.
+
+## Reporter survey upload flow
+
+The reporter is also responsible for receiving survey JSON definitions by POST.
+
+Upload behavior:
+
+1. Caller sends a survey JSON file to the reporter CGI by POST.
+2. Reporter derives `surveyName` from the uploaded filename.
+3. Reporter validates the survey JSON.
+4. Reporter creates `~/.local/share/associative-questionnaire/surveys/` if needed.
+5. If no stored survey exists yet, reporter saves the uploaded survey JSON.
+6. If a stored survey already exists and it is not protected, reporter replaces it with the uploaded survey JSON.
+7. If a stored survey already exists and it has `protected: true`, the caller must also provide a valid protection hash before replacement is allowed.
+
+Protection hash:
+
+- format: lowercase hex SHA-256 of `surveyName + secret`
+- the secret is generated at deploy time
+- the secret is embedded into the reporter CGI script
+- the secret is also stored locally in the deployment workspace
 
 ## Reporter interfaces
 
@@ -314,10 +360,11 @@ Useful future flags:
 - `groupBy`
 - `recipientCount`
 - `ignoreAnswer`
+- `hash`
 
 Default lookup behavior:
 
-- definitions from the deployed public definitions directory
+- survey JSON definitions from the runtime data directory under the current user home
 - answers from the runtime data directory under the current user home
 
 ## Web server expectations
@@ -339,12 +386,12 @@ The design does not require:
 In container deployments:
 
 - mount the runtime data directory as a volume
-- mount or bake in the static questionnaire pages, public definitions, CGI saver, and CGI reporter
+- mount or bake in the static survey pages, CGI saver, and CGI reporter
 - ensure the container user running CGI has a writable home directory
 
 Recommended runtime mount:
 
-- `/home/app/.local/share/associative-questionnaire/answers`
+- `/home/app/.local/share/associative-questionnaire`
 
 ## VPS notes
 
