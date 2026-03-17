@@ -1,8 +1,5 @@
 # TODO
 
-- Refactor repository terminology from `questionnaire` to `survey` everywhere it makes sense.
-  Do this before expanding generator, CGI, reporter, and deployment work so we avoid mixed naming such as `surveyName` beside `questionnaireTitle`.
-
 - Extend the survey schema and normalization flow to support optional survey-level metadata needed by deployment and reporting.
   Include at least `protected: true` support for surveys whose reports require access control.
 

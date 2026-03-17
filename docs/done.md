@@ -56,3 +56,6 @@
 
 19. Added a combined system design document for generated pages, the CGI saver, and the reporter.
     Captured the shared deployment model for VPS and container targets, proposed static and runtime directory layouts, defined the cross-component submission and reporting flow, and identified the submit-action and questionnaire-name tasks that should be completed before the CGI and reporter work.
+
+20. Refactored active repository terminology from questionnaire to survey.
+    Renamed the schema, normalization, generator, and CLI APIs to `survey` terms, updated the supported feature/spec wording and examples to match, and kept the full test suite and typecheck passing through the rename.

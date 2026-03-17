@@ -2,21 +2,21 @@
 
 ## Purpose
 
-The generator produces the standalone questionnaire HTML page that users actually open and submit.
+The generator produces the standalone survey HTML page that users actually open and submit.
 
 ## Inputs
 
-- A questionnaire JSON file that follows the keyed-object schema described in `README.md`.
+- A survey JSON file that follows the keyed-object schema described in `README.md`.
 - An HTML template file that contains the repeatable section, question, and content fragments.
 
 ## Output
 
-- One standalone HTML document generated from the questionnaire JSON and template.
+- One standalone HTML document generated from the survey JSON and template.
 - The generated page must include the styles and browser-side JavaScript it needs, with no extra runtime dependency on a build step or framework.
 
 ## Expected flow
 
-1. Read and validate the questionnaire JSON.
+1. Read and validate the survey JSON.
 2. Read the HTML template.
 3. Expand sections and questions in source order from the keyed objects.
 4. Render question content according to the question type.

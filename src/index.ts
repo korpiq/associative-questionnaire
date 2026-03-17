@@ -1,13 +1,13 @@
 export {
   answerFileSchema,
   parseAnswerFile,
-  parseQuestionnaire,
-  questionnaireSchema
-} from './schema/questionnaire'
-export { normalizeQuestionnaire } from './schema/normalize-questionnaire'
+  parseSurvey,
+  surveySchema
+} from './schema/survey'
+export { normalizeSurvey } from './schema/normalize-survey'
 export type {
   NormalizedQuestion,
-  NormalizedQuestionnaire,
+  NormalizedSurvey,
   NormalizedSection
-} from './schema/normalize-questionnaire'
-export { generateQuestionnaireHtml } from './generator/generate-questionnaire-html'
+} from './schema/normalize-survey'
+export { generateSurveyHtml } from './generator/generate-survey-html'

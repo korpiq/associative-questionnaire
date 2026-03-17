@@ -1,6 +1,6 @@
 # Snippet override example
 
-This directory contains a runnable questionnaire example that overrides every built-in HTML snippet partial:
+This directory contains a runnable survey example that overrides every built-in HTML snippet partial:
 
 - `root`
 - `section`
@@ -10,7 +10,7 @@ This directory contains a runnable questionnaire example that overrides every bu
 
 ## Files
 
-- `questionnaire.json` is the keyed-object questionnaire input.
+- `survey.json` is the keyed-object survey input.
 - `template.html` defines inline `handlebars` partials that replace all five default snippets.
 
 ## Generate example output
@@ -18,7 +18,7 @@ This directory contains a runnable questionnaire example that overrides every bu
 From the repository root, run:
 
 ```bash
-npm run generate -- docs/examples/snippet-overrides/questionnaire.json docs/examples/snippet-overrides/template.html associative-questionnaire-snippet-overrides.html
+npm run generate -- docs/examples/snippet-overrides/survey.json docs/examples/snippet-overrides/template.html associative-survey-snippet-overrides.html
 ```
 
 The command prints the output path after writing the generated HTML file.

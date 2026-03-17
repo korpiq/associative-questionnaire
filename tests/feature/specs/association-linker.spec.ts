@@ -2,7 +2,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { JSDOM } from 'jsdom'
 import { expect } from 'vitest'
 
-import { generateQuestionnaireHtml, parseQuestionnaire } from '../../../src'
+import { generateSurveyHtml, parseSurvey } from '../../../src'
 
 const feature = await loadFeature('tests/feature/association-linker.feature')
 
@@ -171,8 +171,8 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   }
 
   defineSteps(({ Given, When, Then, And }) => {
-    Given('generated questionnaire HTML with one associative question and fixed phrase positions', () => {
-      const questionnaire = parseQuestionnaire({
+    Given('generated survey HTML with one associative question and fixed phrase positions', () => {
+      const survey = parseSurvey({
         title: 'Association example',
         sections: {
           basics: {
@@ -194,7 +194,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
           }
         }
       })
-      const html = generateQuestionnaireHtml(questionnaire, '')
+      const html = generateSurveyHtml(survey, '')
 
       dom = new JSDOM(html, {
         runScripts: 'dangerously'

@@ -3,12 +3,12 @@ import { expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 import { ZodError } from 'zod'
 
-import { parseQuestionnaire } from '../../../src'
+import { parseSurvey } from '../../../src'
 
 const feature = await loadFeature('tests/feature/schema-validation.feature')
 
 describeFeature(feature, ({ Scenario, defineSteps }) => {
-  let questionnaireInput: unknown
+  let surveyInput: unknown
   let parseResult: unknown
   let parseError: ZodError | null
 
@@ -20,9 +20,9 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   }
 
   defineSteps(({ When }) => {
-    When('the questionnaire content is parsed with the schema', () => {
+    When('the survey content is parsed with the schema', () => {
       try {
-        parseResult = parseQuestionnaire(questionnaireInput)
+        parseResult = parseSurvey(surveyInput)
         parseError = null
       } catch (error) {
         parseResult = undefined
@@ -31,14 +31,14 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
   })
 
-  Scenario('Valid questionnaire content is accepted', ({ Given, Then }) => {
-    Given('questionnaire content:', (_ctx, docString) => {
-      questionnaireInput = parseYamlDocString(docString)
+  Scenario('Valid survey content is accepted', ({ Given, Then }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
       parseResult = undefined
       parseError = null
     })
 
-    Then('the parsed questionnaire is:', (_ctx, docString) => {
+    Then('the parsed survey is:', (_ctx, docString) => {
       const expectedOutput = parseYamlDocString<Record<string, unknown>>(docString)
 
       expect(parseError).toBeNull()
@@ -46,14 +46,14 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
   })
 
-  Scenario('Invalid associative questionnaire content is rejected', ({ Given, Then, And }) => {
-    Given('questionnaire content:', (_ctx, docString) => {
-      questionnaireInput = parseYamlDocString(docString)
+  Scenario('Invalid associative survey content is rejected', ({ Given, Then, And }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
       parseResult = undefined
       parseError = null
     })
 
-    Then('the questionnaire content is rejected', () => {
+    Then('the survey content is rejected', () => {
       expect(parseResult).toBeUndefined()
       expect(parseError).toBeInstanceOf(ZodError)
     })

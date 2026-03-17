@@ -1,10 +1,10 @@
 import type {
   AssociativeQuestion,
   MultiChoiceQuestion,
-  Question,
-  Questionnaire,
+  Survey,
+  SurveyQuestion,
   SingleChoiceQuestion
-} from './questionnaire'
+} from './survey'
 
 type NormalizedTextItem = {
   id: string
@@ -52,7 +52,7 @@ export type NormalizedSection = {
   questions: NormalizedQuestion[]
 }
 
-export type NormalizedQuestionnaire = {
+export type NormalizedSurvey = {
   title: string
   description?: string
   sections: NormalizedSection[]
@@ -107,7 +107,7 @@ function normalizeAssociativeQuestion(
   }
 }
 
-function normalizeQuestion(id: string, question: Question): NormalizedQuestion {
+function normalizeQuestion(id: string, question: SurveyQuestion): NormalizedQuestion {
   switch (question.type) {
     case 'single-choice':
       return normalizeSingleChoiceQuestion(id, question)
@@ -125,10 +125,10 @@ function normalizeQuestion(id: string, question: Question): NormalizedQuestion {
   }
 }
 
-export function normalizeQuestionnaire(questionnaire: Questionnaire): NormalizedQuestionnaire {
+export function normalizeSurvey(survey: Survey): NormalizedSurvey {
   return {
-    title: questionnaire.title,
-    sections: Object.entries(questionnaire.sections).map(([id, section]) => ({
+    title: survey.title,
+    sections: Object.entries(survey.sections).map(([id, section]) => ({
       id,
       title: section.title,
       questions: Object.entries(section.questions ?? {}).map(([questionId, question]) =>
@@ -136,6 +136,6 @@ export function normalizeQuestionnaire(questionnaire: Questionnaire): Normalized
       ),
       ...(section.description ? { description: section.description } : {})
     })),
-    ...(questionnaire.description ? { description: questionnaire.description } : {})
+    ...(survey.description ? { description: survey.description } : {})
   }
 }

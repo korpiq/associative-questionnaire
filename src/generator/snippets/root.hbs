@@ -1,14 +1,14 @@
 <html>
 <head>
-<title>{{questionnaire.title}}</title>
+<title>{{survey.title}}</title>
 {{> style}}
 </head>
 <body>
 <form>
-{{#if questionnaire.description}}
-<p>{{questionnaire.description}}</p>
+{{#if survey.description}}
+<p>{{survey.description}}</p>
 {{/if}}
-{{#each questionnaire.sections}}
+{{#each survey.sections}}
 {{> section}}
 {{/each}}
 </form>

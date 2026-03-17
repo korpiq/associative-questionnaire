@@ -1,0 +1,46 @@
+{
+  "title": "Associative survey example",
+  "description": "A minimal example generated from JSON and an HTML template.",
+  "sections": {
+    "basics": {
+      "title": "Basics",
+      "description": "One section with one question of each supported type.",
+      "questions": {
+        "favorite-color": {
+          "title": "Favorite color",
+          "type": "single-choice",
+          "content": {
+            "red": "Red",
+            "blue": "Blue"
+          }
+        },
+        "hobbies": {
+          "title": "Hobbies",
+          "type": "multi-choice",
+          "content": {
+            "music": "Music",
+            "sports": "Sports"
+          }
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "free-text"
+        },
+        "matches": {
+          "title": "Associate phrases",
+          "type": "associative",
+          "content": {
+            "left": {
+              "1": "Calm",
+              "2": "This is a very long phrase that may help us see how such will be laid out on the page."
+            },
+            "right": {
+              "A": "Blue",
+              "B": "Humongous multitude of rephrasing quintessential nomenclature for irresponsibly unquestionable purposes"
+            }
+          }
+        }
+      }
+    }
+  }
+}

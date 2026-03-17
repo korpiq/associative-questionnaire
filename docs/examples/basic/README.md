@@ -1,10 +1,10 @@
 # Basic example
 
-This directory contains a minimal questionnaire JSON file and HTML template for the current generator.
+This directory contains a minimal survey JSON file and HTML template for the current generator.
 
 ## Files
 
-- `questionnaire.json` is the keyed-object questionnaire input.
+- `survey.json` is the keyed-object survey input.
 - `template.html` is the HTML template input.
 
 ## Generate example output
@@ -12,11 +12,11 @@ This directory contains a minimal questionnaire JSON file and HTML template for 
 From the repository root, run:
 
 ```bash
-npm run generate -- docs/examples/basic/questionnaire.json docs/examples/basic/template.html associative-questionnaire-example.html
+npm run generate -- docs/examples/basic/survey.json docs/examples/basic/template.html associative-survey-example.html
 ```
 
 The command prints the output path after writing the generated HTML file.
 
 ## View the result
 
-Open `associative-questionnaire-example.html` in a browser to inspect the generated standalone questionnaire page.
+Open `associative-survey-example.html` in a browser to inspect the generated standalone survey page.

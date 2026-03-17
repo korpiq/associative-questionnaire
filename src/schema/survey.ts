@@ -98,7 +98,7 @@ export const sectionSchema = z.object({
 
 const sectionListSchema = keyedRecordSchema(sectionSchema)
 
-export const questionnaireSchema = z.object({
+export const surveySchema = z.object({
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
   sections: sectionListSchema
@@ -137,20 +137,20 @@ export const answerValueSchema = z.discriminatedUnion('type', [
 ])
 
 export const answerFileSchema = z.object({
-  questionnaireTitle: htmlTextSchema,
+  surveyTitle: htmlTextSchema,
   answers: keyedRecordSchema(answerValueSchema)
 })
 
-export type Questionnaire = z.infer<typeof questionnaireSchema>
-export type Question = z.infer<typeof questionSchema>
-export type Section = z.infer<typeof sectionSchema>
+export type Survey = z.infer<typeof surveySchema>
+export type SurveyQuestion = z.infer<typeof questionSchema>
+export type SurveySection = z.infer<typeof sectionSchema>
 export type AnswerFile = z.infer<typeof answerFileSchema>
 export type SingleChoiceQuestion = z.infer<typeof singleChoiceQuestionSchema>
 export type MultiChoiceQuestion = z.infer<typeof multiChoiceQuestionSchema>
 export type AssociativeQuestion = z.infer<typeof associativeQuestionSchema>
 
-export function parseQuestionnaire(input: unknown): Questionnaire {
-  return questionnaireSchema.parse(input)
+export function parseSurvey(input: unknown): Survey {
+  return surveySchema.parse(input)
 }
 
 export function parseAnswerFile(input: unknown): AnswerFile {

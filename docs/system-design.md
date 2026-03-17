@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how the generated questionnaire pages, the shared CGI saver, and the reporter work together as one deployable system.
+This document defines how the generated survey pages, the shared CGI saver, and the reporter work together as one deployable system.
 
 The design targets two deployment styles:
 
@@ -11,10 +11,10 @@ The design targets two deployment styles:
 
 ## Goals
 
-- Serve one or more standalone questionnaire HTML pages at the same time.
-- Allow additional questionnaire pages to be deployed later without changing the CGI entrypoint.
-- Allow old questionnaire pages to be removed without disturbing saved answers of other questionnaires.
-- Use one shared CGI script to receive submissions from all questionnaire pages.
+- Serve one or more standalone survey HTML pages at the same time.
+- Allow additional survey pages to be deployed later without changing the CGI entrypoint.
+- Allow old survey pages to be removed without disturbing saved answers of other surveys.
+- Use one shared CGI script to receive submissions from all survey pages.
 - Use one reporter command to show statistics for a named survey.
 - Keep survey definitions stored server-side for the reporter without exposing them publicly.
 - Let the CGI create its own runtime data directories under the effective user home directory visible to the web server process.
@@ -32,18 +32,18 @@ The design targets two deployment styles:
 
 Inputs:
 
-- questionnaire JSON
+- survey JSON
 - HTML template
 - submit target URL
 
 Outputs:
 
-- one standalone HTML page per questionnaire
+- one standalone HTML page per survey
 
 Responsibilities:
 
-- validate questionnaire JSON with the existing schema
-- render the questionnaire into a self-contained HTML page
+- validate survey JSON with the existing schema
+- render the survey into a self-contained HTML page
 - include a submit button
 - set the form submission target URL so the page can post to the shared CGI saver
 - include the derived `surveyName` in the generated page so the CGI and reporter can resolve the right files
@@ -53,7 +53,7 @@ Responsibilities:
 
 Input:
 
-- form submissions from any generated questionnaire page
+- form submissions from any generated survey page
 
 Output:
 
@@ -61,7 +61,7 @@ Output:
 
 Responsibilities:
 
-- accept submissions for all deployed questionnaires through one endpoint
+- accept submissions for all deployed surveys through one endpoint
 - validate the incoming answer payload against the same answer schema used elsewhere in the project
 - resolve the target survey storage directory
 - create missing runtime directories under the CGI process home directory
@@ -93,7 +93,7 @@ Output:
 
 Responsibilities:
 
-- load the questionnaire definition for the requested survey
+- load the survey definition for the requested survey
 - load and validate all answer files for that survey
 - calculate counts, percentages, grouped statistics, correctness statistics, and later graphs
 - report invalid or unreadable answer files clearly
@@ -111,7 +111,7 @@ The deployed system separates static assets from runtime data.
 
 These files are copied during deployment and may be replaced or removed later:
 
-- generated questionnaire HTML pages
+- generated survey HTML pages
 - the shared CGI script
 - the reporter program and its support files
 
@@ -136,26 +136,26 @@ Example:
 ```text
 app/
   public/
-    questionnaires/
+    surveys/
       team-fit.html
       onboarding.html
     cgi-bin/
-      save-questionnaire.js
-      report-questionnaire.js
+      save-survey.js
+      report-survey.js
 ```
 
 Notes:
 
-- `public/questionnaires/` holds the generated standalone pages.
+- `public/surveys/` holds the generated standalone pages.
 - `public/cgi-bin/` holds the shared CGI entrypoint.
-- `public/cgi-bin/report-questionnaire.js` is the shared web/CGI reporter entrypoint.
+- `public/cgi-bin/report-survey.js` is the shared web/CGI reporter entrypoint.
 
 ### Runtime data tree
 
 Example under the CGI user home directory:
 
 ```text
-~/.local/share/associative-questionnaire/
+~/.local/share/associative-survey/
   surveys/
     team-fit.json
     onboarding.json
@@ -185,12 +185,12 @@ Proposed identifier:
 Properties:
 
 - deployment-safe token, separate from the human-readable title
-- derived from the questionnaire JSON filename without the `.json` suffix
+- derived from the survey JSON filename without the `.json` suffix
 - used for the generated HTML filename
 - used for the answer subdirectory name
 - used as the reporter lookup argument
 
-This avoids adding a separate name field to the questionnaire schema.
+This avoids adding a separate name field to the survey schema.
 
 ## Survey definition schema
 
@@ -220,14 +220,14 @@ The exact schema shape should be finalized in implementation and tests, but corr
 
 ## Submission flow
 
-1. A user opens a generated questionnaire HTML page.
-2. The page renders the questionnaire and includes a submit button.
+1. A user opens a generated survey HTML page.
+2. The page renders the survey and includes a submit button.
 3. The form posts to the configured CGI URL.
 4. The submission includes:
    - answer fields only
 5. The CGI validates the payload.
 6. The CGI computes a respondent file key from selected request headers.
-7. The CGI creates `~/.local/share/associative-questionnaire/answers/<surveyName>/` if needed.
+7. The CGI creates `~/.local/share/associative-survey/answers/<surveyName>/` if needed.
 8. The CGI writes one JSON file for that respondent key.
 9. The CGI returns a built-in HTML page or redirects to a configured HTML page.
 
@@ -271,7 +271,7 @@ Saved answers should continue to follow the existing schema:
 
 ```json
 {
-  "questionnaireTitle": "Example title",
+  "surveyTitle": "Example title",
   "answers": {
     "favorite-color": { "type": "single-choice", "value": "red" },
     "hobbies": { "type": "multi-choice", "value": ["music"] },
@@ -283,7 +283,7 @@ Saved answers should continue to follow the existing schema:
 
 Recommended addition:
 
-- store `surveyName` alongside `questionnaireTitle` in the answer file
+- store `surveyName` alongside `surveyTitle` in the answer file
 
 Reason:
 
@@ -316,9 +316,9 @@ Result:
 ## Reporter flow
 
 1. Operator opens the reporter page with the desired `surveyName`.
-2. Reporter resolves the stored survey JSON from `~/.local/share/associative-questionnaire/surveys/<surveyName>.json`.
-3. Reporter resolves `~/.local/share/associative-questionnaire/answers/<surveyName>/`.
-4. Reporter validates the questionnaire JSON.
+2. Reporter resolves the stored survey JSON from `~/.local/share/associative-survey/surveys/<surveyName>.json`.
+3. Reporter resolves `~/.local/share/associative-survey/answers/<surveyName>/`.
+4. Reporter validates the survey JSON.
 5. Reporter validates each answer file.
 6. Reporter computes totals, per-question breakdowns, correctness statistics for questions that define correct answers, optional grouped statistics, and later graphs.
 7. Reporter renders an HTML report page with statistics and graphics.
@@ -332,7 +332,7 @@ Upload behavior:
 1. Caller sends a survey JSON file to the reporter CGI by POST.
 2. Reporter derives `surveyName` from the uploaded filename.
 3. Reporter validates the survey JSON.
-4. Reporter creates `~/.local/share/associative-questionnaire/surveys/` if needed.
+4. Reporter creates `~/.local/share/associative-survey/surveys/` if needed.
 5. If no stored survey exists yet, reporter saves the uploaded survey JSON.
 6. If a stored survey already exists and it is not protected, reporter replaces it with the uploaded survey JSON.
 7. If a stored survey already exists and it has `protected: true`, the caller must also provide a valid protection hash before replacement is allowed.
@@ -349,7 +349,7 @@ Protection hash:
 Minimum endpoint:
 
 ```text
-/cgi-bin/report-questionnaire.js?surveyName=<surveyName>
+/cgi-bin/report-survey.js?surveyName=<surveyName>
 ```
 
 The reporter depends on the caller to provide the correct `surveyName`.
@@ -371,7 +371,7 @@ Default lookup behavior:
 
 The design assumes:
 
-- the web server can serve static questionnaire HTML files
+- the web server can serve static survey HTML files
 - the web server can execute the shared CGI script
 - the CGI process has a writable home directory
 
@@ -391,7 +391,7 @@ In container deployments:
 
 Recommended runtime mount:
 
-- `/home/app/.local/share/associative-questionnaire`
+- `/home/app/.local/share/associative-survey`
 
 ## VPS notes
 

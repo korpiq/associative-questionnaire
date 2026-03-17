@@ -2,12 +2,12 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 
-import { generateQuestionnaireHtml, parseQuestionnaire } from '../../../src'
+import { generateSurveyHtml, parseSurvey } from '../../../src'
 
 const feature = await loadFeature('tests/feature/snippet-overrides.feature')
 
 describeFeature(feature, ({ Scenario }) => {
-  let questionnaireInput: unknown
+  let surveyInput: unknown
   let templateInput = ''
   let generatedHtml = ''
 
@@ -19,8 +19,8 @@ describeFeature(feature, ({ Scenario }) => {
   }
 
   Scenario('Template overrides replace default snippets', ({ Given, And, When, Then }) => {
-    Given('questionnaire content:', (_ctx, docString) => {
-      questionnaireInput = parseYamlDocString(docString)
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
       generatedHtml = ''
     })
 
@@ -28,9 +28,9 @@ describeFeature(feature, ({ Scenario }) => {
       templateInput = docString ?? ''
     })
 
-    When('the questionnaire HTML page is generated', () => {
-      const questionnaire = parseQuestionnaire(questionnaireInput)
-      generatedHtml = generateQuestionnaireHtml(questionnaire, templateInput)
+    When('the survey HTML page is generated', () => {
+      const survey = parseSurvey(surveyInput)
+      generatedHtml = generateSurveyHtml(survey, templateInput)
     })
 
     Then('the result contains the section title override {string}', (_ctx, expected) => {

@@ -1,6 +1,6 @@
 Feature: Association linker
   Scenario: Dragging from one phrase to another toggles an association
-    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    Given generated survey HTML with one associative question and fixed phrase positions
     When the right-side handle of left phrase "1" starts dragging to point 240 120
     Then the live associative line starts at left phrase "1" and ends at point 240 120
     And left phrase "1" is marked pending
@@ -17,14 +17,14 @@ Feature: Association linker
     And 0 stored associative lines are visible
 
   Scenario: Keyboard linking toggles an association
-    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    Given generated survey HTML with one associative question and fixed phrase positions
     When left phrase "1" is focused and key "A" is pressed
     Then associative answer "matches" contains pair "1" "A"
     And the live associative line is hidden
     And 1 stored associative lines are visible
 
   Scenario: Tapping one phrase and then the opposite side toggles an association
-    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    Given generated survey HTML with one associative question and fixed phrase positions
     When left phrase "1" is tapped
     Then left phrase "1" is marked pending
     When right phrase "A" is tapped
@@ -38,7 +38,7 @@ Feature: Association linker
     And 0 stored associative lines are visible
 
   Scenario: Touch dragging from one phrase to another toggles an association
-    Given generated questionnaire HTML with one associative question and fixed phrase positions
+    Given generated survey HTML with one associative question and fixed phrase positions
     When left phrase "1" is touch-dragged to right phrase "A"
     Then associative answer "matches" contains pair "1" "A"
     And the live associative line is hidden after touch drag

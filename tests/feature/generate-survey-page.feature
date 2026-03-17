@@ -1,17 +1,17 @@
-Feature: Generate questionnaire HTML page
+Feature: Generate survey HTML page
   Scenario: Generate a standalone page with one section and all supported question types
-    Given questionnaire content:
+    Given survey content:
       """
-      {title: Example questionnaire, description: Example description, sections: {basics: {title: Basics, description: Basic prompts, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, hobbies: {title: Hobbies, type: multi-choice, content: {music: Music, sports: Sports}}, notes: {title: Notes, type: free-text}, matches: {title: Associate phrases, type: associative, content: {left: {"1": Calm}, right: {A: Blue}}}}}}}
+      {title: Example survey, description: Example description, sections: {basics: {title: Basics, description: Basic prompts, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, hobbies: {title: Hobbies, type: multi-choice, content: {music: Music, sports: Sports}}, notes: {title: Notes, type: free-text}, matches: {title: Associate phrases, type: associative, content: {left: {"1": Calm}, right: {A: Blue}}}}}}}
       """
     And HTML template:
       """
       {{> root}}
       """
-    When the questionnaire HTML page is generated
+    When the survey HTML page is generated
     Then the result is a standalone HTML page
-    And the result contains the questionnaire title "Example questionnaire"
-    And the result contains the questionnaire description "Example description"
+    And the result contains the survey title "Example survey"
+    And the result contains the survey description "Example description"
     And the result contains the section title "Basics"
     And the result contains the section description "Basic prompts"
     And the result contains the single-choice question title "Favorite color"

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { normalizeQuestionnaire, parseQuestionnaire } from '../src'
+import { normalizeSurvey, parseSurvey } from '../src'
 
-describe('normalizeQuestionnaire', () => {
+describe('normalizeSurvey', () => {
   it('preserves keyed source order and restores ids from keys', () => {
-    const questionnaire = parseQuestionnaire({
-      title: 'Example questionnaire',
+    const survey = parseSurvey({
+      title: 'Example survey',
       sections: {
         basics: {
           title: 'Basics',
@@ -46,10 +46,10 @@ describe('normalizeQuestionnaire', () => {
       }
     })
 
-    const normalized = normalizeQuestionnaire(questionnaire)
+    const normalized = normalizeSurvey(survey)
 
     expect(normalized).toMatchObject({
-      title: 'Example questionnaire',
+      title: 'Example survey',
       sections: [
         {
           id: 'basics',

@@ -6,12 +6,12 @@ import {
   type NormalizedFreeTextQuestion,
   type NormalizedMultiChoiceQuestion,
   type NormalizedQuestion,
-  type NormalizedQuestionnaire,
+  type NormalizedSurvey,
   type NormalizedSection,
   type NormalizedSingleChoiceQuestion,
-  normalizeQuestionnaire
-} from '../schema/normalize-questionnaire'
-import type { Questionnaire } from '../schema/questionnaire'
+  normalizeSurvey
+} from '../schema/normalize-survey'
+import type { Survey } from '../schema/survey'
 
 function readSnippet(filename: string): string {
   return readFileSync(new URL(`./snippets/${filename}`, import.meta.url), 'utf8').trim()
@@ -127,10 +127,8 @@ function ensureStandaloneDocument(html: string): string {
   return standalone
 }
 
-function isNormalizedQuestionnaire(
-  questionnaire: Questionnaire | NormalizedQuestionnaire
-): questionnaire is NormalizedQuestionnaire {
-  return Array.isArray(questionnaire.sections)
+function isNormalizedSurvey(survey: Survey | NormalizedSurvey): survey is NormalizedSurvey {
+  return Array.isArray(survey.sections)
 }
 
 function createRenderer(template: string): Handlebars.TemplateDelegate {
@@ -153,15 +151,15 @@ type GeneratorSectionView = Omit<NormalizedSection, 'questions'> & {
   questions: GeneratorQuestionView[]
 }
 
-type GeneratorQuestionnaireView = Omit<NormalizedQuestionnaire, 'sections'> & {
+type GeneratorSurveyView = Omit<NormalizedSurvey, 'sections'> & {
   sections: GeneratorSectionView[]
 }
 
-function toGeneratorView(questionnaire: NormalizedQuestionnaire): GeneratorQuestionnaireView {
+function toGeneratorView(survey: NormalizedSurvey): GeneratorSurveyView {
   return {
-    title: questionnaire.title,
-    ...(questionnaire.description ? { description: questionnaire.description } : {}),
-    sections: questionnaire.sections.map((section) => ({
+    title: survey.title,
+    ...(survey.description ? { description: survey.description } : {}),
+    sections: survey.sections.map((section) => ({
       id: section.id,
       title: section.title,
       ...(section.description ? { description: section.description } : {}),
@@ -173,16 +171,14 @@ function toGeneratorView(questionnaire: NormalizedQuestionnaire): GeneratorQuest
   }
 }
 
-export function generateQuestionnaireHtml(
-  questionnaire: Questionnaire | NormalizedQuestionnaire,
+export function generateSurveyHtml(
+  survey: Survey | NormalizedSurvey,
   template: string
 ): string {
-  const normalized = isNormalizedQuestionnaire(questionnaire)
-    ? questionnaire
-    : normalizeQuestionnaire(questionnaire)
+  const normalized = isNormalizedSurvey(survey) ? survey : normalizeSurvey(survey)
   const render = createRenderer(template)
   const html = render({
-    questionnaire: toGeneratorView(normalized)
+    survey: toGeneratorView(normalized)
   })
 
   return ensureStandaloneDocument(html)

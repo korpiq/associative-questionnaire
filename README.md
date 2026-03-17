@@ -1,25 +1,25 @@
-# Associative questionnaire
+# Associative survey
 
-Questionnaire system based on single HTML page. Main feature is presenting a group of phrases that the user answering the questionnaire should link with matching phrases in another group.
+Survey system based on single HTML page. Main feature is presenting a group of phrases that the user answering the survey should link with matching phrases in another group.
 
 Client-side scripting must be kept to minimum and done in javascript compatible with major browsers for both desktop and mobile. Styles should be progressive.
 
 ## Design
 
-1. Generator that produces a standalone HTML page from a HTML template and questionnaire JSON.
+1. Generator that produces a standalone HTML page from a HTML template and survey JSON.
    - should generate a concise and straightforward HTML page that contains all styles and javascript necessary for a smooth, progressive user experience.
-2. CGI script that stores the results of any questionnaire forms to JSON files on same server.
-3. Reporter that produces a statistical report from a questionnaire and associated answer files.
+2. CGI script that stores the results of any survey forms to JSON files on same server.
+3. Reporter that produces a statistical report from a survey and associated answer files.
 
 The actual application seen by users is the generated HTML page that stores the answers via the CGI script.
 
 Scripts outside browser (generator reporter) can be implemented in Typescript for nodejs version 20. CGI script must be plain javascript.
 
-### Questionnaire content as JSON data structure
+### Survey content as JSON data structure
 
-Text in questionnaire content may be markdown and/or HTML to allow images and nice layout.
+Text in survey content may be markdown and/or HTML to allow images and nice layout.
 
-Section and question lists in questionnaire JSON are objects keyed by identifier. Presentation follows object key order in the source JSON.
+Section and question lists in survey JSON are objects keyed by identifier. Presentation follows object key order in the source JSON.
 
 - section list
   - identifier key for each section
@@ -49,30 +49,30 @@ Section and question lists in questionnaire JSON are objects keyed by identifier
   - repeatable element to use for each question
     - repeatable element for each content item per question type
 
-### Questionnaire HTML page generator
+### Survey HTML page generator
 
 Parameters
-- Questionnaire content file
+- Survey content file
 - HTML template file
 Outputs
-- HTML questionnaire generated from HTML template by Questionnaire content.
+- HTML survey generated from HTML template by survey content.
 
 See `docs/generator.md` for the current planned usage flow and constraints.
 
-### Questionnaire results saver CGI script
+### Survey results saver CGI script
 
 Results saver CGI script
-- receives questionnaire answers when the form in the HTML page is submitted
-- stores them in separate JSON files under directory `questionnaire/<questionnaire-title>`.
+- receives survey answers when the form in the HTML page is submitted
+- stores them in separate JSON files under directory `survey/<survey-title>`.
 - Filename should be a one-way hash of some headers identifying the calling browser, so same user on same device with same browser would save to same file, but others to others.
 - It is ok to produce separate files if user saves from a different IP address.
 
-### Questionnaire reporter
+### Survey reporter
 
 Parameters
-- Questionnaire content file
+- Survey content file
 - Answer files
-- Optional number of recipients asked to answer the questionnaire
+- Optional number of recipients asked to answer the survey
 - Optional list of question identifiers to group answers by for statistics
 - Optional identifiers for answers that are not scored (e.g. because ambiguity)
 Outputs
@@ -133,11 +133,11 @@ describeFeature(feature, ({ Scenario }) => {
         And('Answer to {string} is {string}', (_ctx, question, answer) => {
             answers[question] = answer;
         })
-        When('Questionnaire report is generated', () => {
+        When('Survey report is generated', () => {
           // first complete the setup descibed above
           fs.writeFileSync(answerFilename, JSON.stringify(answers));
           // proceed to do what the spec line says
-          report = reportQuestionnaireResults(questionnaire, [answerFilename]);
+          report = reportSurveyResults(survey, [answerFilename]);
         })
         Then('Report contains results of one answer', () => {
           expect(report.answers.count).toEqual(1);
@@ -153,6 +153,6 @@ We use Zod schemas to verify data integrity.
 
 ## Anonymity
 
-We avoid doing anything identifying the users. A questionnaire may or may not contains questions to identify users.
+We avoid doing anything identifying the users. A survey may or may not contain questions to identify users.
 
 Note that each step must do exactly what its Gherkin description says. If not otherwise applicable, they must populate a shared variable that is then used in a later step to actually execute the setup built by earlier steps.

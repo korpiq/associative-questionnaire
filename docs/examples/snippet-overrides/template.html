@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>{{questionnaire.title}}</title>
+<title>{{survey.title}}</title>
 {{> style}}
 </head>
 <body>
 <main class="snippet-demo-shell">
 <header class="snippet-demo-header">
 <p class="snippet-demo-eyebrow">Root override</p>
-<h1>{{questionnaire.title}}</h1>
-<p>{{questionnaire.description}}</p>
+<h1>{{survey.title}}</h1>
+<p>{{survey.description}}</p>
 </header>
 <form class="snippet-demo">
-{{#each questionnaire.sections}}
+{{#each survey.sections}}
 {{> section}}
 {{/each}}
 </form>

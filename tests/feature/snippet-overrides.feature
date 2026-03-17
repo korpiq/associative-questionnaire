@@ -1,6 +1,6 @@
 Feature: Generator snippet overrides
   Scenario: Template overrides replace default snippets
-    Given questionnaire content:
+    Given survey content:
       """
       {title: Override example, description: Override description, sections: {basics: {title: Basics, questions: {notes: {title: Notes, type: free-text}}}}}
       """
@@ -32,7 +32,7 @@ Feature: Generator snippet overrides
       {{/inline}}
       {{> root}}
       """
-    When the questionnaire HTML page is generated
+    When the survey HTML page is generated
     Then the result contains the section title override "Override Basics"
     And the result contains the question title override "Override Notes"
     And the result contains the style override "background: rgb(250, 240, 230)"

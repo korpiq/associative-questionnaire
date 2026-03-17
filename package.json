@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "check": "tsc --noEmit --project tsconfig.json",
-    "generate": "tsx src/cli/generate-questionnaire-html.ts",
+    "generate": "tsx src/cli/generate-survey-html.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
