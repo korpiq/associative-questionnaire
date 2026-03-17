@@ -80,3 +80,6 @@
 
 27. Implemented saver runtime answer storage creation under the effective user home.
     Added filesystem-backed feature coverage for the runtime answers root and per-survey directory, resolved the storage path under `~/.local/share/associative-survey/answers`, and created the required directories on demand.
+
+28. Implemented shared saver-path answer persistence.
+    Composed request-body parsing, survey-aware answer validation, respondent filename hashing, and runtime storage into one persistence function, and verified that repeat submissions from the same respondent replace the existing file for that survey.

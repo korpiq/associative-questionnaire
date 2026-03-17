@@ -8,6 +8,7 @@ export { normalizeSurveyAnswerRequestBody } from './cgi/normalize-survey-answer-
 export { normalizeSurveyAnswerFields } from './cgi/normalize-survey-answer-fields'
 export { deriveRespondentAnswerFilename } from './cgi/derive-respondent-answer-filename'
 export { ensureSurveyAnswerStorage } from './cgi/ensure-survey-answer-storage'
+export { saveSurveyAnswerSubmission } from './cgi/save-survey-answer-submission'
 export { normalizeSurvey } from './schema/normalize-survey'
 export type {
   NormalizedQuestion,

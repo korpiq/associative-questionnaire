@@ -1,8 +1,5 @@
 # TODO
 
-- Implement CGI answer persistence for all surveys through one shared endpoint.
-  Repeated submissions from the same respondent key should replace the existing answer file for that survey.
-
 - Add feature coverage for CGI HTML responses and customization parameters.
   Cover built-in success and failure pages plus the `ok` (redirect url on success), `fail` (redirect url on failure), and `css` (extra CSS file url) CGI parameters.
 
