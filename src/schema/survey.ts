@@ -20,68 +20,119 @@ const letterKeyedTextSchema = z.record(
   htmlTextSchema
 )
 
-export const singleChoiceQuestionSchema = z.object({
-  title: htmlTextSchema,
-  description: htmlTextSchema.optional(),
-  type: z.literal('single-choice'),
-  content: keyedRecordSchema(htmlTextSchema).superRefine((value, ctx) => {
-    if (Object.keys(value).length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Single-choice questions must define at least one option'
-      })
-    }
-  })
+const associativeCorrectPairSchema = z.object({
+  left: z.string().regex(/^[0-9]$/, 'Associative correct left key must be a single digit'),
+  right: z.string().regex(/^[A-Za-z]$/, 'Associative correct right key must be a single letter')
 })
 
-export const multiChoiceQuestionSchema = z.object({
-  title: htmlTextSchema,
-  description: htmlTextSchema.optional(),
-  type: z.literal('multi-choice'),
-  content: keyedRecordSchema(htmlTextSchema).superRefine((value, ctx) => {
-    if (Object.keys(value).length === 0) {
+export const singleChoiceQuestionSchema = z
+  .object({
+    title: htmlTextSchema,
+    description: htmlTextSchema.optional(),
+    type: z.literal('single-choice'),
+    content: keyedRecordSchema(htmlTextSchema),
+    correct: identifierSchema.optional()
+  })
+  .superRefine((value, ctx) => {
+    if (Object.keys(value.content).length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Multi-choice questions must define at least one option'
+        message: 'Single-choice questions must define at least one option',
+        path: ['content']
+      })
+    }
+
+    if (value.correct && !(value.correct in value.content)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Correct answer must match one of the defined options',
+        path: ['correct']
       })
     }
   })
-})
+
+export const multiChoiceQuestionSchema = z
+  .object({
+    title: htmlTextSchema,
+    description: htmlTextSchema.optional(),
+    type: z.literal('multi-choice'),
+    content: keyedRecordSchema(htmlTextSchema),
+    correct: z.array(identifierSchema).optional()
+  })
+  .superRefine((value, ctx) => {
+    if (Object.keys(value.content).length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Multi-choice questions must define at least one option',
+        path: ['content']
+      })
+    }
+
+    value.correct?.forEach((correctId, index) => {
+      if (!(correctId in value.content)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Each correct answer must match one of the defined options',
+          path: ['correct', index]
+        })
+      }
+    })
+  })
 
 export const freeTextQuestionSchema = z.object({
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
-  type: z.literal('free-text')
+  type: z.literal('free-text'),
+  correct: z.array(htmlTextSchema).optional()
 })
 
-export const associativeQuestionSchema = z.object({
-  title: htmlTextSchema,
-  description: htmlTextSchema.optional(),
-  type: z.literal('associative'),
-  content: z
-    .object({
+export const associativeQuestionSchema = z
+  .object({
+    title: htmlTextSchema,
+    description: htmlTextSchema.optional(),
+    type: z.literal('associative'),
+    content: z.object({
       left: digitKeyedTextSchema,
       right: letterKeyedTextSchema
-    })
-    .superRefine((value, ctx) => {
-      if (Object.keys(value.left).length === 0) {
+    }),
+    correct: z.array(associativeCorrectPairSchema).optional()
+  })
+  .superRefine((value, ctx) => {
+      if (Object.keys(value.content.left).length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Associative questions must define at least one left-side phrase',
-          path: ['left']
+          path: ['content', 'left']
         })
       }
-      if (Object.keys(value.right).length === 0) {
+      if (Object.keys(value.content.right).length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Associative questions must define at least one right-side phrase',
-          path: ['right']
+          path: ['content', 'right']
         })
       }
-    })
-})
 
-export const questionSchema = z.discriminatedUnion('type', [
+      value.correct?.forEach((pair, index) => {
+        if (!(pair.left in value.content.left)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Correct associative left key must match a defined left-side phrase',
+            path: ['correct', index, 'left']
+          })
+        }
+
+        if (!(pair.right in value.content.right)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Correct associative right key must match a defined right-side phrase',
+            path: ['correct', index, 'right']
+          })
+        }
+      })
+    })
+
+export const questionSchema = z.union([
   singleChoiceQuestionSchema,
   multiChoiceQuestionSchema,
   freeTextQuestionSchema,

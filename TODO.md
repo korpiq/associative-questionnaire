@@ -1,8 +1,5 @@
 # TODO
 
-- Extend the survey schema to support optional correct answers on any question type.
-  Questions with correct answers should later report correct and incorrect answer counts and percentages, while questions without them should not.
-
 - Add feature coverage for generator output that includes a submit button, configurable form action, and derived `surveyName`.
 
 - Implement derived `surveyName` handling from the survey JSON filename and carry it through generated output.

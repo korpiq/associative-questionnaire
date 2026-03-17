@@ -17,7 +17,8 @@ describe('normalizeSurvey', () => {
               content: {
                 music: 'Music',
                 sports: 'Sports'
-              }
+              },
+              correct: ['music']
             },
             matches: {
               title: 'Associate phrases',
@@ -31,7 +32,8 @@ describe('normalizeSurvey', () => {
                   A: 'Blue',
                   B: 'Green'
                 }
-              }
+              },
+              correct: [{ left: '1', right: 'A' }]
             }
           }
         },
@@ -40,7 +42,8 @@ describe('normalizeSurvey', () => {
           questions: {
             freeform: {
               title: 'Notes',
-              type: 'free-text'
+              type: 'free-text',
+              correct: ['Calm']
             }
           }
         }
@@ -60,6 +63,7 @@ describe('normalizeSurvey', () => {
             {
               id: 'hobbies',
               type: 'multi-choice',
+              correct: ['music'],
               content: [
                 { id: 'music', text: 'Music' },
                 { id: 'sports', text: 'Sports' }
@@ -68,6 +72,7 @@ describe('normalizeSurvey', () => {
             {
               id: 'matches',
               type: 'associative',
+              correct: [{ left: '1', right: 'A' }],
               content: {
                 left: [
                   { id: '1', text: 'Calm' },
@@ -87,7 +92,8 @@ describe('normalizeSurvey', () => {
           questions: [
             {
               id: 'freeform',
-              type: 'free-text'
+              type: 'free-text',
+              correct: ['Calm']
             }
           ]
         }

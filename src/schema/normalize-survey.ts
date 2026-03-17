@@ -20,15 +20,18 @@ type NormalizedQuestionBase = {
 export type NormalizedSingleChoiceQuestion = NormalizedQuestionBase & {
   type: 'single-choice'
   content: NormalizedTextItem[]
+  correct?: string
 }
 
 export type NormalizedMultiChoiceQuestion = NormalizedQuestionBase & {
   type: 'multi-choice'
   content: NormalizedTextItem[]
+  correct?: string[]
 }
 
 export type NormalizedFreeTextQuestion = NormalizedQuestionBase & {
   type: 'free-text'
+  correct?: string[]
 }
 
 export type NormalizedAssociativeQuestion = NormalizedQuestionBase & {
@@ -37,6 +40,7 @@ export type NormalizedAssociativeQuestion = NormalizedQuestionBase & {
     left: NormalizedTextItem[]
     right: NormalizedTextItem[]
   }
+  correct?: Array<{ left: string; right: string }>
 }
 
 export type NormalizedQuestion =
@@ -75,6 +79,7 @@ function normalizeSingleChoiceQuestion(
     title: question.title,
     type: question.type,
     content: normalizeTextRecord(question.content),
+    ...(question.correct ? { correct: question.correct } : {}),
     ...(question.description ? { description: question.description } : {})
   }
 }
@@ -88,6 +93,7 @@ function normalizeMultiChoiceQuestion(
     title: question.title,
     type: question.type,
     content: normalizeTextRecord(question.content),
+    ...(question.correct ? { correct: question.correct } : {}),
     ...(question.description ? { description: question.description } : {})
   }
 }
@@ -104,6 +110,7 @@ function normalizeAssociativeQuestion(
       left: normalizeTextRecord(question.content.left),
       right: normalizeTextRecord(question.content.right)
     },
+    ...(question.correct ? { correct: question.correct } : {}),
     ...(question.description ? { description: question.description } : {})
   }
 }
@@ -119,11 +126,14 @@ function normalizeQuestion(id: string, question: SurveyQuestion): NormalizedQues
         id,
         title: question.title,
         type: question.type,
+        ...(question.correct ? { correct: question.correct } : {}),
         ...(question.description ? { description: question.description } : {})
       }
     case 'associative':
       return normalizeAssociativeQuestion(id, question)
   }
+
+  throw new Error(`Unsupported question type: ${(question as { type?: unknown }).type}`)
 }
 
 export function normalizeSurvey(survey: Survey): NormalizedSurvey {

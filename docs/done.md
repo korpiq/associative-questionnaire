@@ -62,3 +62,6 @@
 
 21. Added survey-level metadata support to the schema and normalization flow.
     Introduced optional `protected: true` support on surveys, verified acceptance and rejection behavior through schema feature coverage, preserved the metadata in normalized surveys, and kept the full test suite and typecheck passing.
+
+22. Added optional correct-answer support to survey questions.
+    Extended all question schema variants with optional `correct` definitions, validated that configured correct answers match the defined survey content, preserved them through normalization, and verified the change with schema, normalization, full-suite, and typecheck coverage.
