@@ -71,4 +71,30 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expect(actualIssues).toEqual(expectedIssues)
     })
   })
+
+  Scenario('Invalid survey-level protected metadata is rejected', ({ Given, Then, And }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
+      parseResult = undefined
+      parseError = null
+    })
+
+    Then('the survey content is rejected', () => {
+      expect(parseResult).toBeUndefined()
+      expect(parseError).toBeInstanceOf(ZodError)
+    })
+
+    And('the schema issues are:', (_ctx, docString) => {
+      const expectedIssues = parseYamlDocString<
+        Array<{ path: Array<string | number>; message: string }>
+      >(docString)
+      const actualIssues =
+        parseError?.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message
+        })) ?? []
+
+      expect(actualIssues).toEqual(expectedIssues)
+    })
+  })
 })

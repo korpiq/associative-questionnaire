@@ -55,6 +55,7 @@ export type NormalizedSection = {
 export type NormalizedSurvey = {
   title: string
   description?: string
+  protected?: boolean
   sections: NormalizedSection[]
 }
 
@@ -136,6 +137,7 @@ export function normalizeSurvey(survey: Survey): NormalizedSurvey {
       ),
       ...(section.description ? { description: section.description } : {})
     })),
+    ...(survey.protected !== undefined ? { protected: survey.protected } : {}),
     ...(survey.description ? { description: survey.description } : {})
   }
 }

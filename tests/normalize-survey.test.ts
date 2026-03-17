@@ -6,6 +6,7 @@ describe('normalizeSurvey', () => {
   it('preserves keyed source order and restores ids from keys', () => {
     const survey = parseSurvey({
       title: 'Example survey',
+      protected: true,
       sections: {
         basics: {
           title: 'Basics',
@@ -50,6 +51,7 @@ describe('normalizeSurvey', () => {
 
     expect(normalized).toMatchObject({
       title: 'Example survey',
+      protected: true,
       sections: [
         {
           id: 'basics',

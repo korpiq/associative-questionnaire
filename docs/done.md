@@ -59,3 +59,6 @@
 
 20. Refactored active repository terminology from questionnaire to survey.
     Renamed the schema, normalization, generator, and CLI APIs to `survey` terms, updated the supported feature/spec wording and examples to match, and kept the full test suite and typecheck passing through the rename.
+
+21. Added survey-level metadata support to the schema and normalization flow.
+    Introduced optional `protected: true` support on surveys, verified acceptance and rejection behavior through schema feature coverage, preserved the metadata in normalized surveys, and kept the full test suite and typecheck passing.

@@ -1,8 +1,5 @@
 # TODO
 
-- Extend the survey schema and normalization flow to support optional survey-level metadata needed by deployment and reporting.
-  Include at least `protected: true` support for surveys whose reports require access control.
-
 - Extend the survey schema to support optional correct answers on any question type.
   Questions with correct answers should later report correct and incorrect answer counts and percentages, while questions without them should not.
 

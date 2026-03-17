@@ -101,6 +101,7 @@ const sectionListSchema = keyedRecordSchema(sectionSchema)
 export const surveySchema = z.object({
   title: htmlTextSchema,
   description: htmlTextSchema.optional(),
+  protected: z.boolean().optional(),
   sections: sectionListSchema
 })
 
