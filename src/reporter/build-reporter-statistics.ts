@@ -13,11 +13,19 @@ type CountEntry = {
   percentage: number
 }
 
+type CorrectnessEntry = {
+  correctCount: number
+  incorrectCount: number
+  correctPercentage: number
+  incorrectPercentage: number
+}
+
 type ReporterSingleChoiceStats = {
   id: string
   title: string
   type: 'single-choice'
   answeredCount: number
+  correctness?: CorrectnessEntry
   options: Array<{
     id: string
     text: string
@@ -29,6 +37,7 @@ type ReporterMultiChoiceStats = {
   title: string
   type: 'multi-choice'
   answeredCount: number
+  correctness?: CorrectnessEntry
   options: Array<{
     id: string
     text: string
@@ -40,6 +49,7 @@ type ReporterFreeTextStats = {
   title: string
   type: 'free-text'
   answeredCount: number
+  correctness?: CorrectnessEntry
   answers: Array<{
     value: string
   } & CountEntry>
@@ -50,6 +60,7 @@ type ReporterAssociativeStats = {
   title: string
   type: 'associative'
   answeredCount: number
+  correctness?: CorrectnessEntry
   pairs: Array<{
     key: string
     left: string
@@ -123,6 +134,9 @@ function buildSingleChoiceStatistics(
     title: question.title,
     type: 'single-choice',
     answeredCount,
+    ...(question.correct
+      ? { correctness: buildCorrectnessEntry(answers, respondentCount, (answer) => answer.value === question.correct) }
+      : {}),
     options: question.content.map((option) => {
       const count = answers.filter((answer) => answer.value === option.id).length
 
@@ -151,6 +165,15 @@ function buildMultiChoiceStatistics(
     title: question.title,
     type: 'multi-choice',
     answeredCount,
+    ...(question.correct
+      ? {
+          correctness: buildCorrectnessEntry(
+            answers,
+            respondentCount,
+            (answer) => isExactIdentifierSet(answer.value, question.correct ?? [])
+          )
+        }
+      : {}),
     options: question.content.map((option) => {
       const count = answers.filter((answer) => answer.value.includes(option.id)).length
 
@@ -184,6 +207,15 @@ function buildFreeTextStatistics(
     title: question.title,
     type: 'free-text',
     answeredCount,
+    ...(question.correct
+      ? {
+          correctness: buildCorrectnessEntry(
+            answers,
+            respondentCount,
+            (answer) => question.correct?.includes(answer.value) ?? false
+          )
+        }
+      : {}),
     answers: Array.from(counts.entries()).map(([value, count]) => ({
       value,
       count,
@@ -226,6 +258,15 @@ function buildAssociativeStatistics(
     title: question.title,
     type: 'associative',
     answeredCount,
+    ...(question.correct
+      ? {
+          correctness: buildCorrectnessEntry(
+            answers,
+            respondentCount,
+            (answer) => isExactPairSet(answer.value, question.correct ?? [])
+          )
+        }
+      : {}),
     pairs: Array.from(counts.entries()).map(([key, entry]) => ({
       key,
       left: entry.left,
@@ -234,4 +275,49 @@ function buildAssociativeStatistics(
       percentage: percentage(entry.count, respondentCount)
     }))
   }
+}
+
+function buildCorrectnessEntry<TAnswer extends { value: unknown }>(
+  answers: TAnswer[],
+  respondentCount: number,
+  isCorrect: (answer: TAnswer) => boolean
+): CorrectnessEntry {
+  const correctCount = answers.filter((answer) => isCorrect(answer)).length
+  const incorrectCount = answers.length - correctCount
+
+  return {
+    correctCount,
+    incorrectCount,
+    correctPercentage: percentage(correctCount, respondentCount),
+    incorrectPercentage: percentage(incorrectCount, respondentCount)
+  }
+}
+
+function isExactIdentifierSet(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  const leftSorted = [...left].sort()
+  const rightSorted = [...right].sort()
+
+  return leftSorted.every((value, index) => value === rightSorted[index])
+}
+
+function isExactPairSet(
+  left: Array<{ left: string; right: string }>,
+  right: Array<{ left: string; right: string }>
+): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  const leftSorted = left
+    .map((pair) => `${pair.left}:${pair.right}`)
+    .sort()
+  const rightSorted = right
+    .map((pair) => `${pair.left}:${pair.right}`)
+    .sort()
+
+  return leftSorted.every((value, index) => value === rightSorted[index])
 }

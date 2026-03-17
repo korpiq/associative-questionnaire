@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter correctness statistics for questions that define correct answers.
-  Show correct and incorrect answer counts and percentages only for questions that provide correct answers.
-
 - Implement reporter grouped statistics parameters.
   Support caller-provided grouping inputs such as grouped-by question identifiers and optional recipient counts.
 

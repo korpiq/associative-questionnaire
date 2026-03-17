@@ -104,3 +104,6 @@
 
 35. Added reporter totals and per-question statistics.
     Computed respondent totals plus per-question counts and percentages for single-choice, multi-choice, free-text, and associative answers from the validated survey and saved answer files.
+
+36. Added reporter correctness statistics for questions with correct answers.
+    Extended reporter statistics to compute correct and incorrect counts and percentages only for questions that define `correct` answers, covering single-choice, multi-choice, free-text, and associative correctness rules.
