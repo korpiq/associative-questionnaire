@@ -1,8 +1,5 @@
 # TODO
 
-- Implement CGI runtime storage creation under the effective user home directory.
-  It should create the runtime answers root and per-`surveyName` directories on demand.
-
 - Implement CGI answer persistence for all surveys through one shared endpoint.
   Repeated submissions from the same respondent key should replace the existing answer file for that survey.
 

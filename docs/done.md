@@ -77,3 +77,6 @@
 
 26. Added saver-side answer validation and hashed respondent filenames.
     Validated normalized answers against the survey definition before saving, added deterministic hashed respondent filenames from the selected CGI headers plus optional deployment salt, and verified both behaviors through feature coverage.
+
+27. Implemented saver runtime answer storage creation under the effective user home.
+    Added filesystem-backed feature coverage for the runtime answers root and per-survey directory, resolved the storage path under `~/.local/share/associative-survey/answers`, and created the required directories on demand.
