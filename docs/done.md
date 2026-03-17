@@ -86,3 +86,6 @@
 
 29. Added a manual saver helper and try-it-out guide.
     Added a `manual:save` CLI helper for exercising the current saver path without a CGI wrapper, documented generator and saver tryout flows in `docs/try-it-out.md`, and linked the guide from the README.
+
+30. Added saver CGI HTML responses with redirect and CSS overrides.
+    Covered built-in success and failure pages plus the `ok`, `fail`, and `css` parameters in feature tests, and implemented a CGI-ready response builder that returns HTML by default and redirects with `303` when override URLs are provided.

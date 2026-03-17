@@ -1,11 +1,5 @@
 # TODO
 
-- Add feature coverage for CGI HTML responses and customization parameters.
-  Cover built-in success and failure pages plus the `ok` (redirect url on success), `fail` (redirect url on failure), and `css` (extra CSS file url) CGI parameters.
-
-- Implement CGI HTML success and failure responses with optional redirect and CSS overrides.
-  The CGI should never need to return JSON.
-
 - Add feature coverage for reporter survey upload and stored survey resolution by `surveyName`.
   The reporter should accept survey JSON uploads by POST, derive `surveyName` from the uploaded filename, and later resolve stored surveys plus answers for that survey.
 
