@@ -18,10 +18,7 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
         `<section data-question="${escapeHtml(question.id)}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
-        ...question.options.map(
-          (option) =>
-            `<li>${escapeHtml(option.text)}: ${option.count} (${option.percentage}%)</li>`
-        ),
+        ...question.options.map((option) => renderBarItem(option.text, option.count, option.percentage)),
         '</ul>',
         '</section>'
       ].join('')
@@ -30,10 +27,7 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
         `<section data-question="${escapeHtml(question.id)}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
-        ...question.answers.map(
-          (answer) =>
-            `<li>${escapeHtml(answer.value)}: ${answer.count} (${answer.percentage}%)</li>`
-        ),
+        ...question.answers.map((answer) => renderBarItem(answer.value, answer.count, answer.percentage)),
         '</ul>',
         '</section>'
       ].join('')
@@ -42,14 +36,24 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
         `<section data-question="${escapeHtml(question.id)}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
-        ...question.pairs.map(
-          (pair) =>
-            `<li>${escapeHtml(pair.key)}: ${pair.count} (${pair.percentage}%)</li>`
-        ),
+        ...question.pairs.map((pair) => renderBarItem(pair.key, pair.count, pair.percentage)),
         '</ul>',
         '</section>'
       ].join('')
   }
+}
+
+function renderBarItem(label: string, count: number, percentage: number): string {
+  return [
+    '<li>',
+    `<div data-bar-chart>`,
+    `<span>${escapeHtml(label)}: ${count} (${percentage}%)</span>`,
+    `<div style="background: #dbeafe; border-radius: 999px; height: 0.75rem; margin-top: 0.25rem; overflow: hidden;">`,
+    `<div style="background: #2563eb; height: 100%; width: ${percentage}%"></div>`,
+    '</div>',
+    '</div>',
+    '</li>'
+  ].join('')
 }
 
 export function renderReporterHtmlPage(input: {
@@ -81,13 +85,12 @@ export function renderReporterHtmlPage(input: {
           '<section data-grouped-results>',
           '<h2>Grouped results</h2>',
           '<ul>',
-          ...input.statistics.groupedResults.map(
-            (group) =>
-              `<li>${escapeHtml(group.key)}: ${group.respondentCount}${
-                group.recipientPercentage !== undefined
-                  ? ` (${group.recipientPercentage}%)`
-                  : ''
-              }</li>`
+          ...input.statistics.groupedResults.map((group) =>
+            renderBarItem(
+              group.key,
+              group.respondentCount,
+              group.recipientPercentage ?? group.respondentCount
+            )
           ),
           '</ul>',
           '</section>'

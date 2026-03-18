@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter graphics in the HTML report page.
-  Present the calculated survey statistics with clear visual summaries.
-
 - Document VPS deployment for generated survey pages, CGI scripts, runtime survey storage, runtime answer storage, and protected reporter secrets.
 
 - Generate a Dockerfile that builds a container containing everything required to serve a survey.

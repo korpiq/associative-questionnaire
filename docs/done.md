@@ -113,3 +113,6 @@
 
 38. Added reporter HTML output as a CGI-ready page.
     Rendered one HTML report page per requested `surveyName`, showing the survey title, respondent totals, grouped results, and per-question statistics from the current reporter statistics object.
+
+39. Added simple graphics to the reporter HTML page.
+    Extended the reporter page with inline visual bar summaries for percentages in per-question and grouped statistics, and covered the graphics markup through the reporter HTML feature tests.
