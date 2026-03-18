@@ -158,3 +158,6 @@
 
 53. Added workspace loading for deployment targets and their surveys.
     Implemented `targets/<target-name>/target.json` loading from the workspace, discovered per-target survey directories under `targets/<target-name>/surveys/`, returned the standard `survey.json` and `template.html` paths for each survey, covered successful loading plus missing `target.json`, and verified the change with the full suite and typecheck.
+
+54. Added reusable deployment-path parsing for the `/./` split rule.
+    Implemented a shared parser that separates the pre-existing root from the deploy-creatable subpath, preserves full paths without a split marker, rejects multiple `/./` markers and empty right-hand subpaths, covered that behavior in feature tests, and verified the change with the full suite and typecheck.

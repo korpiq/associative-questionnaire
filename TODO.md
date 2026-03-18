@@ -13,7 +13,6 @@ Custom CSS and script sections should add to or override existing individual ent
 
 ## deployment targets
 
-- implement `/./` path splitting in deployment path handling so the left side must already exist and the right side may be created by deployment
 - refactor deployment commands to take a target configuration name instead of raw SSH or container arguments
 - update SSH deployment and installer logic to use configured `publicPath`, `cgiPath`, `dataDir`, and defaulted `protectionFile`
 - update container deployment logic to use target configuration files too
