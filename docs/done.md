@@ -110,3 +110,6 @@
 
 37. Added grouped reporter statistics parameters.
     Extended reporter statistics with caller-provided `groupBy` question identifiers and optional `recipientCount`, producing grouped respondent counts and recipient percentages alongside the existing report totals and per-question statistics.
+
+38. Added reporter HTML output as a CGI-ready page.
+    Rendered one HTML report page per requested `surveyName`, showing the survey title, respondent totals, grouped results, and per-question statistics from the current reporter statistics object.

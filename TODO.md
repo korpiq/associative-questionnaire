@@ -1,8 +1,5 @@
 # TODO
 
-- Implement reporter HTML output as a CGI page.
-  Render one survey report page per requested `surveyName`.
-
 - Implement reporter graphics in the HTML report page.
   Present the calculated survey statistics with clear visual summaries.
 
