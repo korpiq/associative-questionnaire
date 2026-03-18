@@ -2,6 +2,8 @@
 
 This project can be deployed to a VPS-style Linux server where static survey pages and CGI scripts are installed by one user, while the web server process uses a different home directory.
 
+See [ssh.md](/home/kato/omat/associative-questionnaire/docs/deployment/ssh.md) for the SSH-hosting constraints, the `/./` path split rule, and the planned `targets/<target-name>/target.json` deployment configuration model.
+
 ## Prepare deployment assets
 
 From the repository root:
