@@ -12,6 +12,13 @@ function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
 }
 
+type DeployedSurvey = {
+  publicHtmlFilename: string
+  surveyName: string
+  surveyPath: string
+  templatePath: string
+}
+
 function main(): void {
   const workspaceRoot = process.cwd()
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
@@ -21,6 +28,20 @@ function main(): void {
   const runtimeRoot = join(generatedRoot, 'runtime')
   const runtimeSurveyRoot = join(runtimeRoot, 'surveys')
   const runtimeBundlePath = join(runtimeRoot, 'runtime-cgi.js')
+  const deployedSurveys: DeployedSurvey[] = [
+    {
+      publicHtmlFilename: 'survey.html',
+      surveyName: 'survey',
+      surveyPath: resolve(workspaceRoot, 'docs/examples/basic/survey.json'),
+      templatePath: resolve(workspaceRoot, 'docs/examples/basic/template.html')
+    },
+    {
+      publicHtmlFilename: 'override-survey.html',
+      surveyName: 'override-survey',
+      surveyPath: resolve(workspaceRoot, 'docs/examples/snippet-overrides/survey.json'),
+      templatePath: resolve(workspaceRoot, 'docs/examples/basic/template.html')
+    }
+  ]
 
   ensureDirectory(publicCgiRoot)
   ensureDirectory(publicSurveyRoot)
@@ -35,17 +56,20 @@ function main(): void {
     outfile: runtimeBundlePath
   })
 
-  const surveyPath = resolve(workspaceRoot, 'docs/examples/basic/survey.json')
-  const templatePath = resolve(workspaceRoot, 'docs/examples/basic/template.html')
-  const survey = parseSurvey(JSON.parse(readFileSync(surveyPath, 'utf8')))
-  const template = readFileSync(templatePath, 'utf8')
-  const surveyHtml = generateSurveyHtml(survey, template, {
-    surveyName: 'survey',
-    formAction: '/cgi-bin/save-survey.js'
-  })
+  deployedSurveys.forEach((deployedSurvey) => {
+    const survey = parseSurvey(JSON.parse(readFileSync(deployedSurvey.surveyPath, 'utf8')))
+    const template = readFileSync(deployedSurvey.templatePath, 'utf8')
+    const surveyHtml = generateSurveyHtml(survey, template, {
+      surveyName: deployedSurvey.surveyName,
+      formAction: '/cgi-bin/save-survey.js'
+    })
 
-  writeFileSync(join(publicSurveyRoot, 'survey.html'), surveyHtml)
-  copyFileSync(surveyPath, join(runtimeSurveyRoot, 'survey.json'))
+    writeFileSync(join(publicSurveyRoot, deployedSurvey.publicHtmlFilename), surveyHtml)
+    copyFileSync(
+      deployedSurvey.surveyPath,
+      join(runtimeSurveyRoot, `${deployedSurvey.surveyName}.json`)
+    )
+  })
 
   const saveScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/save-survey.js')
   const reporterScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/report-survey.template.js')
@@ -70,6 +94,7 @@ function main(): void {
         publicRoot,
         runtimeSurveyRoot,
         runtimeBundlePath,
+        deployedSurveys,
         saveScriptTargetPath,
         reportScriptTargetPath,
         storedSecretFilePath: preparedReporter.storedSecretFilePath

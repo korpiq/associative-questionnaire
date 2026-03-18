@@ -14,6 +14,7 @@
     "prepare:container": "node --import tsx src/cli/prepare-container-assets.ts",
     "test": "vitest run",
     "test:container": "bash scripts/test-container.sh",
+    "test:integration": "bash scripts/test-integration.sh",
     "test:watch": "vitest"
   },
   "devDependencies": {

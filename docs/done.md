@@ -137,3 +137,6 @@
 
 46. Adopted the snippet-override visual style as the default survey theme.
     Reworked the default generator root, section, question, and style snippets to use the showcase layout and palette as the baseline survey presentation, added generator coverage for the new shell and content classes, and verified the change with the full suite and typecheck.
+
+47. Added a separate multi-survey container integration test.
+    Extended container preparation to seed two distinct deployed surveys, added a standalone `npm run test:integration` Docker workflow that verifies both survey pages and report counts updating independently as answers are stored, and kept the full suite and typecheck green alongside the new integration coverage.

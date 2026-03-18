@@ -142,6 +142,12 @@ npm run test:container
 
 That command builds the image, runs the container, submits one answer, and verifies that the report shows one respondent.
 
+There is also a broader integration test that seeds two surveys into one container and checks that each report updates independently as more answers are submitted:
+
+```bash
+npm run test:integration
+```
+
 ## Stop the container
 
 ```bash
