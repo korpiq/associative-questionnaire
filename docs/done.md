@@ -128,3 +128,6 @@
 
 43. Reformatted structured feature doc strings into readable multiline YAML.
     Reworked dense one-line survey, answer, and parameter fixtures across the feature files into readable multiline YAML or JSON, preserved raw payload steps where the specs intentionally pass literal JSON strings, and verified the full suite and typecheck after the parser-sensitive cleanup.
+
+44. Refined feature scenarios for clearer behavior-focused coverage.
+    Split broad generator and protected-access scenarios into smaller behavior-specific examples, shortened saver response scenario titles to match their single responsibility, moved shared setup into shared step definitions, and verified the expanded feature set with the full suite and typecheck.

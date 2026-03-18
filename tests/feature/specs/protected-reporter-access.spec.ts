@@ -46,156 +46,121 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expect(accessError).toBeInstanceOf(Error)
       expect(accessError?.message).toBe(message)
     })
+
+    Then('the protected survey upload succeeds', () => {
+      expect(accessError).toBeNull()
+    })
+
+    Then('the resolved protected survey title is {string}', (_ctx, title) => {
+      expect(accessError).toBeNull()
+      expect(resolvedSurveyTitle).toBe(title)
+    })
   })
 
-  Scenario(
-    'Replacing a protected stored survey requires the correct protection hash',
-    ({ Given, And, When, Then }) => {
-      Given('an empty protected reporter home directory', () => {
-        effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-protected-reporter-home-'))
-        createdHomeDirectories.push(effectiveHomeDirectory)
-        resetState()
-      })
+  defineSteps(({ Given, And, When }) => {
+    Given('an empty protected reporter home directory', () => {
+      effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-protected-reporter-home-'))
+      createdHomeDirectories.push(effectiveHomeDirectory)
+      resetState()
+    })
 
-      And('a protected stored survey named {string} exists', (_ctx, name) => {
-        surveyName = name
-        const surveysRoot = join(
-          effectiveHomeDirectory,
-          '.local',
-          'share',
-          'associative-survey',
-          'surveys'
-        )
+    And('a protected stored survey named {string} exists', (_ctx, name) => {
+      surveyName = name
+      const surveysRoot = join(
+        effectiveHomeDirectory,
+        '.local',
+        'share',
+        'associative-survey',
+        'surveys'
+      )
 
-        mkdirSync(surveysRoot, { recursive: true })
-        writeFileSync(
-          join(surveysRoot, `${surveyName}.json`),
-          JSON.stringify({
-            title: 'Protected survey',
-            protected: true,
-            sections: {
-              basics: {
-                title: 'Basics'
-              }
+      mkdirSync(surveysRoot, { recursive: true })
+      writeFileSync(
+        join(surveysRoot, `${surveyName}.json`),
+        JSON.stringify({
+          title: 'Protected survey',
+          protected: true,
+          sections: {
+            basics: {
+              title: 'Basics'
             }
-          })
-        )
-      })
+          }
+        })
+      )
+    })
 
-      And('the replacement uploaded survey filename is {string}', (_ctx, filename) => {
-        replacementUploadedSurveyFilename = filename
-      })
+    And('the replacement uploaded survey filename is {string}', (_ctx, filename) => {
+      replacementUploadedSurveyFilename = filename
+    })
 
-      And('the replacement uploaded survey JSON is:', (_ctx, docString) => {
-        replacementUploadedSurveyJson = docString ?? ''
-      })
+    And('the replacement uploaded survey JSON is:', (_ctx, docString) => {
+      replacementUploadedSurveyJson = docString ?? ''
+    })
 
-      And('the reporter protection secret is {string}', (_ctx, secret) => {
-        protectionSecret = secret
-      })
+    And('the reporter protection secret is {string}', (_ctx, secret) => {
+      protectionSecret = secret
+    })
 
-      When('the replacement uploaded survey is stored without a protection hash', () => {
-        try {
-          storeUploadedReporterSurvey({
-            uploadedFilename: replacementUploadedSurveyFilename,
-            uploadedJson: replacementUploadedSurveyJson,
-            effectiveHomeDirectory,
-            protectionSecret
-          })
-          accessError = null
-        } catch (error) {
-          accessError = error as Error
-        }
-      })
-
-      When('the replacement uploaded survey is stored with the correct protection hash', () => {
-        try {
-          storeUploadedReporterSurvey({
-            uploadedFilename: replacementUploadedSurveyFilename,
-            uploadedJson: replacementUploadedSurveyJson,
-            effectiveHomeDirectory,
-            protectionSecret,
-            protectionHash: validHash()
-          })
-          accessError = null
-        } catch (error) {
-          accessError = error as Error
-        }
-      })
-
-      Then('the protected survey upload succeeds', () => {
-        expect(accessError).toBeNull()
-      })
-    }
-  )
-
-  Scenario(
-    'Resolving a protected stored survey report requires the correct protection hash',
-    ({ Given, And, When, Then }) => {
-      Given('an empty protected reporter home directory', () => {
-        effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-protected-reporter-home-'))
-        createdHomeDirectories.push(effectiveHomeDirectory)
-        resetState()
-      })
-
-      And('a protected stored survey named {string} exists', (_ctx, name) => {
-        surveyName = name
-        const surveysRoot = join(
+    When('the replacement uploaded survey is stored without a protection hash', () => {
+      try {
+        storeUploadedReporterSurvey({
+          uploadedFilename: replacementUploadedSurveyFilename,
+          uploadedJson: replacementUploadedSurveyJson,
           effectiveHomeDirectory,
-          '.local',
-          'share',
-          'associative-survey',
-          'surveys'
-        )
+          protectionSecret
+        })
+        accessError = null
+      } catch (error) {
+        accessError = error as Error
+      }
+    })
 
-        mkdirSync(surveysRoot, { recursive: true })
-        writeFileSync(
-          join(surveysRoot, `${surveyName}.json`),
-          JSON.stringify({
-            title: 'Protected survey',
-            protected: true,
-            sections: {
-              basics: {
-                title: 'Basics'
-              }
-            }
-          })
-        )
-      })
+    When('the replacement uploaded survey is stored with the correct protection hash', () => {
+      try {
+        storeUploadedReporterSurvey({
+          uploadedFilename: replacementUploadedSurveyFilename,
+          uploadedJson: replacementUploadedSurveyJson,
+          effectiveHomeDirectory,
+          protectionSecret,
+          protectionHash: validHash()
+        })
+        accessError = null
+      } catch (error) {
+        accessError = error as Error
+      }
+    })
 
-      And('the reporter protection secret is {string}', (_ctx, secret) => {
-        protectionSecret = secret
-      })
+    When('the protected reporter survey is resolved without a hash', () => {
+      try {
+        const resolved = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
+          protectionSecret
+        })
+        resolvedSurveyTitle = resolved.survey.title
+        accessError = null
+      } catch (error) {
+        accessError = error as Error
+      }
+    })
 
-      When('the protected reporter survey is resolved without a hash', () => {
-        try {
-          const resolved = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
-            protectionSecret
-          })
-          resolvedSurveyTitle = resolved.survey.title
-          accessError = null
-        } catch (error) {
-          accessError = error as Error
-        }
-      })
+    When('the protected reporter survey is resolved with the correct protection hash', () => {
+      try {
+        const resolved = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
+          protectionSecret,
+          protectionHash: validHash()
+        })
+        resolvedSurveyTitle = resolved.survey.title
+        accessError = null
+      } catch (error) {
+        accessError = error as Error
+      }
+    })
+  })
 
-      When('the protected reporter survey is resolved with the correct protection hash', () => {
-        try {
-          const resolved = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
-            protectionSecret,
-            protectionHash: validHash()
-          })
-          resolvedSurveyTitle = resolved.survey.title
-          accessError = null
-        } catch (error) {
-          accessError = error as Error
-        }
-      })
+  Scenario('Protected survey upload rejects a missing hash', () => {})
 
-      Then('the resolved protected survey title is {string}', (_ctx, title) => {
-        expect(accessError).toBeNull()
-        expect(resolvedSurveyTitle).toBe(title)
-      })
-    }
-  )
+  Scenario('Protected survey upload accepts the correct hash', () => {})
+
+  Scenario('Protected survey report rejects a missing hash', () => {})
+
+  Scenario('Protected survey report accepts the correct hash', () => {})
 })

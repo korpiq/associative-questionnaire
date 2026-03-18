@@ -1,5 +1,5 @@
 Feature: Render saver CGI HTML responses
-  Scenario: Successful submissions use the built-in success page by default
+  Scenario: Built-in success page
     Given a successful saver outcome
     When the saver CGI response is rendered
     Then the CGI response status code is 200
@@ -7,7 +7,7 @@ Feature: Render saver CGI HTML responses
     And the CGI response body contains "Survey saved"
     And the CGI response body contains "Your answers have been stored."
 
-  Scenario: Successful submissions can set the respondent cookie
+  Scenario: Success response sets the respondent cookie
     Given a successful saver outcome
     And the saver response parameters are:
       """
@@ -19,14 +19,14 @@ Feature: Render saver CGI HTML responses
     Then the CGI response status code is 200
     And the CGI response header "Set-Cookie" is "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"
 
-  Scenario: Failed submissions use the built-in failure page by default
+  Scenario: Built-in failure page
     Given a failed saver outcome with message "Survey save failed"
     When the saver CGI response is rendered
     Then the CGI response status code is 400
     And the CGI response content type is "text/html; charset=utf-8"
     And the CGI response body contains "Survey save failed"
 
-  Scenario: Successful submissions can redirect to a custom success page
+  Scenario: Success redirect
     Given a successful saver outcome
     And the saver response parameters are:
       """
@@ -39,7 +39,7 @@ Feature: Render saver CGI HTML responses
     And the CGI response header "Location" is "https://example.test/thanks.html"
     And the CGI response body contains "Redirecting"
 
-  Scenario: Failed submissions can redirect to a custom failure page
+  Scenario: Failure redirect
     Given a failed saver outcome with message "Survey save failed"
     And the saver response parameters are:
       """
@@ -52,7 +52,7 @@ Feature: Render saver CGI HTML responses
     And the CGI response header "Location" is "https://example.test/error.html"
     And the CGI response body contains "Redirecting"
 
-  Scenario: Built-in pages can link a custom stylesheet
+  Scenario: Built-in page with custom stylesheet
     Given a successful saver outcome
     And the saver response parameters are:
       """

@@ -68,7 +68,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
   })
 
-  Scenario('Successful submissions use the built-in success page by default', ({ Given }) => {
+  Scenario('Built-in success page', ({ Given }) => {
 
     Given('a successful saver outcome', () => {
       saverOutcome = { success: true }
@@ -77,7 +77,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
   })
 
-  Scenario('Failed submissions use the built-in failure page by default', ({ Given }) => {
+  Scenario('Built-in failure page', ({ Given }) => {
     Given('a failed saver outcome with message {string}', (_ctx, message) => {
       saverOutcome = { success: false, message }
       saverResponseParameters = {}
@@ -85,7 +85,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
   })
 
-  Scenario('Successful submissions can redirect to a custom success page', ({ Given, And }) => {
+  Scenario('Success redirect', ({ Given, And }) => {
     Given('a successful saver outcome', () => {
       saverOutcome = { success: true }
       saverResponseParameters = {}
@@ -98,7 +98,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
   })
 
-  Scenario('Failed submissions can redirect to a custom failure page', ({ Given, And }) => {
+  Scenario('Failure redirect', ({ Given, And }) => {
     Given('a failed saver outcome with message {string}', (_ctx, message) => {
       saverOutcome = { success: false, message }
       saverResponseParameters = {}
@@ -111,7 +111,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
   })
 
-  Scenario('Built-in pages can link a custom stylesheet', ({ Given, And }) => {
+  Scenario('Built-in page with custom stylesheet', ({ Given, And }) => {
     Given('a successful saver outcome', () => {
       saverOutcome = { success: true }
       saverResponseParameters = {}
@@ -124,7 +124,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
   })
 
-  Scenario('Successful submissions can set the respondent cookie', ({ Given, And }) => {
+  Scenario('Success response sets the respondent cookie', ({ Given, And }) => {
     Given('a successful saver outcome', () => {
       saverOutcome = { success: true }
       saverResponseParameters = {}
