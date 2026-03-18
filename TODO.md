@@ -13,7 +13,6 @@ Custom CSS and script sections should add to or override existing individual ent
 
 ## deployment targets
 
-- load target settings and discovered surveys in container and SSH asset-preparation code instead of hard-coded example surveys
 - generate target-based survey HTML pages from `targets/<target-name>/surveys/<survey-name>/`
 - generate target-based saver and reporter CGI assets with configured runtime paths and URLs
 - refactor deployment commands to take a target configuration name instead of raw SSH or container arguments

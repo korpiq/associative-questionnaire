@@ -164,3 +164,6 @@
 
 55. Defined the generated target-settings contract for production assets.
     Added one shared generated-settings shape for per-survey HTML output plus injected saver and reporter CGI runtime settings, kept survey form actions aligned with the configured saver URL, preserved configured data paths as written, covered the resulting settings object in feature tests, and verified the change with the full suite and typecheck.
+
+56. Switched container asset preparation to discovered target surveys.
+    Added a sample target under `targets/sample`, mapped discovered surveys into deployable public HTML outputs through a tested helper, replaced the hard-coded survey list in `prepare-container-assets` with target-backed survey discovery, verified the prep command directly, and kept the full suite and typecheck green.

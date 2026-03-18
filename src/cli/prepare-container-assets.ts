@@ -4,19 +4,14 @@ import { buildSync } from 'esbuild'
 
 import {
   generateSurveyHtml,
+  loadDeploymentTarget,
   parseSurvey,
   prepareReporterProtectionSecret
 } from '../index'
+import { listTargetDeployedSurveys } from '../deploy/list-target-deployed-surveys'
 
 function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
-}
-
-type DeployedSurvey = {
-  publicHtmlFilename: string
-  surveyName: string
-  surveyPath: string
-  templatePath: string
 }
 
 function main(): void {
@@ -28,20 +23,11 @@ function main(): void {
   const runtimeRoot = join(generatedRoot, 'runtime')
   const runtimeSurveyRoot = join(runtimeRoot, 'surveys')
   const runtimeBundlePath = join(runtimeRoot, 'runtime-cgi.js')
-  const deployedSurveys: DeployedSurvey[] = [
-    {
-      publicHtmlFilename: 'survey.html',
-      surveyName: 'survey',
-      surveyPath: resolve(workspaceRoot, 'docs/examples/basic/survey.json'),
-      templatePath: resolve(workspaceRoot, 'docs/examples/basic/template.html')
-    },
-    {
-      publicHtmlFilename: 'override-survey.html',
-      surveyName: 'override-survey',
-      surveyPath: resolve(workspaceRoot, 'docs/examples/snippet-overrides/survey.json'),
-      templatePath: resolve(workspaceRoot, 'docs/examples/basic/template.html')
-    }
-  ]
+  const deploymentTarget = loadDeploymentTarget({
+    workspaceDirectory: workspaceRoot,
+    targetName: 'sample'
+  })
+  const deployedSurveys = listTargetDeployedSurveys(deploymentTarget)
 
   ensureDirectory(publicCgiRoot)
   ensureDirectory(publicSurveyRoot)
