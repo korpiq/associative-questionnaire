@@ -13,4 +13,4 @@
   Add an automated end-to-end container test that builds and runs the container, submits answers to a survey inside it, and verifies the report output.
 
 - Rework Gherkin scenarios to avoid repeated step text where the parser rejects repetition.
-  Prefer clearer scenario structure over repeated identical lines once the current implementation work is stable.
+  Prefer clearer scenario structure over repeated identical lines once the current implementation work is stable. Make it easier to understand by short, descriptive Scenario titles.
