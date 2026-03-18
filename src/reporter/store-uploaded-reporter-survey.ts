@@ -1,11 +1,17 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { basename, join } from 'node:path'
+import { basename, extname, join } from 'node:path'
 
-import { deriveSurveyName } from '../generator/generate-survey-html'
 import { parseSurvey } from '../schema/survey'
 
 import { deriveProtectedSurveyAccessHash } from './derive-protected-survey-access-hash'
 import { ensureReporterSurveyStorage } from './runtime-paths'
+
+function deriveStoredSurveyName(uploadedFilename: string): string {
+  const filename = basename(uploadedFilename)
+  const extension = extname(filename)
+
+  return extension ? filename.slice(0, -extension.length) : filename
+}
 
 function assertProtectedSurveyUploadAllowed(input: {
   surveyName: string
@@ -43,7 +49,7 @@ export function storeUploadedReporterSurvey(input: {
   surveyName: string
   storedSurveyFilePath: string
 } {
-  const surveyName = deriveSurveyName(basename(input.uploadedFilename))
+  const surveyName = deriveStoredSurveyName(input.uploadedFilename)
   parseSurvey(JSON.parse(input.uploadedJson))
 
   const { surveysRoot } = ensureReporterSurveyStorage(input.effectiveHomeDirectory)

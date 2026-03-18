@@ -116,3 +116,9 @@
 
 39. Added simple graphics to the reporter HTML page.
     Extended the reporter page with inline visual bar summaries for percentages in per-question and grouped statistics, and covered the graphics markup through the reporter HTML feature tests.
+
+40. Documented VPS deployment for the current survey system.
+    Added a deployment guide for preparing public CGI assets, installing runtime survey JSON under the effective CGI user home, and handling the locally stored reporter protection secret.
+
+41. Added a runnable Docker deployment path with end-to-end verification.
+    Added deploy preparation assets, plain JavaScript CGI entrypoints, a bundled CGI runtime, a Dockerfile that serves a survey plus saver and reporter from one container, and an automated Docker test that builds the image, submits answers, and verifies the report.

@@ -1,0 +1,7 @@
+.git
+node_modules
+dist
+coverage
+.manual-home
+.deploy
+associative-survey-example.html

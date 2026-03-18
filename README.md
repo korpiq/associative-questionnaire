@@ -84,6 +84,7 @@ Outputs
 
 See `docs/system-design.md` for the current combined deployment and runtime design of generated pages, the CGI saver, and the reporter.
 See `docs/try-it-out.md` for current manual generator and saver tryout commands.
+See `docs/deployment-vps.md` for the current VPS deployment flow.
 
 ### HTML template snippets
 

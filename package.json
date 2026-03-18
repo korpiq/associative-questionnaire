@@ -11,7 +11,9 @@
     "check": "tsc --noEmit --project tsconfig.json",
     "generate": "node --import tsx src/cli/generate-survey-html.ts",
     "manual:save": "node --import tsx src/cli/manual-save-survey.ts",
+    "prepare:container": "node --import tsx src/cli/prepare-container-assets.ts",
     "test": "vitest run",
+    "test:container": "bash scripts/test-container.sh",
     "test:watch": "vitest"
   },
   "devDependencies": {
