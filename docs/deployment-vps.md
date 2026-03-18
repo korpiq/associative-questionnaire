@@ -18,6 +18,26 @@ That prepares:
 - runtime seed survey JSON under `deploy/generated/runtime/surveys/`
 - reporter protection secret under `.deploy/reporter-protection-secret.txt`
 
+## Install by SSH
+
+If the remote CGI user home is the same home directory you reach over SSH, you can install the prepared files directly with:
+
+```bash
+npm run install:ssh -- user@example.test sites/associative-survey
+```
+
+That command:
+
+- runs `npm run build`
+- runs `npm run prepare:container`
+- copies the public tree to `$HOME/sites/associative-survey/public/` on the remote host
+- copies the seed survey JSON files to `$HOME/.local/share/associative-survey/surveys/`
+- makes the remote CGI scripts executable
+
+The install path argument must stay relative to the remote home directory.
+
+If the web server executes CGI scripts with a different effective home directory than the SSH account, use the manual steps below instead.
+
 ## Install public files
 
 Copy the prepared public tree to the web root served by your CGI-capable server:

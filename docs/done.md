@@ -149,3 +149,6 @@
 
 50. Added a seeded visual correctness showcase container.
     Created a dedicated visual preparation path and Docker-backed `npm run test:visual` workflow that serves a seeded scored survey with prefilled answer files, verifies the report exposes correctness summaries, and leaves the container running for manual visual inspection of the survey and report pages.
+
+51. Added an SSH installer for remote-home VPS deployments.
+    Implemented a test-covered SSH install plan builder and `npm run install:ssh` CLI that prepares local assets, uploads the public tree and seed survey JSON files into paths under the remote home directory, documents the remote-home assumption in the VPS deployment guide, and verified the change with the full suite and typecheck.
