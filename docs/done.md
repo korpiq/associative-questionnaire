@@ -155,3 +155,6 @@
 
 52. Added validated deployment target configuration parsing.
     Defined a shared target configuration parser for `ssh` and `container` targets, sourced the target name from the surrounding target directory, defaulted `protectionFile` and `createMissingSubpaths`, added behavior coverage for both target types plus missing target-specific fields, and verified the change with the full suite and typecheck.
+
+53. Added workspace loading for deployment targets and their surveys.
+    Implemented `targets/<target-name>/target.json` loading from the workspace, discovered per-target survey directories under `targets/<target-name>/surveys/`, returned the standard `survey.json` and `template.html` paths for each survey, covered successful loading plus missing `target.json`, and verified the change with the full suite and typecheck.

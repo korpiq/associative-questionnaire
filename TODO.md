@@ -13,7 +13,6 @@ Custom CSS and script sections should add to or override existing individual ent
 
 ## deployment targets
 
-- add support for `targets/<target-name>/target.json` with surveys discovered from `targets/<target-name>/surveys/`
 - implement `/./` path splitting in deployment path handling so the left side must already exist and the right side may be created by deployment
 - refactor deployment commands to take a target configuration name instead of raw SSH or container arguments
 - update SSH deployment and installer logic to use configured `publicPath`, `cgiPath`, `dataDir`, and defaulted `protectionFile`
