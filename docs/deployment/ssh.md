@@ -130,9 +130,12 @@ Each target configuration file should define:
 
 - `type`
   One of `container` or `ssh`.
-- target connection parameter
-  For `container`: the container or image target name needed by the deployment flow.
-  For `ssh`: the SSH address, such as `user@example.test`.
+- `containerName`
+  Required when `type` is `container`.
+  This is the container or image target name needed by the deployment flow.
+- `sshTarget`
+  Required when `type` is `ssh`.
+  This is the SSH address, such as `user@example.test`.
 - `publicPath`
   Remote path for publicly visible static files.
 - `cgiPath`

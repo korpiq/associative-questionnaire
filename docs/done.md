@@ -152,3 +152,6 @@
 
 51. Added an SSH installer for remote-home VPS deployments.
     Implemented a test-covered SSH install plan builder and `npm run install:ssh` CLI that prepares local assets, uploads the public tree and seed survey JSON files into paths under the remote home directory, documents the remote-home assumption in the VPS deployment guide, and verified the change with the full suite and typecheck.
+
+52. Added validated deployment target configuration parsing.
+    Defined a shared target configuration parser for `ssh` and `container` targets, sourced the target name from the surrounding target directory, defaulted `protectionFile` and `createMissingSubpaths`, added behavior coverage for both target types plus missing target-specific fields, and verified the change with the full suite and typecheck.

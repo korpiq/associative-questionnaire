@@ -13,9 +13,12 @@ Custom CSS and script sections should add to or override existing individual ent
 
 ## deployment targets
 
-- add target environment configuration files with a shared schema for common fields and environment-specific validation for `ssh` and `container`
 - add support for `targets/<target-name>/target.json` with surveys discovered from `targets/<target-name>/surveys/`
 - implement `/./` path splitting in deployment path handling so the left side must already exist and the right side may be created by deployment
 - refactor deployment commands to take a target configuration name instead of raw SSH or container arguments
 - update SSH deployment and installer logic to use configured `publicPath`, `cgiPath`, `dataDir`, and defaulted `protectionFile`
 - update container deployment logic to use target configuration files too
+
+## visual testing should use sample target
+
+Convert visual testing to use a sample target container with sample surveys under /targets/sample/.
