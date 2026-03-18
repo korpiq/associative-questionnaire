@@ -97,4 +97,30 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       })
     })
   })
+
+  Scenario('Reporter HTML page shows correctness summaries for scored questions', ({ Given, And, When }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
+      answerFilesInput = []
+      renderedHtml = ''
+    })
+
+    And('saved answer files are:', (_ctx, docString) => {
+      answerFilesInput = parseYamlDocString(docString)
+    })
+
+    When('the reporter HTML page is rendered for {string}', (_ctx, surveyName) => {
+      const survey = parseSurvey(surveyInput)
+      const statistics = buildReporterStatistics(
+        survey,
+        answerFilesInput.map((answerFile) => parseAnswerFile(answerFile))
+      )
+
+      renderedHtml = renderReporterHtmlPage({
+        surveyName,
+        survey,
+        statistics
+      })
+    })
+  })
 })

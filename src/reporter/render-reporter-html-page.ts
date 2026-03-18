@@ -17,6 +17,7 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
       return [
         `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
+        renderCorrectness(question),
         '<ul>',
         ...question.options.map((option) => renderBarItem(option.text, option.count, option.percentage)),
         '</ul>',
@@ -26,6 +27,7 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
       return [
         `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
+        renderCorrectness(question),
         '<ul>',
         ...question.answers.map((answer) => renderTextCountItem(answer.value, answer.count)),
         '</ul>',
@@ -35,12 +37,26 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
       return [
         `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
+        renderCorrectness(question),
         '<ul>',
         ...question.pairs.map((pair) => renderBarItem(pair.key, pair.count, pair.percentage)),
         '</ul>',
         '</section>'
       ].join('')
   }
+}
+
+function renderCorrectness(question: ReporterQuestionStatistics): string {
+  if (!question.correctness) {
+    return ''
+  }
+
+  return [
+    '<div data-correctness-summary>',
+    `<p>Correct: ${question.correctness.correctCount} (${question.correctness.correctPercentage}%)</p>`,
+    `<p>Incorrect: ${question.correctness.incorrectCount} (${question.correctness.incorrectPercentage}%)</p>`,
+    '</div>'
+  ].join('')
 }
 
 function renderBarItem(label: string, count: number, percentage: number): string {

@@ -119,3 +119,66 @@ Feature: Render reporter HTML output
     And the reporter HTML page contains "data-answer-count"
     And the reporter HTML page contains ">2<"
     And the reporter HTML page does not contain "data-bar-chart"
+
+  Scenario: Reporter HTML page shows correctness summaries for scored questions
+    Given survey content:
+      """
+      {
+        title: Example survey,
+        sections: {
+          basics: {
+            title: Basics,
+            questions: {
+              favorite-color: {
+                title: Favorite color,
+                type: single-choice,
+                content: {
+                  red: Red,
+                  blue: Blue
+                },
+                correct: blue
+              },
+              notes: {
+                title: Notes,
+                type: free-text,
+                correct: [Calm]
+              }
+            }
+          }
+        }
+      }
+      """
+    And saved answer files are:
+      """
+      [
+        {
+          surveyTitle: Example survey,
+          answers: {
+            favorite-color: {
+              type: single-choice,
+              value: blue
+            },
+            notes: {
+              type: free-text,
+              value: Calm
+            }
+          }
+        },
+        {
+          surveyTitle: Example survey,
+          answers: {
+            favorite-color: {
+              type: single-choice,
+              value: red
+            },
+            notes: {
+              type: free-text,
+              value: Loud
+            }
+          }
+        }
+      ]
+      """
+    When the reporter HTML page is rendered for "example-survey"
+    Then the reporter HTML page contains "Correct: 1 (50%)"
+    And the reporter HTML page contains "Incorrect: 1 (50%)"
