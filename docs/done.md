@@ -161,3 +161,6 @@
 
 54. Added reusable deployment-path parsing for the `/./` split rule.
     Implemented a shared parser that separates the pre-existing root from the deploy-creatable subpath, preserves full paths without a split marker, rejects multiple `/./` markers and empty right-hand subpaths, covered that behavior in feature tests, and verified the change with the full suite and typecheck.
+
+55. Defined the generated target-settings contract for production assets.
+    Added one shared generated-settings shape for per-survey HTML output plus injected saver and reporter CGI runtime settings, kept survey form actions aligned with the configured saver URL, preserved configured data paths as written, covered the resulting settings object in feature tests, and verified the change with the full suite and typecheck.

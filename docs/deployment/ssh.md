@@ -18,8 +18,10 @@ This note records the current SSH-hosted deployment model for the target VPS ser
 ## Split home directories
 
 - The web server process does not see the same home directory path that we see over SSH.
+- The SSH CGI environment does not define `HOME`.
 - Because of that, paths under the SSH-visible home directory outside `~/sites/` must not be used for CGI runtime data.
 - The earlier assumption that runtime survey JSON or answer files could be placed under `~/.local/share/associative-survey/` from the SSH side does not match this hosting model.
+- On this host, CGI runtime paths must therefore be absolute paths or be derived from `SCRIPT_FILENAME`, which is absolute.
 
 ## Writable runtime area
 
@@ -32,6 +34,8 @@ This note records the current SSH-hosted deployment model for the target VPS ser
 - Public survey pages and CGI scripts should be deployed under `~/sites/<domain-name>/www`.
 - CGI runtime data must also live somewhere under the deployed `sites` tree, not under the SSH home outside it.
 - Installer logic for this hosting target must be based on the `sites` tree layout rather than on remote `$HOME` runtime paths.
+- CGI runtime path resolution for this host must not depend on `HOME`.
+- When relative layout is needed at CGI runtime, it should be derived from the absolute `SCRIPT_FILENAME` path instead.
 
 ## Deployment path concepts
 
@@ -182,3 +186,6 @@ Useful implementation direction:
 - one environment-specific schema extension for `ssh`
 - one environment-specific schema extension for `container`
 - deployment commands that take a target name instead of raw SSH or container arguments
+- generated survey HTML may embed target-specific public URLs directly, such as the saver CGI form action
+- generated saver and reporter CGI assets may either receive injected target settings directly or load them from generated config files placed alongside the CGI scripts
+- for the SSH host described here, injected absolute runtime paths are the simpler starting point because `HOME` is unavailable in CGI
