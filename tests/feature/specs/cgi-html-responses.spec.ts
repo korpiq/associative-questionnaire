@@ -10,6 +10,7 @@ type SaverResponseParameters = {
   ok?: string
   fail?: string
   css?: string
+  setCookieHeader?: string
 }
 
 describeFeature(feature, ({ Scenario, defineSteps }) => {
@@ -121,5 +122,17 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       saverResponseParameters = parseYamlDocString(docString)
     })
 
+  })
+
+  Scenario('Successful submissions can set the respondent cookie', ({ Given, And }) => {
+    Given('a successful saver outcome', () => {
+      saverOutcome = { success: true }
+      saverResponseParameters = {}
+      resetResponse()
+    })
+
+    And('the saver response parameters are:', (_ctx, docString) => {
+      saverResponseParameters = parseYamlDocString(docString)
+    })
   })
 })

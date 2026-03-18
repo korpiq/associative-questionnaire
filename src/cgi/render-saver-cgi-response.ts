@@ -51,6 +51,7 @@ export function renderSaverCgiResponse(input: {
   ok?: string
   fail?: string
   css?: string
+  setCookieHeader?: string
 }): {
   statusCode: number
   headers: Record<string, string>
@@ -61,7 +62,8 @@ export function renderSaverCgiResponse(input: {
       statusCode: 303,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        Location: input.ok
+        Location: input.ok,
+        ...(input.setCookieHeader ? { 'Set-Cookie': input.setCookieHeader } : {})
       },
       body: renderRedirectPage(input.ok)
     }
@@ -82,7 +84,8 @@ export function renderSaverCgiResponse(input: {
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'text/html; charset=utf-8'
+        'Content-Type': 'text/html; charset=utf-8',
+        ...(input.setCookieHeader ? { 'Set-Cookie': input.setCookieHeader } : {})
       },
       body: renderHtmlPage({
         title: 'Survey saved',

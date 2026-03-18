@@ -122,3 +122,6 @@
 
 41. Added a runnable Docker deployment path with end-to-end verification.
     Added deploy preparation assets, plain JavaScript CGI entrypoints, a bundled CGI runtime, a Dockerfile that serves a survey plus saver and reporter from one container, and an automated Docker test that builds the image, submits answers, and verifies the report.
+
+42. Replaced saver respondent hashing with month-long respondent cookies.
+    Switched saver persistence from header-derived respondent file hashes to pseudorandom cookie ids, set a one-month `Set-Cookie` value on the first successful save, reused existing cookie ids on later saves, and updated the saver tests, docs, and manual helper accordingly.

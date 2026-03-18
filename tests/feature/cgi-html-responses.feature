@@ -7,6 +7,16 @@ Feature: Render saver CGI HTML responses
     And the CGI response body contains "Survey saved"
     And the CGI response body contains "Your answers have been stored."
 
+  Scenario: Successful submissions can set the respondent cookie
+    Given a successful saver outcome
+    And the saver response parameters are:
+      """
+      {setCookieHeader: "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"}
+      """
+    When the saver CGI response is rendered
+    Then the CGI response status code is 200
+    And the CGI response header "Set-Cookie" is "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"
+
   Scenario: Failed submissions use the built-in failure page by default
     Given a failed saver outcome with message "Survey save failed"
     When the saver CGI response is rendered

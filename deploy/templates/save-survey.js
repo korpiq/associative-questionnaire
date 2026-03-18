@@ -3,6 +3,7 @@
 import {
   renderSaverCgiResponse,
   resolveStoredReporterSurvey,
+  resolveRespondentCookie,
   saveSurveyAnswerSubmission
 } from '/opt/associative-survey/app/deploy/generated/runtime/runtime-cgi.js'
 
@@ -46,16 +47,13 @@ try {
     protectionSecret: undefined,
     protectionHash: undefined
   })
+  const respondent = resolveRespondentCookie(process.env.HTTP_COOKIE)
 
   saveSurveyAnswerSubmission({
     survey,
     surveyName,
     requestBody,
-    headers: {
-      REMOTE_ADDR: process.env.REMOTE_ADDR,
-      HTTP_USER_AGENT: process.env.HTTP_USER_AGENT,
-      HTTP_ACCEPT_LANGUAGE: process.env.HTTP_ACCEPT_LANGUAGE
-    },
+    respondentId: respondent.respondentId,
     effectiveHomeDirectory
   })
 
@@ -63,7 +61,8 @@ try {
     renderSaverCgiResponse({
       success: true,
       ok: toOptional(query.get('ok')),
-      css: toOptional(query.get('css'))
+      css: toOptional(query.get('css')),
+      setCookieHeader: respondent.setCookieHeader
     })
   )
 } catch (error) {

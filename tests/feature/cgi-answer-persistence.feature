@@ -10,10 +10,7 @@ Feature: Persist saved survey answers through the shared saver path
       """
       favorite-color=blue&notes=First+note
       """
-    And the CGI request headers are:
-      """
-      {REMOTE_ADDR: 203.0.113.10, HTTP_USER_AGENT: ExampleBrowser/1.0, HTTP_ACCEPT_LANGUAGE: "en-US,en;q=0.9"}
-      """
+    And the respondent id is "0123456789abcdef0123456789abcdef"
     When the survey submission is saved
     Then one saved answer file exists for the survey
     And the saved answer file contains:
@@ -36,10 +33,7 @@ Feature: Persist saved survey answers through the shared saver path
       """
       favorite-color=blue&notes=Updated+note
       """
-    And the CGI request headers are:
-      """
-      {REMOTE_ADDR: 203.0.113.10, HTTP_USER_AGENT: ExampleBrowser/1.0, HTTP_ACCEPT_LANGUAGE: "en-US,en;q=0.9"}
-      """
+    And the respondent id is "0123456789abcdef0123456789abcdef"
     When the first survey submission is saved
     And the replacement survey submission is saved
     Then one saved answer file exists for the survey

@@ -9,8 +9,6 @@ import { parseSurvey, saveSurveyAnswerSubmission } from '../../../src'
 
 const feature = await loadFeature('tests/feature/cgi-answer-persistence.feature')
 
-type CgiRequestHeaders = Record<string, string | undefined>
-
 describeFeature(feature, ({ Scenario }) => {
   const createdHomeDirectories: string[] = []
   let effectiveHomeDirectory = ''
@@ -18,7 +16,7 @@ describeFeature(feature, ({ Scenario }) => {
   let surveyInput: unknown
   let requestBody = ''
   let replacementRequestBody = ''
-  let headersInput: CgiRequestHeaders
+  let respondentId = ''
   let savedAnswerFilePath = ''
 
   afterAll(() => {
@@ -43,7 +41,7 @@ describeFeature(feature, ({ Scenario }) => {
       surveyInput = undefined
       requestBody = ''
       replacementRequestBody = ''
-      headersInput = {}
+      respondentId = ''
       savedAnswerFilePath = ''
     })
 
@@ -59,8 +57,8 @@ describeFeature(feature, ({ Scenario }) => {
       requestBody = docString ?? ''
     })
 
-    And('the CGI request headers are:', (_ctx, docString) => {
-      headersInput = parseYamlDocString(docString)
+    And('the respondent id is {string}', (_ctx, value) => {
+      respondentId = value
     })
 
     When('the survey submission is saved', () => {
@@ -68,7 +66,7 @@ describeFeature(feature, ({ Scenario }) => {
         survey: parseSurvey(surveyInput),
         surveyName,
         requestBody,
-        headers: headersInput,
+        respondentId,
         effectiveHomeDirectory
       })
 
@@ -108,7 +106,7 @@ describeFeature(feature, ({ Scenario }) => {
       surveyInput = undefined
       requestBody = ''
       replacementRequestBody = ''
-      headersInput = {}
+      respondentId = ''
       savedAnswerFilePath = ''
     })
 
@@ -128,8 +126,8 @@ describeFeature(feature, ({ Scenario }) => {
       replacementRequestBody = docString ?? ''
     })
 
-    And('the CGI request headers are:', (_ctx, docString) => {
-      headersInput = parseYamlDocString(docString)
+    And('the respondent id is {string}', (_ctx, value) => {
+      respondentId = value
     })
 
     When('the first survey submission is saved', () => {
@@ -137,7 +135,7 @@ describeFeature(feature, ({ Scenario }) => {
         survey: parseSurvey(surveyInput),
         surveyName,
         requestBody,
-        headers: headersInput,
+        respondentId,
         effectiveHomeDirectory
       })
     })
@@ -147,7 +145,7 @@ describeFeature(feature, ({ Scenario }) => {
         survey: parseSurvey(surveyInput),
         surveyName,
         requestBody: replacementRequestBody,
-        headers: headersInput,
+        respondentId,
         effectiveHomeDirectory
       })
 

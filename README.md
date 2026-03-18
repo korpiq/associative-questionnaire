@@ -65,8 +65,8 @@ See `docs/try-it-out.md` for current manual tryout commands.
 Results saver CGI script
 - receives survey answers when the form in the HTML page is submitted
 - stores them in separate JSON files under directory `survey/<survey-title>`.
-- Filename should be a one-way hash of some headers identifying the calling browser, so same user on same device with same browser would save to same file, but others to others.
-- It is ok to produce separate files if user saves from a different IP address.
+- identifies repeat submissions by a month-long random cookie set on the first successful save
+- stores one JSON file per survey per cookie value, replacing the same file on later saves from that browser
 
 ### Survey reporter
 

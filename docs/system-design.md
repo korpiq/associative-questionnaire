@@ -58,6 +58,7 @@ Input:
 Output:
 
 - one JSON answer file per logical respondent per survey
+- one JSON answer file per logical respondent cookie per survey
 
 Responsibilities:
 
@@ -65,7 +66,7 @@ Responsibilities:
 - validate the incoming answer payload against the same answer schema used elsewhere in the project
 - resolve the target survey storage directory
 - create missing runtime directories under the CGI process home directory
-- write or replace the answer JSON file for that respondent key
+- write or replace the answer JSON file for that respondent cookie id
 - return an HTML success or failure response suitable for simple browser form submission
 
 Implementation constraint:
@@ -226,10 +227,11 @@ The exact schema shape should be finalized in implementation and tests, but corr
 4. The submission includes:
    - answer fields only
 5. The CGI validates the payload.
-6. The CGI computes a respondent file key from selected request headers.
-7. The CGI creates `~/.local/share/associative-survey/answers/<surveyName>/` if needed.
-8. The CGI writes one JSON file for that respondent key.
-9. The CGI returns a built-in HTML page or redirects to a configured HTML page.
+6. On the first successful save, the CGI generates a random respondent cookie id and returns it in `Set-Cookie`.
+7. On later saves, the CGI reuses the existing respondent cookie id from the browser request.
+8. The CGI creates `~/.local/share/associative-survey/answers/<surveyName>/` if needed.
+9. The CGI writes one JSON file for that respondent cookie id.
+10. The CGI returns a built-in HTML page or redirects to a configured HTML page.
 
 ## CGI response customization
 
@@ -293,25 +295,21 @@ This is another pending schema change.
 
 ## Respondent file naming
 
-The current project contract already says the filename should be a one-way hash of identifying request headers.
+The saver identifies repeat submissions through a cookie set by the CGI.
 
-Proposed input material:
+Behavior:
 
-- `REMOTE_ADDR`
-- `HTTP_USER_AGENT`
-- `HTTP_ACCEPT_LANGUAGE`
-- optionally a deployment-specific salt read from environment
-
-Proposed behavior:
-
-- hash the selected values with SHA-256
-- use the hex digest as the filename stem
-- write to `<hash>.json`
+- if the request already includes a valid respondent cookie, reuse its value
+- otherwise generate a pseudorandom 32-character lowercase hex id
+- on the first successful save, return that id in `Set-Cookie`
+- set the cookie lifetime to one month
+- use the cookie value as the answer filename stem
+- write to `<respondent-cookie-id>.json`
 
 Result:
 
-- repeat submissions from the same apparent browser/device replace the same file
-- submissions from different devices or materially different headers create separate files
+- repeat submissions from the same browser cookie replace the same file
+- a browser without that cookie gets a different file
 
 ## Reporter flow
 

@@ -1,6 +1,6 @@
 # Try It Out
 
-This project does not yet have a real CGI executable script, but you can already try the current generator and saver path from the repository root.
+This project includes a runnable local saver path and a deployable container path from the repository root.
 
 ## Generate a survey page
 
@@ -47,27 +47,19 @@ Inspect the saved answer file under:
 .manual-home/.local/share/associative-survey/answers/survey/
 ```
 
-The default manual helper headers are:
+The default manual helper respondent id is:
 
-- `REMOTE_ADDR=203.0.113.10`
-- `HTTP_USER_AGENT=ManualSurveySaver/1.0`
-- `HTTP_ACCEPT_LANGUAGE=en-US,en;q=0.9`
+- `0123456789abcdef0123456789abcdef`
 
 Override them if needed:
 
 ```bash
-MANUAL_REMOTE_ADDR=198.51.100.7 MANUAL_USER_AGENT='AnotherBrowser/2.0' npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=Other+device' .manual-home
-```
-
-If you want the respondent hash to include a deployment salt:
-
-```bash
-MANUAL_DEPLOYMENT_SALT=deploy-secret npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=Salted+save' .manual-home
+MANUAL_RESPONDENT_ID=abcdefabcdefabcdefabcdefabcdefab npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=Other+client' .manual-home
 ```
 
 ## Verify replacement behavior
 
-Run the helper twice with the same home directory and same header values, but a different request body:
+Run the helper twice with the same home directory and same respondent id, but a different request body:
 
 ```bash
 npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=First+note' .manual-home

@@ -3,24 +3,20 @@ import { join } from 'node:path'
 
 import type { Survey } from '../schema/survey'
 
-import { deriveRespondentAnswerFilename } from './derive-respondent-answer-filename'
 import { ensureSurveyAnswerStorage } from './ensure-survey-answer-storage'
 import { normalizeSurveyAnswerRequestBody } from './normalize-survey-answer-request-body'
-
-type CgiRequestHeaders = Record<string, string | undefined>
 
 export function saveSurveyAnswerSubmission(input: {
   survey: Survey
   surveyName: string
   requestBody: string
-  headers: CgiRequestHeaders
+  respondentId: string
   effectiveHomeDirectory: string
-  deploymentSalt?: string
 }): {
   savedAnswerFilePath: string
 } {
   const answerFile = normalizeSurveyAnswerRequestBody(input.survey, input.requestBody)
-  const respondentFilename = deriveRespondentAnswerFilename(input.headers, input.deploymentSalt)
+  const respondentFilename = `${input.respondentId}.json`
   const { surveyAnswersDirectory } = ensureSurveyAnswerStorage(
     input.surveyName,
     input.effectiveHomeDirectory
