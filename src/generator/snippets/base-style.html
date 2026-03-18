@@ -1,23 +1,137 @@
 <style>
-body { font-family: sans-serif; margin: 0 auto; max-width: 100vw; padding: 0; }
-form { display: grid; gap: 1.5rem; }
-section, article { display: grid; gap: 0.75rem; }
-.question-options, .associative-groups { display: grid; gap: 0.5rem; }
-.associative-groups { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); min-height: 16rem; padding: 1rem; position: relative; }
-.associative-lines { height: 100%; inset: 0; pointer-events: none; position: absolute; width: 100%; z-index: 0; }
-.associative-line { stroke: #15803d; stroke-linecap: round; stroke-width: 3; }
-.associative-line-live { stroke: #2563eb; stroke-dasharray: 6 4; }
-.phrase-list { display: grid; gap: 0.5rem; position: relative; z-index: 1; }
-.phrase-list[data-side="left"] { grid-column: 1; }
-.phrase-list[data-side="right"] { grid-column: 3; }
-.phrase { align-items: center; background: transparent; border: 0; display: flex; overflow: visible; padding: 0; position: relative; text-align: left; touch-action: none; width: 100%; }
-.phrase-box { align-items: center; background: #fff; border: 1px solid #bbb; border-radius: 0.5rem; box-sizing: border-box; display: flex; gap: 0.75rem; min-width: 0; padding: 0.75rem; position: relative; width: 100%; z-index: 1; }
-.phrase.is-pending .phrase-box { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15); }
-.phrase.is-linked .phrase-box { border-color: #15803d; }
-.phrase[data-side="left"] { padding-right: 0.75rem; }
-.phrase[data-side="right"] { padding-left: 0.75rem; }
-.phrase-handle { background: #15803d; border-radius: 999px; display: inline-block; height: 0.875rem; position: absolute; top: 50%; transform: translateY(-50%); width: 0.875rem; z-index: 0; }
-.phrase-handle-left { left: 0.3125rem; }
-.phrase-handle-right { right: 0.3125rem; }
-.phrase-key { font-weight: 700; min-width: 1.5rem; }
+  body {
+    font-family: sans-serif;
+    margin: 0 auto;
+    max-width: 100vw;
+    padding: 0;
+  }
+
+  form {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  section,
+  article {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .question-options,
+  .associative-groups {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .associative-groups {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 16rem;
+    padding: 1rem;
+    position: relative;
+  }
+
+  .associative-lines {
+    height: 100%;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    z-index: 0;
+  }
+
+  .associative-line {
+    stroke: #15803d;
+    stroke-linecap: round;
+    stroke-width: 3;
+  }
+
+  .associative-line-live {
+    stroke: #2563eb;
+    stroke-dasharray: 6 4;
+  }
+
+  .phrase-list {
+    display: grid;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .phrase-list[data-side="left"] {
+    grid-column: 1;
+  }
+
+  .phrase-list[data-side="right"] {
+    grid-column: 3;
+  }
+
+  .phrase {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    display: flex;
+    overflow: visible;
+    padding: 0;
+    position: relative;
+    text-align: left;
+    touch-action: none;
+    width: 100%;
+  }
+
+  .phrase-box {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.75rem;
+    min-width: 0;
+    padding: 0.75rem;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .phrase.is-pending .phrase-box {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  }
+
+  .phrase.is-linked .phrase-box {
+    border-color: #15803d;
+  }
+
+  .phrase[data-side="left"] {
+    padding-right: 0.75rem;
+  }
+
+  .phrase[data-side="right"] {
+    padding-left: 0.75rem;
+  }
+
+  .phrase-handle {
+    background: #15803d;
+    border-radius: 999px;
+    display: inline-block;
+    height: 0.875rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.875rem;
+    z-index: 0;
+  }
+
+  .phrase-handle-left {
+    left: 0.3125rem;
+  }
+
+  .phrase-handle-right {
+    right: 0.3125rem;
+  }
+
+  .phrase-key {
+    font-weight: 700;
+    min-width: 1.5rem;
+  }
 </style>

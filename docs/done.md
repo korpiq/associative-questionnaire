@@ -131,3 +131,6 @@
 
 44. Refined feature scenarios for clearer behavior-focused coverage.
     Split broad generator and protected-access scenarios into smaller behavior-specific examples, shortened saver response scenario titles to match their single responsibility, moved shared setup into shared step definitions, and verified the expanded feature set with the full suite and typecheck.
+
+45. Reindented template and snippet HTML/CSS sources for readability.
+    Reformatted the core Handlebars generator snippets and the snippet-override example template with consistent nested HTML indentation and multiline CSS blocks, kept behavior unchanged, and verified the full suite and typecheck after the formatting-only pass.

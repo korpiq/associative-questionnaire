@@ -21,28 +21,28 @@ Feature: Generator snippet overrides
     And HTML template:
       """
       {{#*inline "section"}}
-      <section data-section="{{id}}">
-      <h2>Override {{title}}</h2>
-      {{#each questions}}
-      {{> question}}
-      {{/each}}
-      </section>
+        <section data-section="{{id}}">
+          <h2>Override {{title}}</h2>
+          {{#each questions}}
+            {{> question}}
+          {{/each}}
+        </section>
       {{/inline}}
       {{#*inline "question"}}
-      <article data-question="{{id}}">
-      <h3>Override {{title}}</h3>
-      <div class="override-question">{{{contentHtml}}}</div>
-      </article>
+        <article data-question="{{id}}">
+          <h3>Override {{title}}</h3>
+          <div class="override-question">{{{contentHtml}}}</div>
+        </article>
       {{/inline}}
       {{#*inline "style"}}
-      <style>
-      body { background: rgb(250, 240, 230); }
-      </style>
+        <style>
+          body { background: rgb(250, 240, 230); }
+        </style>
       {{/inline}}
       {{#*inline "script"}}
-      <script>
-      document.documentElement.dataset.overrideScript = 'true';
-      </script>
+        <script>
+          document.documentElement.dataset.overrideScript = 'true';
+        </script>
       {{/inline}}
       {{> root}}
       """

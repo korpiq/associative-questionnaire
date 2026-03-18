@@ -1,18 +1,18 @@
 <html>
-<head>
-<title>{{survey.title}}</title>
-{{> style}}
-</head>
-<body>
-<form method="post" action="{{{formAction}}}" data-survey-name="{{surveyName}}">
-{{#if survey.description}}
-<p>{{survey.description}}</p>
-{{/if}}
-{{#each survey.sections}}
-{{> section}}
-{{/each}}
-<button type="submit">Submit survey</button>
-</form>
-{{> script}}
-</body>
+  <head>
+    <title>{{survey.title}}</title>
+    {{> style}}
+  </head>
+  <body>
+    <form method="post" action="{{{formAction}}}" data-survey-name="{{surveyName}}">
+      {{#if survey.description}}
+        <p>{{survey.description}}</p>
+      {{/if}}
+      {{#each survey.sections}}
+        {{> section}}
+      {{/each}}
+      <button type="submit">Submit survey</button>
+    </form>
+    {{> script}}
+  </body>
 </html>
