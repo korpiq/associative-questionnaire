@@ -1,9 +1,9 @@
 <style>
   body {
-    font-family: sans-serif;
-    margin: 0 auto;
-    max-width: 100vw;
-    padding: 0;
+    background: #f4efe5;
+    color: #1f2933;
+    font-family: Georgia, serif;
+    margin: 0;
   }
 
   form {
@@ -11,10 +11,119 @@
     gap: 1.5rem;
   }
 
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+
   section,
   article {
     display: grid;
     gap: 0.75rem;
+  }
+
+  .survey-shell {
+    margin: 0 auto;
+    max-width: 60rem;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .survey-header {
+    display: grid;
+    gap: 0.75rem;
+    background: #16324f;
+    border-radius: 1rem;
+    color: #f8fafc;
+    padding: 1.5rem;
+  }
+
+  .survey-eyebrow,
+  .survey-section-heading > p,
+  .survey-question-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .survey-header > h1,
+  .survey-section-heading > h2,
+  .survey-question > h3 {
+    margin: 0;
+  }
+
+  .survey-header > p:last-child,
+  .survey-section-heading > p:last-child {
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .survey-form {
+    margin: 0;
+  }
+
+  .survey-section {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid #cbd5e1;
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+
+  .survey-questions {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .survey-question {
+    background: #fffdf8;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 0 0 1px #e2e8f0;
+    padding: 1rem;
+  }
+
+  .survey-content {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .survey-submit {
+    border: 0;
+    border-radius: 999px;
+    background: #16324f;
+    color: #f8fafc;
+    cursor: pointer;
+    font-weight: 700;
+    justify-self: start;
+    padding: 0.85rem 1.4rem;
+  }
+
+  .survey-submit:hover {
+    background: #22486f;
+  }
+
+  .survey-submit:focus-visible,
+  .phrase:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #16324f;
+    outline-offset: 2px;
+  }
+
+  .survey-content input[type='text'],
+  .survey-content textarea {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    width: 100%;
+  }
+
+  .survey-content label {
+    align-items: start;
+    display: flex;
+    gap: 0.6rem;
   }
 
   .question-options,
@@ -80,8 +189,8 @@
 
   .phrase-box {
     align-items: center;
-    background: #fff;
-    border: 1px solid #bbb;
+    background: #fffdf8;
+    border: 1px solid #cbd5e1;
     border-radius: 0.5rem;
     box-sizing: border-box;
     display: flex;

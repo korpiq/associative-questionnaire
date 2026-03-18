@@ -65,6 +65,9 @@ Feature: Generate survey HTML page
     And the result contains the associative question title "Associate phrases"
     And the result contains the associative left phrase "Calm"
     And the result contains the associative right phrase "Blue"
+    And the result contains the shell class "survey-shell"
+    And the result contains the section class "survey-section"
+    And the result contains the question class "survey-question"
 
   Scenario: Generated page uses native POST form submission
     Given survey content:

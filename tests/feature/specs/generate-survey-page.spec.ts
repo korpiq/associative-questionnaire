@@ -51,10 +51,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
     Then('the result is a standalone HTML page', () => {
       expect(generatedHtml).toContain('<!DOCTYPE html>')
-      expect(generatedHtml).toContain('<html>')
+      expect(generatedHtml).toContain('<html')
       expect(generatedHtml).toContain('<style>')
       expect(generatedHtml).toContain('<script>')
-      expect(generatedHtml).toContain('<form ')
+      expect(generatedHtml).toContain('<form')
     })
 
     And('the result contains the survey title {string}', (_ctx, title) => {
@@ -95,6 +95,18 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
     And('the result contains the associative right phrase {string}', (_ctx, phrase) => {
       expect(generatedHtml).toContain(phrase)
+    })
+
+    And('the result contains the shell class {string}', (_ctx, className) => {
+      expect(generatedHtml).toContain(`class="${className}"`)
+    })
+
+    And('the result contains the section class {string}', (_ctx, className) => {
+      expect(generatedHtml).toContain(`class="${className}"`)
+    })
+
+    And('the result contains the question class {string}', (_ctx, className) => {
+      expect(generatedHtml).toContain(`class="${className}"`)
     })
 
     And('the result posts to {string}', (_ctx, actionUrl) => {

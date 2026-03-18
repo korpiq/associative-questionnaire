@@ -134,3 +134,6 @@
 
 45. Reindented template and snippet HTML/CSS sources for readability.
     Reformatted the core Handlebars generator snippets and the snippet-override example template with consistent nested HTML indentation and multiline CSS blocks, kept behavior unchanged, and verified the full suite and typecheck after the formatting-only pass.
+
+46. Adopted the snippet-override visual style as the default survey theme.
+    Reworked the default generator root, section, question, and style snippets to use the showcase layout and palette as the baseline survey presentation, added generator coverage for the new shell and content classes, and verified the change with the full suite and typecheck.

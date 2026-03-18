@@ -1,18 +1,32 @@
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>{{survey.title}}</title>
     {{> style}}
   </head>
   <body>
-    <form method="post" action="{{{formAction}}}" data-survey-name="{{surveyName}}">
-      {{#if survey.description}}
-        <p>{{survey.description}}</p>
-      {{/if}}
-      {{#each survey.sections}}
-        {{> section}}
-      {{/each}}
-      <button type="submit">Submit survey</button>
-    </form>
+    <main class="survey-shell">
+      <header class="survey-header">
+        <p class="survey-eyebrow">Associative survey</p>
+        <h1>{{survey.title}}</h1>
+        {{#if survey.description}}
+          <p>{{survey.description}}</p>
+        {{/if}}
+      </header>
+      <form
+        class="survey-form"
+        method="post"
+        action="{{{formAction}}}"
+        data-survey-name="{{surveyName}}"
+      >
+        {{#each survey.sections}}
+          {{> section}}
+        {{/each}}
+        <div class="survey-actions">
+          <button class="survey-submit" type="submit">Submit survey</button>
+        </div>
+      </form>
+    </main>
     {{> script}}
   </body>
 </html>
