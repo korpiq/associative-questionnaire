@@ -9,8 +9,8 @@ import {
   parseSurvey,
   prepareReporterCgiAsset,
   prepareSaverCgiAsset,
-  prepareReporterProtectionSecret
 } from '../index'
+import { readTargetNameArgument } from './read-target-name-argument'
 
 function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
@@ -18,6 +18,7 @@ function ensureDirectory(path: string): void {
 
 function main(): void {
   const workspaceRoot = process.cwd()
+  const targetName = readTargetNameArgument(process.argv, 'sample')
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
   const publicRoot = join(generatedRoot, 'public')
   const publicCgiRoot = join(publicRoot, 'cgi-bin')
@@ -27,7 +28,7 @@ function main(): void {
   const runtimeBundlePath = join(runtimeRoot, 'runtime-cgi.js')
   const deploymentTarget = loadDeploymentTarget({
     workspaceDirectory: workspaceRoot,
-    targetName: 'sample'
+    targetName
   })
   const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
 

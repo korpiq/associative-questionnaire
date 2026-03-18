@@ -173,3 +173,6 @@
 
 58. Switched generated CGI assets to injected target runtime settings.
     Added target-based saver and reporter CGI asset preparation helpers, injected configured data directories into the generated CGI scripts, introduced explicit runtime-dir helpers so saver and reporter logic no longer depend on `HOME` when paths are injected, copied target configs into the container build, aligned the sample target data root with the container runtime, and verified the change with feature coverage, the full suite, typecheck, and the Docker-backed container test.
+
+59. Refactored container preparation to accept a target name.
+    Added a reusable target-name CLI argument reader, updated `prepare-container-assets` to accept a target name with `sample` as the compatibility default instead of always hard-coding one target, verified the explicit `npm run prepare:container -- sample` path, and kept the full suite and typecheck green.
