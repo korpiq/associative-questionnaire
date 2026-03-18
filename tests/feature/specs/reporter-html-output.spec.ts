@@ -29,6 +29,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expect(renderedHtml).toContain(text)
     }
 
+    const assertDoesNotContain = (text: string): void => {
+      expect(renderedHtml).not.toContain(text)
+    }
+
     Then('the reporter HTML page contains {string}', (_ctx, text) => {
       assertContains(text)
     })
@@ -36,9 +40,39 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     And('the reporter HTML page contains {string}', (_ctx, text) => {
       assertContains(text)
     })
+
+    And('the reporter HTML page does not contain {string}', (_ctx, text) => {
+      assertDoesNotContain(text)
+    })
   })
 
   Scenario('Reporter HTML page shows the survey title, totals, and per-question statistics', ({ Given, And, When }) => {
+    Given('survey content:', (_ctx, docString) => {
+      surveyInput = parseYamlDocString(docString)
+      answerFilesInput = []
+      renderedHtml = ''
+    })
+
+    And('saved answer files are:', (_ctx, docString) => {
+      answerFilesInput = parseYamlDocString(docString)
+    })
+
+    When('the reporter HTML page is rendered for {string}', (_ctx, surveyName) => {
+      const survey = parseSurvey(surveyInput)
+      const statistics = buildReporterStatistics(
+        survey,
+        answerFilesInput.map((answerFile) => parseAnswerFile(answerFile))
+      )
+
+      renderedHtml = renderReporterHtmlPage({
+        surveyName,
+        survey,
+        statistics
+      })
+    })
+  })
+
+  Scenario('Free-text answers are listed with counts and no bars', ({ Given, And, When }) => {
     Given('survey content:', (_ctx, docString) => {
       surveyInput = parseYamlDocString(docString)
       answerFilesInput = []

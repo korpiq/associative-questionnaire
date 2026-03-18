@@ -63,3 +63,59 @@ Feature: Render reporter HTML output
     And the reporter HTML page contains "Favorite color"
     And the reporter HTML page contains "Blue"
     And the reporter HTML page contains "Notes"
+
+  Scenario: Free-text answers are listed with counts and no bars
+    Given survey content:
+      """
+      {
+        title: Example survey,
+        sections: {
+          basics: {
+            title: Basics,
+            questions: {
+              notes: {
+                title: Notes,
+                type: free-text
+              }
+            }
+          }
+        }
+      }
+      """
+    And saved answer files are:
+      """
+      [
+        {
+          surveyTitle: Example survey,
+          answers: {
+            notes: {
+              type: free-text,
+              value: Calm
+            }
+          }
+        },
+        {
+          surveyTitle: Example survey,
+          answers: {
+            notes: {
+              type: free-text,
+              value: Calm
+            }
+          }
+        },
+        {
+          surveyTitle: Example survey,
+          answers: {
+            notes: {
+              type: free-text,
+              value: Loud
+            }
+          }
+        }
+      ]
+      """
+    When the reporter HTML page is rendered for "example-survey"
+    Then the reporter HTML page contains "Calm"
+    And the reporter HTML page contains "data-answer-count"
+    And the reporter HTML page contains ">2<"
+    And the reporter HTML page does not contain "data-bar-chart"

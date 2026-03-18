@@ -15,7 +15,7 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
     case 'single-choice':
     case 'multi-choice':
       return [
-        `<section data-question="${escapeHtml(question.id)}">`,
+        `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
         ...question.options.map((option) => renderBarItem(option.text, option.count, option.percentage)),
@@ -24,16 +24,16 @@ function renderQuestion(question: ReporterQuestionStatistics): string {
       ].join('')
     case 'free-text':
       return [
-        `<section data-question="${escapeHtml(question.id)}">`,
+        `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
-        ...question.answers.map((answer) => renderBarItem(answer.value, answer.count, answer.percentage)),
+        ...question.answers.map((answer) => renderTextCountItem(answer.value, answer.count)),
         '</ul>',
         '</section>'
       ].join('')
     case 'associative':
       return [
-        `<section data-question="${escapeHtml(question.id)}">`,
+        `<section data-question="${escapeHtml(question.id)}" data-question-type="${question.type}">`,
         `<h3>${escapeHtml(question.title)}</h3>`,
         '<ul>',
         ...question.pairs.map((pair) => renderBarItem(pair.key, pair.count, pair.percentage)),
@@ -52,6 +52,15 @@ function renderBarItem(label: string, count: number, percentage: number): string
     `<div style="background: #2563eb; height: 100%; width: ${percentage}%"></div>`,
     '</div>',
     '</div>',
+    '</li>'
+  ].join('')
+}
+
+function renderTextCountItem(label: string, count: number): string {
+  return [
+    '<li>',
+    `<span>${escapeHtml(label)}</span> `,
+    `<span data-answer-count>${count}</span>`,
     '</li>'
   ].join('')
 }

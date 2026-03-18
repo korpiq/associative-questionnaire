@@ -140,3 +140,6 @@
 
 47. Added a separate multi-survey container integration test.
     Extended container preparation to seed two distinct deployed surveys, added a standalone `npm run test:integration` Docker workflow that verifies both survey pages and report counts updating independently as answers are stored, and kept the full suite and typecheck green alongside the new integration coverage.
+
+48. Changed free-text report output to plain counted lists.
+    Updated the reporter HTML renderer so free-text answers are listed without visual percentage bars and instead show only the distinct answer text plus a count, added HTML feature coverage for the new output, and verified the change with the full suite and typecheck.
