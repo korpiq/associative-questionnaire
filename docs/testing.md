@@ -13,6 +13,7 @@
 - Make each step do exactly what its Gherkin text says.
 - If several scenarios share the same execution step, define it once with `defineSteps`.
 - Keep structured inputs, expected outputs, and validation errors concise in YAML doc strings inside the feature file.
+- Do not rely on leading indentation inside Gherkin doc strings. The parser normalizes doc-string indentation, so nested structure should use YAML forms that remain valid after that trimming.
 
 ## Step structure
 
