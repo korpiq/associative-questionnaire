@@ -3,12 +3,12 @@ import { dirname, join, resolve } from 'node:path'
 import { buildSync } from 'esbuild'
 
 import {
+  buildGeneratedTargetSettings,
   generateSurveyHtml,
   loadDeploymentTarget,
   parseSurvey,
   prepareReporterProtectionSecret
 } from '../index'
-import { listTargetDeployedSurveys } from '../deploy/list-target-deployed-surveys'
 
 function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
@@ -27,7 +27,7 @@ function main(): void {
     workspaceDirectory: workspaceRoot,
     targetName: 'sample'
   })
-  const deployedSurveys = listTargetDeployedSurveys(deploymentTarget)
+  const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
 
   ensureDirectory(publicCgiRoot)
   ensureDirectory(publicSurveyRoot)
@@ -42,18 +42,18 @@ function main(): void {
     outfile: runtimeBundlePath
   })
 
-  deployedSurveys.forEach((deployedSurvey) => {
-    const survey = parseSurvey(JSON.parse(readFileSync(deployedSurvey.surveyPath, 'utf8')))
-    const template = readFileSync(deployedSurvey.templatePath, 'utf8')
+  generatedTargetSettings.surveyHtml.forEach((generatedSurvey) => {
+    const survey = parseSurvey(JSON.parse(readFileSync(generatedSurvey.surveyPath, 'utf8')))
+    const template = readFileSync(generatedSurvey.templatePath, 'utf8')
     const surveyHtml = generateSurveyHtml(survey, template, {
-      surveyName: deployedSurvey.surveyName,
-      formAction: '/cgi-bin/save-survey.js'
+      surveyName: generatedSurvey.surveyName,
+      formAction: generatedSurvey.formAction
     })
 
-    writeFileSync(join(publicSurveyRoot, deployedSurvey.publicHtmlFilename), surveyHtml)
+    writeFileSync(join(publicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
     copyFileSync(
-      deployedSurvey.surveyPath,
-      join(runtimeSurveyRoot, `${deployedSurvey.surveyName}.json`)
+      generatedSurvey.surveyPath,
+      join(runtimeSurveyRoot, `${generatedSurvey.surveyName}.json`)
     )
   })
 
@@ -80,7 +80,8 @@ function main(): void {
         publicRoot,
         runtimeSurveyRoot,
         runtimeBundlePath,
-        deployedSurveys,
+        deploymentTargetName: deploymentTarget.targetName,
+        deployedSurveys: generatedTargetSettings.surveyHtml,
         saveScriptTargetPath,
         reportScriptTargetPath,
         storedSecretFilePath: preparedReporter.storedSecretFilePath

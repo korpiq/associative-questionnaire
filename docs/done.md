@@ -167,3 +167,6 @@
 
 56. Switched container asset preparation to discovered target surveys.
     Added a sample target under `targets/sample`, mapped discovered surveys into deployable public HTML outputs through a tested helper, replaced the hard-coded survey list in `prepare-container-assets` with target-backed survey discovery, verified the prep command directly, and kept the full suite and typecheck green.
+
+57. Switched generated survey pages to target-backed HTML settings.
+    Updated container asset preparation to drive generated survey filenames and form actions from the shared generated target settings, verified the prepared survey HTML includes the target-configured saver URL, and kept the full suite and typecheck green.
