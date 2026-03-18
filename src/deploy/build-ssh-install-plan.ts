@@ -1,66 +1,135 @@
+import type { LoadedDeploymentTarget } from './load-deployment-target'
+import { parseDeploymentPath } from './parse-deployment-path'
+
 function quoteRemotePath(path: string): string {
-  return `'${path.replaceAll("'", "'\"'\"'")}'`
+  const escaped = path.replaceAll('\\', '\\\\').replaceAll('"', '\\"').replaceAll('`', '\\`')
+
+  return `"${escaped}"`
 }
 
-function validateInstallPath(installPath: string): string {
-  if (!installPath) {
-    throw new Error('Install path must not be empty')
+function toRemoteShellPath(path: string): string {
+  if (path === '~') {
+    return '$HOME'
   }
 
-  if (installPath.startsWith('/')) {
-    throw new Error('Install path must be relative to the remote home directory')
+  if (path.startsWith('~/')) {
+    return `$HOME/${path.slice(2)}`
   }
 
-  if (installPath.split('/').some((segment) => segment === '' || segment === '.' || segment === '..')) {
-    throw new Error('Install path must not contain empty, "." or ".." segments')
+  return path
+}
+
+function toResolvedRemoteShellPath(path: string): string {
+  return toRemoteShellPath(path).replace('/./', '/')
+}
+
+function toParsedRemotePath(path: string): {
+  existingRoot: string
+  createableSubpath: string
+  fullPath: string
+} {
+  return parseDeploymentPath(toRemoteShellPath(path))
+}
+
+function buildPathSetupCommand(input: {
+  publicPath: string
+  cgiPath: string
+  dataDir: string
+  createMissingSubpaths: boolean
+}): string {
+  const parsedPaths = [input.publicPath, input.cgiPath, input.dataDir].map(toParsedRemotePath)
+  const checks: string[] = []
+  const createablePaths: string[] = []
+
+  parsedPaths.forEach((path) => {
+    if (!path.createableSubpath || !input.createMissingSubpaths) {
+      checks.push(`test -d ${quoteRemotePath(path.fullPath)}`)
+      return
+    }
+
+    checks.push(`test -d ${quoteRemotePath(path.existingRoot)}`)
+    createablePaths.push(path.fullPath)
+  })
+
+  const dataRoot = parsedPaths[2]?.fullPath
+
+  if (!dataRoot) {
+    throw new Error('Expected a data directory for the SSH install plan')
   }
 
-  return installPath
+  return [
+    checks.join(' && '),
+    [
+      'mkdir -p',
+      ...createablePaths.map(quoteRemotePath),
+      quoteRemotePath(`${dataRoot}/surveys`),
+      quoteRemotePath(`${dataRoot}/answers`)
+    ].join(' ')
+  ].join(' && ')
 }
 
 export function buildSshInstallPlan(input: {
-  sshTarget: string
-  installPath: string
+  target: LoadedDeploymentTarget
+  localProtectionSecretFilePath: string
 }): {
   remotePublicRoot: string
-  remoteRuntimeRoot: string
+  remoteCgiRoot: string
+  remoteDataRoot: string
+  remoteProtectionFilePath: string
   commands: Array<[string, ...string[]]>
 } {
-  const installPath = validateInstallPath(input.installPath)
-  const remotePublicRoot = `$HOME/${installPath}/public`
-  const remoteRuntimeRoot = '$HOME/.local/share/associative-survey'
+  if (input.target.type !== 'ssh') {
+    throw new Error('SSH install plans require an ssh target configuration')
+  }
+
+  const remotePublicRoot = toParsedRemotePath(input.target.publicPath).fullPath
+  const remoteCgiRoot = toParsedRemotePath(input.target.cgiPath).fullPath
+  const remoteDataRoot = toParsedRemotePath(input.target.dataDir).fullPath
+  const remoteProtectionFilePath = toResolvedRemoteShellPath(input.target.protectionFile)
 
   return {
     remotePublicRoot,
-    remoteRuntimeRoot,
+    remoteCgiRoot,
+    remoteDataRoot,
+    remoteProtectionFilePath,
     commands: [
       [
         'ssh',
-        input.sshTarget,
-        [
-          'mkdir -p',
-          quoteRemotePath(`${remotePublicRoot}/cgi-bin`),
-          quoteRemotePath(`${remotePublicRoot}/surveys`),
-          quoteRemotePath(`${remoteRuntimeRoot}/surveys`),
-          quoteRemotePath(`${remoteRuntimeRoot}/answers`)
-        ].join(' ')
+        input.target.sshTarget,
+        buildPathSetupCommand({
+          publicPath: input.target.publicPath,
+          cgiPath: input.target.cgiPath,
+          dataDir: input.target.dataDir,
+          createMissingSubpaths: input.target.createMissingSubpaths
+        })
       ],
       [
         'scp',
         '-r',
-        'deploy/generated/public/.',
-        `${input.sshTarget}:${remotePublicRoot}/`
+        'deploy/generated/public/surveys/.',
+        `${input.target.sshTarget}:${remotePublicRoot}/`
+      ],
+      [
+        'scp',
+        '-r',
+        'deploy/generated/public/cgi-bin/.',
+        `${input.target.sshTarget}:${remoteCgiRoot}/`
       ],
       [
         'scp',
         '-r',
         'deploy/generated/runtime/surveys/.',
-        `${input.sshTarget}:${remoteRuntimeRoot}/surveys/`
+        `${input.target.sshTarget}:${remoteDataRoot}/surveys/`
+      ],
+      [
+        'scp',
+        input.localProtectionSecretFilePath,
+        `${input.target.sshTarget}:${remoteProtectionFilePath}`
       ],
       [
         'ssh',
-        input.sshTarget,
-        `chmod 755 ${quoteRemotePath(`${remotePublicRoot}/cgi-bin`)}/*.js`
+        input.target.sshTarget,
+        `chmod 755 ${quoteRemotePath(remoteCgiRoot)}/*.js`
       ]
     ]
   }

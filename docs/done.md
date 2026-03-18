@@ -179,3 +179,6 @@
 
 60. Switched container image assembly to generated target settings.
     Added a generated container-target manifest plus a runtime-data installer, updated the Dockerfile to prepare one target explicitly and seed its runtime data from the generated manifest instead of hard-coded paths, preserved fallback behavior for non-targeted visual builds, and verified the change with the full suite, typecheck, and both Docker-backed container flows.
+
+61. Switched SSH installation to target-backed deployment paths.
+    Reworked the SSH install plan and CLI around loaded SSH targets instead of raw install arguments, applied `/./` path splitting to configured public, CGI, data, and protection-file destinations, copied public pages, CGI scripts, survey JSON seeds, and the local protection secret into their configured remote locations, updated the VPS deployment docs to match the new target-based workflow, and verified the change with SSH feature coverage plus the full suite and typecheck.

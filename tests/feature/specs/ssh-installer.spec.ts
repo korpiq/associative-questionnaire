@@ -3,16 +3,19 @@ import { expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 
 import { buildSshInstallPlan } from '../../../src/deploy/build-ssh-install-plan'
+import type { LoadedDeploymentTarget } from '../../../src/deploy/load-deployment-target'
 
 const feature = await loadFeature('tests/feature/ssh-installer.feature')
 
 describeFeature(feature, ({ Scenario }) => {
-  let sshTarget = ''
-  let installPath = ''
+  let target: LoadedDeploymentTarget | undefined
+  let localProtectionSecretFilePath = ''
   let plan:
     | {
         remotePublicRoot: string
-        remoteRuntimeRoot: string
+        remoteCgiRoot: string
+        remoteDataRoot: string
+        remoteProtectionFilePath: string
         commands: Array<[string, ...string[]]>
       }
     | undefined
@@ -26,62 +29,83 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario(
-    'A valid install path produces remote copy commands under the remote home directory',
-    ({ Given, And, When, Then }) => {
-      Given('the SSH target is {string}', (_ctx, value) => {
-        sshTarget = value
-        installPath = ''
-        plan = undefined
-        planError = null
-      })
-
-      And('the remote install path is {string}', (_ctx, value) => {
-        installPath = value
-      })
-
-      When('the SSH install plan is built', () => {
-        try {
-          plan = buildSshInstallPlan({ sshTarget, installPath })
-          planError = null
-        } catch (error) {
-          plan = undefined
-          planError = error as Error
-        }
-      })
-
-      Then('the remote public root is {string}', (_ctx, value) => {
-        expect(planError).toBeNull()
-        expect(plan?.remotePublicRoot).toBe(value)
-      })
-
-      And('the remote runtime root is {string}', (_ctx, value) => {
-        expect(planError).toBeNull()
-        expect(plan?.remoteRuntimeRoot).toBe(value)
-      })
-
-      And('the SSH install commands are:', (_ctx, docString) => {
-        expect(planError).toBeNull()
-        expect(plan?.commands).toEqual(parseYamlDocString(docString))
-      })
-    }
-  )
-
-  Scenario('An absolute remote install path is rejected', ({ Given, And, When, Then }) => {
-    Given('the SSH target is {string}', (_ctx, value) => {
-      sshTarget = value
-      installPath = ''
+  Scenario('An SSH target produces remote copy commands from configured paths', ({ Given, And, When, Then }) => {
+    Given('the loaded SSH deployment target is:', (_ctx, docString) => {
+      target = parseYamlDocString<LoadedDeploymentTarget>(docString)
+      localProtectionSecretFilePath = ''
       plan = undefined
       planError = null
     })
 
-    And('the remote install path is {string}', (_ctx, value) => {
-      installPath = value
+    And('the local reporter protection secret file path is {string}', (_ctx, value) => {
+      localProtectionSecretFilePath = value
     })
 
     When('the SSH install plan is built', () => {
       try {
-        plan = buildSshInstallPlan({ sshTarget, installPath })
+        if (!target) {
+          throw new Error('Expected a loaded SSH deployment target')
+        }
+
+        plan = buildSshInstallPlan({
+          target,
+          localProtectionSecretFilePath
+        })
+        planError = null
+      } catch (error) {
+        plan = undefined
+        planError = error as Error
+      }
+    })
+
+    Then('the remote public root is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.remotePublicRoot).toBe(value)
+    })
+
+    And('the remote CGI root is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.remoteCgiRoot).toBe(value)
+    })
+
+    And('the remote data root is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.remoteDataRoot).toBe(value)
+    })
+
+    And('the remote protection file path is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.remoteProtectionFilePath).toBe(value)
+    })
+
+    And('the SSH install commands are:', (_ctx, docString) => {
+      expect(planError).toBeNull()
+      expect(plan?.commands).toEqual(parseYamlDocString(docString))
+    })
+  })
+
+  Scenario('A non-SSH target is rejected', ({ Given, And, When, Then }) => {
+    Given('the loaded SSH deployment target is:', (_ctx, docString) => {
+      target = parseYamlDocString<LoadedDeploymentTarget>(docString)
+      localProtectionSecretFilePath = ''
+      plan = undefined
+      planError = null
+    })
+
+    And('the local reporter protection secret file path is {string}', (_ctx, value) => {
+      localProtectionSecretFilePath = value
+    })
+
+    When('the SSH install plan is built', () => {
+      try {
+        if (!target) {
+          throw new Error('Expected a loaded SSH deployment target')
+        }
+
+        plan = buildSshInstallPlan({
+          target,
+          localProtectionSecretFilePath
+        })
         planError = null
       } catch (error) {
         plan = undefined

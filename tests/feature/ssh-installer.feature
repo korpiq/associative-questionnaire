@@ -1,40 +1,94 @@
-Feature: Build an SSH install plan for VPS deployment
-  Scenario: A valid install path produces remote copy commands under the remote home directory
-    Given the SSH target is "deploy@example.test"
-    And the remote install path is "sites/associative-survey"
+Feature: Build an SSH install plan from a target configuration
+  Scenario: An SSH target produces remote copy commands from configured paths
+    Given the loaded SSH deployment target is:
+      """
+      {
+        "targetName": "example-vps",
+        "type": "ssh",
+        "sshTarget": "deploy@example.test",
+        "publicPath": "~/sites/example.test/www/./surveys",
+        "cgiPath": "~/sites/example.test/www/./cgi-bin",
+        "dataDir": "~/sites/example.test/www/./data",
+        "protectionFile": "~/sites/example.test/www/./data/protection.txt",
+        "publicBaseUrl": "https://example.test",
+        "saverUrl": "https://example.test/cgi-bin/save-survey.js",
+        "reporterUrl": "https://example.test/cgi-bin/report-survey.js",
+        "createMissingSubpaths": true,
+        "targetDirectory": "/workspace/targets/example-vps",
+        "surveys": [
+          {
+            "surveyName": "survey",
+            "surveyDirectory": "/workspace/targets/example-vps/surveys/survey",
+            "surveyPath": "/workspace/targets/example-vps/surveys/survey/survey.json",
+            "templatePath": "/workspace/targets/example-vps/surveys/survey/template.html"
+          }
+        ]
+      }
+      """
+    And the local reporter protection secret file path is "/workspace/.deploy/reporter-protection-secret.txt"
     When the SSH install plan is built
-    Then the remote public root is "$HOME/sites/associative-survey/public"
-    And the remote runtime root is "$HOME/.local/share/associative-survey"
+    Then the remote public root is "$HOME/sites/example.test/www/surveys"
+    And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
+    And the remote data root is "$HOME/sites/example.test/www/data"
+    And the remote protection file path is "$HOME/sites/example.test/www/data/protection.txt"
     And the SSH install commands are:
       """
       [
         [
-          ssh,
-          deploy@example.test,
-          "mkdir -p '$HOME/sites/associative-survey/public/cgi-bin' '$HOME/sites/associative-survey/public/surveys' '$HOME/.local/share/associative-survey/surveys' '$HOME/.local/share/associative-survey/answers'"
+          "ssh",
+          "deploy@example.test",
+          "test -d \"$HOME/sites/example.test/www\" && test -d \"$HOME/sites/example.test/www\" && test -d \"$HOME/sites/example.test/www\" && mkdir -p \"$HOME/sites/example.test/www/surveys\" \"$HOME/sites/example.test/www/cgi-bin\" \"$HOME/sites/example.test/www/data\" \"$HOME/sites/example.test/www/data/surveys\" \"$HOME/sites/example.test/www/data/answers\""
         ],
         [
-          scp,
-          -r,
-          deploy/generated/public/.,
-          deploy@example.test:$HOME/sites/associative-survey/public/
+          "scp",
+          "-r",
+          "deploy/generated/public/surveys/.",
+          "deploy@example.test:$HOME/sites/example.test/www/surveys/"
         ],
         [
-          scp,
-          -r,
-          deploy/generated/runtime/surveys/.,
-          deploy@example.test:$HOME/.local/share/associative-survey/surveys/
+          "scp",
+          "-r",
+          "deploy/generated/public/cgi-bin/.",
+          "deploy@example.test:$HOME/sites/example.test/www/cgi-bin/"
         ],
         [
-          ssh,
-          deploy@example.test,
-          "chmod 755 '$HOME/sites/associative-survey/public/cgi-bin'/*.js"
+          "scp",
+          "-r",
+          "deploy/generated/runtime/surveys/.",
+          "deploy@example.test:$HOME/sites/example.test/www/data/surveys/"
+        ],
+        [
+          "scp",
+          "/workspace/.deploy/reporter-protection-secret.txt",
+          "deploy@example.test:$HOME/sites/example.test/www/data/protection.txt"
+        ],
+        [
+          "ssh",
+          "deploy@example.test",
+          "chmod 755 \"$HOME/sites/example.test/www/cgi-bin\"/*.js"
         ]
       ]
       """
 
-  Scenario: An absolute remote install path is rejected
-    Given the SSH target is "deploy@example.test"
-    And the remote install path is "/var/www/associative-survey"
+  Scenario: A non-SSH target is rejected
+    Given the loaded SSH deployment target is:
+      """
+      {
+        "targetName": "local-container",
+        "type": "container",
+        "containerName": "associative-survey-local",
+        "publicPath": "/srv/www/./surveys",
+        "cgiPath": "/srv/www/./cgi-bin",
+        "dataDir": "/home/app/.local/share/associative-survey",
+        "protectionFile": "/home/app/.local/share/associative-survey/protection.txt",
+        "publicBaseUrl": "http://127.0.0.1:18080",
+        "saverUrl": "http://127.0.0.1:18080/cgi-bin/save-survey.js",
+        "reporterUrl": "http://127.0.0.1:18080/cgi-bin/report-survey.js",
+        "createMissingSubpaths": true,
+        "targetDirectory": "/workspace/targets/local-container",
+        "surveys": []
+      }
+      """
+    And the local reporter protection secret file path is "/workspace/.deploy/reporter-protection-secret.txt"
     When the SSH install plan is built
-    Then the SSH install plan is rejected with "Install path must be relative to the remote home directory"
+    Then the SSH install plan is rejected with "SSH install plans require an ssh target configuration"

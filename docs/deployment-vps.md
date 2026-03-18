@@ -10,7 +10,7 @@ From the repository root:
 
 ```bash
 npm run build
-npm run prepare:container
+npm run prepare:container -- <target-name>
 ```
 
 That prepares:
@@ -18,25 +18,27 @@ That prepares:
 - generated survey page under `deploy/generated/public/surveys/`
 - CGI scripts under `deploy/generated/public/cgi-bin/`
 - runtime seed survey JSON under `deploy/generated/runtime/surveys/`
+- generated target settings manifest under `deploy/generated/container-target-settings.json`
 - reporter protection secret under `.deploy/reporter-protection-secret.txt`
 
 ## Install by SSH
 
-If the remote CGI user home is the same home directory you reach over SSH, you can install the prepared files directly with:
+If the remote target is configured under `targets/<target-name>/target.json`, install it with:
 
 ```bash
-npm run install:ssh -- user@example.test sites/associative-survey
+npm run install:ssh -- <target-name>
 ```
 
 That command:
 
 - runs `npm run build`
-- runs `npm run prepare:container`
-- copies the public tree to `$HOME/sites/associative-survey/public/` on the remote host
-- copies the seed survey JSON files to `$HOME/.local/share/associative-survey/surveys/`
+- runs `npm run prepare:container -- <target-name>`
+- loads the SSH target config from `targets/<target-name>/target.json`
+- copies generated survey pages to the configured `publicPath`
+- copies generated CGI scripts to the configured `cgiPath`
+- copies seed survey JSON files to `dataDir/surveys`
+- copies the local reporter protection secret to `protectionFile`
 - makes the remote CGI scripts executable
-
-The install path argument must stay relative to the remote home directory.
 
 If the web server executes CGI scripts with a different effective home directory than the SSH account, use the manual steps below instead.
 
@@ -51,20 +53,20 @@ The CGI scripts are plain JavaScript and must stay executable.
 
 ## Install runtime seed survey JSON
 
-Copy the prepared seed survey JSON from `deploy/generated/runtime/surveys/` into the effective CGI user home under:
+Copy the prepared seed survey JSON from `deploy/generated/runtime/surveys/` into the configured runtime data directory under:
 
 ```text
-~/.local/share/associative-survey/surveys/
+<dataDir>/surveys/
 ```
 
-If the deploy user home and the web server process home differ, do not place runtime data under the deploy user home by accident. The runtime data must live under the CGI process home directory.
+If the deploy user home and the web server process home differ, do not place runtime data under the deploy user home by accident. The runtime data must live under the configured shared data path seen by the CGI process.
 
 ## Runtime directories
 
-At runtime the system uses:
+At runtime the system uses the configured `dataDir`:
 
 ```text
-~/.local/share/associative-survey/
+<dataDir>/
   surveys/
   answers/
 ```
@@ -73,6 +75,6 @@ The saver creates `answers/<surveyName>/` on demand. The reporter reads stored s
 
 ## Protected reporter secret
 
-The deploy preparation step generates `.deploy/reporter-protection-secret.txt` locally in the workspace and injects the same secret into the prepared reporter CGI script.
+The deploy preparation step generates `.deploy/reporter-protection-secret.txt` locally in the workspace, injects the same secret into the prepared reporter CGI script, and the SSH installer copies that secret to the configured remote `protectionFile`.
 
 Keep the local secret file available for future protected survey administration.

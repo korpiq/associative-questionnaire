@@ -179,7 +179,7 @@ Not needed in the configuration at this stage:
 - separate web-server-visibility flag
   The target paths themselves are the source of truth.
 
-Useful implementation direction:
+Current implementation direction:
 
 - one config file per target under a dedicated deployment config directory
 - one shared schema for common target fields
@@ -189,3 +189,4 @@ Useful implementation direction:
 - generated survey HTML may embed target-specific public URLs directly, such as the saver CGI form action
 - generated saver and reporter CGI assets may either receive injected target settings directly or load them from generated config files placed alongside the CGI scripts
 - for the SSH host described here, injected absolute runtime paths are the simpler starting point because `HOME` is unavailable in CGI
+- the SSH installer currently copies survey HTML, CGI scripts, survey JSON seeds, and the reporter protection secret into separately configured `publicPath`, `cgiPath`, `dataDir/surveys`, and `protectionFile` locations

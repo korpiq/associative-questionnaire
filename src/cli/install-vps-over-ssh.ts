@@ -1,18 +1,29 @@
 import { execFileSync } from 'node:child_process'
+import { join } from 'node:path'
 
 import { buildSshInstallPlan } from '../deploy/build-ssh-install-plan'
+import { loadDeploymentTarget } from '../deploy/load-deployment-target'
+import { readTargetNameArgument } from './read-target-name-argument'
 
 function main(): void {
-  const [sshTarget, installPath] = process.argv.slice(2)
+  const workspaceRoot = process.cwd()
+  const targetName = readTargetNameArgument(process.argv, '')
 
-  if (!sshTarget || !installPath) {
-    throw new Error('Usage: npm run install:ssh -- <ssh-target> <install-path-under-remote-home>')
+  if (!targetName) {
+    throw new Error('Usage: npm run install:ssh -- <target-name>')
   }
 
   execFileSync('npm', ['run', 'build'], { stdio: 'inherit' })
-  execFileSync('npm', ['run', 'prepare:container'], { stdio: 'inherit' })
+  execFileSync('npm', ['run', 'prepare:container', '--', targetName], { stdio: 'inherit' })
 
-  const plan = buildSshInstallPlan({ sshTarget, installPath })
+  const target = loadDeploymentTarget({
+    workspaceDirectory: workspaceRoot,
+    targetName
+  })
+  const plan = buildSshInstallPlan({
+    target,
+    localProtectionSecretFilePath: join(workspaceRoot, '.deploy', 'reporter-protection-secret.txt')
+  })
 
   plan.commands.forEach((command) => {
     const [file, ...args] = command
@@ -22,9 +33,12 @@ function main(): void {
   console.log(
     JSON.stringify(
       {
-        sshTarget,
+        targetName,
+        sshTarget: target.type === 'ssh' ? target.sshTarget : undefined,
         remotePublicRoot: plan.remotePublicRoot,
-        remoteRuntimeRoot: plan.remoteRuntimeRoot
+        remoteCgiRoot: plan.remoteCgiRoot,
+        remoteDataRoot: plan.remoteDataRoot,
+        remoteProtectionFilePath: plan.remoteProtectionFilePath
       },
       null,
       2
