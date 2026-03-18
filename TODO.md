@@ -13,7 +13,6 @@ Custom CSS and script sections should add to or override existing individual ent
 
 ## deployment targets
 
-- update container deployment logic to use target configuration files and generated target-based assets
 - refactor SSH installation commands to take a target configuration name instead of raw SSH arguments
 - update SSH deployment and installer logic to use configured `publicPath`, `cgiPath`, `dataDir`, and defaulted `protectionFile`
   SSH runtime paths must not depend on `HOME`; use absolute configured paths or derive them from `SCRIPT_FILENAME`.

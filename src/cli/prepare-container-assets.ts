@@ -20,6 +20,7 @@ function main(): void {
   const workspaceRoot = process.cwd()
   const targetName = readTargetNameArgument(process.argv, 'sample')
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
+  const generatedTargetSettingsPath = join(generatedRoot, 'container-target-settings.json')
   const publicRoot = join(generatedRoot, 'public')
   const publicCgiRoot = join(publicRoot, 'cgi-bin')
   const publicSurveyRoot = join(publicRoot, 'surveys')
@@ -60,6 +61,8 @@ function main(): void {
     )
   })
 
+  writeFileSync(generatedTargetSettingsPath, JSON.stringify(generatedTargetSettings, null, 2))
+
   const saveScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/save-survey.js')
   const reporterScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/report-survey.template.js')
   const saveScriptTargetPath = join(publicCgiRoot, 'save-survey.js')
@@ -90,6 +93,7 @@ function main(): void {
         publicRoot,
         runtimeSurveyRoot,
         runtimeBundlePath,
+        generatedTargetSettingsPath,
         deploymentTargetName: deploymentTarget.targetName,
         deployedSurveys: generatedTargetSettings.surveyHtml,
         saveScriptTargetPath,

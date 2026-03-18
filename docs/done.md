@@ -176,3 +176,6 @@
 
 59. Refactored container preparation to accept a target name.
     Added a reusable target-name CLI argument reader, updated `prepare-container-assets` to accept a target name with `sample` as the compatibility default instead of always hard-coding one target, verified the explicit `npm run prepare:container -- sample` path, and kept the full suite and typecheck green.
+
+60. Switched container image assembly to generated target settings.
+    Added a generated container-target manifest plus a runtime-data installer, updated the Dockerfile to prepare one target explicitly and seed its runtime data from the generated manifest instead of hard-coded paths, preserved fallback behavior for non-targeted visual builds, and verified the change with the full suite, typecheck, and both Docker-backed container flows.
