@@ -11,7 +11,9 @@ Feature: Render saver CGI HTML responses
     Given a successful saver outcome
     And the saver response parameters are:
       """
-      {setCookieHeader: "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"}
+      {
+        setCookieHeader: "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"
+      }
       """
     When the saver CGI response is rendered
     Then the CGI response status code is 200
@@ -28,7 +30,9 @@ Feature: Render saver CGI HTML responses
     Given a successful saver outcome
     And the saver response parameters are:
       """
-      {ok: "https://example.test/thanks.html"}
+      {
+        ok: "https://example.test/thanks.html"
+      }
       """
     When the saver CGI response is rendered
     Then the CGI response status code is 303
@@ -39,7 +43,9 @@ Feature: Render saver CGI HTML responses
     Given a failed saver outcome with message "Survey save failed"
     And the saver response parameters are:
       """
-      {fail: "https://example.test/error.html"}
+      {
+        fail: "https://example.test/error.html"
+      }
       """
     When the saver CGI response is rendered
     Then the CGI response status code is 303
@@ -50,7 +56,9 @@ Feature: Render saver CGI HTML responses
     Given a successful saver outcome
     And the saver response parameters are:
       """
-      {css: "https://example.test/saver.css"}
+      {
+        css: "https://example.test/saver.css"
+      }
       """
     When the saver CGI response is rendered
     Then the CGI response status code is 200

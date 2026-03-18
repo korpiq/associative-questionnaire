@@ -4,7 +4,28 @@ Feature: Persist saved survey answers through the shared saver path
     And the survey name is "example-survey"
     And survey content:
       """
-      {title: Example survey, sections: {basics: {title: Basics, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, notes: {title: Notes, type: free-text}}}}}
+      {
+        title: Example survey,
+        sections: {
+          basics: {
+            title: Basics,
+            questions: {
+              favorite-color: {
+                title: Favorite color,
+                type: single-choice,
+                content: {
+                  red: Red,
+                  blue: Blue
+                }
+              },
+              notes: {
+                title: Notes,
+                type: free-text
+              }
+            }
+          }
+        }
+      }
       """
     And the URL-encoded request body is:
       """
@@ -15,7 +36,19 @@ Feature: Persist saved survey answers through the shared saver path
     Then one saved answer file exists for the survey
     And the saved answer file contains:
       """
-      {surveyTitle: Example survey, answers: {favorite-color: {type: single-choice, value: blue}, notes: {type: free-text, value: First note}}}
+      {
+        surveyTitle: Example survey,
+        answers: {
+          favorite-color: {
+            type: single-choice,
+            value: blue
+          },
+          notes: {
+            type: free-text,
+            value: First note
+          }
+        }
+      }
       """
 
   Scenario: Saving again for the same respondent replaces the existing survey answer file
@@ -23,7 +56,28 @@ Feature: Persist saved survey answers through the shared saver path
     And the survey name is "example-survey"
     And survey content:
       """
-      {title: Example survey, sections: {basics: {title: Basics, questions: {favorite-color: {title: Favorite color, type: single-choice, content: {red: Red, blue: Blue}}, notes: {title: Notes, type: free-text}}}}}
+      {
+        title: Example survey,
+        sections: {
+          basics: {
+            title: Basics,
+            questions: {
+              favorite-color: {
+                title: Favorite color,
+                type: single-choice,
+                content: {
+                  red: Red,
+                  blue: Blue
+                }
+              },
+              notes: {
+                title: Notes,
+                type: free-text
+              }
+            }
+          }
+        }
+      }
       """
     And the first URL-encoded request body is:
       """
@@ -39,5 +93,17 @@ Feature: Persist saved survey answers through the shared saver path
     Then one saved answer file exists for the survey
     And the saved answer file contains:
       """
-      {surveyTitle: Example survey, answers: {favorite-color: {type: single-choice, value: blue}, notes: {type: free-text, value: Updated note}}}
+      {
+        surveyTitle: Example survey,
+        answers: {
+          favorite-color: {
+            type: single-choice,
+            value: blue
+          },
+          notes: {
+            type: free-text,
+            value: Updated note
+          }
+        }
+      }
       """

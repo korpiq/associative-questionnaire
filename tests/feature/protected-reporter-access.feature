@@ -5,7 +5,24 @@ Feature: Enforce protected reporter upload and report access
     And the replacement uploaded survey filename is "example-survey.json"
     And the replacement uploaded survey JSON is:
       """
-      {"title":"Replacement survey","sections":{"basics":{"title":"Basics","questions":{"favorite-color":{"title":"Favorite color","type":"single-choice","content":{"red":"Red","blue":"Blue"}}}}}}
+      {
+        "title": "Replacement survey",
+        "sections": {
+          "basics": {
+            "title": "Basics",
+            "questions": {
+              "favorite-color": {
+                "title": "Favorite color",
+                "type": "single-choice",
+                "content": {
+                  "red": "Red",
+                  "blue": "Blue"
+                }
+              }
+            }
+          }
+        }
+      }
       """
     And the reporter protection secret is "deploy-secret"
     When the replacement uploaded survey is stored without a protection hash

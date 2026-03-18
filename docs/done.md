@@ -125,3 +125,6 @@
 
 42. Replaced saver respondent hashing with month-long respondent cookies.
     Switched saver persistence from header-derived respondent file hashes to pseudorandom cookie ids, set a one-month `Set-Cookie` value on the first successful save, reused existing cookie ids on later saves, and updated the saver tests, docs, and manual helper accordingly.
+
+43. Reformatted structured feature doc strings into readable multiline YAML.
+    Reworked dense one-line survey, answer, and parameter fixtures across the feature files into readable multiline YAML or JSON, preserved raw payload steps where the specs intentionally pass literal JSON strings, and verified the full suite and typecheck after the parser-sensitive cleanup.

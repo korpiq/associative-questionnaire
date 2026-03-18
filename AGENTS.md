@@ -12,6 +12,7 @@
 - Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
 - Do not use `.js` file extensions in TypeScript import specifiers in this repository.
 - Prefer concise YAML doc strings in Gherkin steps when tests need to show structured input, output, or validation errors.
+- Keep HTML and CSS indented for readability in templates, examples, and generated snippet source files.
 - Do not use `/tmp` for repository work; write generated files either to the current directory for user-facing command examples or to a dedicated directory inside the workspace.
 - When working interactively with user, do not commit until user accepts.
 - When told to do several TODO steps alone, commit after each verified TODO step before starting the next one.

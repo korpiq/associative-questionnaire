@@ -4,7 +4,24 @@ Feature: Store and resolve reporter surveys by survey name
     And the uploaded survey filename is "example-survey.json"
     And the uploaded survey JSON is:
       """
-      {"title":"Example survey","sections":{"basics":{"title":"Basics","questions":{"favorite-color":{"title":"Favorite color","type":"single-choice","content":{"red":"Red","blue":"Blue"}}}}}}
+      {
+        "title": "Example survey",
+        "sections": {
+          "basics": {
+            "title": "Basics",
+            "questions": {
+              "favorite-color": {
+                "title": "Favorite color",
+                "type": "single-choice",
+                "content": {
+                  "red": "Red",
+                  "blue": "Blue"
+                }
+              }
+            }
+          }
+        }
+      }
       """
     When the uploaded survey is stored for the reporter
     Then the stored survey name is "example-survey"
@@ -16,7 +33,24 @@ Feature: Store and resolve reporter surveys by survey name
     And the uploaded survey filename is "example-survey.json"
     And the uploaded survey JSON is:
       """
-      {"title":"Example survey","sections":{"basics":{"title":"Basics","questions":{"favorite-color":{"title":"Favorite color","type":"single-choice","content":{"red":"Red","blue":"Blue"}}}}}}
+      {
+        "title": "Example survey",
+        "sections": {
+          "basics": {
+            "title": "Basics",
+            "questions": {
+              "favorite-color": {
+                "title": "Favorite color",
+                "type": "single-choice",
+                "content": {
+                  "red": "Red",
+                  "blue": "Blue"
+                }
+              }
+            }
+          }
+        }
+      }
       """
     And a saved answer file exists for the survey
     When the uploaded survey is stored for the reporter

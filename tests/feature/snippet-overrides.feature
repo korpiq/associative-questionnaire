@@ -2,7 +2,21 @@ Feature: Generator snippet overrides
   Scenario: Template overrides replace default snippets
     Given survey content:
       """
-      {title: Override example, description: Override description, sections: {basics: {title: Basics, questions: {notes: {title: Notes, type: free-text}}}}}
+      {
+        title: Override example,
+        description: Override description,
+        sections: {
+          basics: {
+            title: Basics,
+            questions: {
+              notes: {
+                title: Notes,
+                type: free-text
+              }
+            }
+          }
+        }
+      }
       """
     And HTML template:
       """
