@@ -146,3 +146,6 @@
 
 49. Rendered correctness summaries in the reporter HTML page.
     Added correctness blocks to the reporter HTML output for questions that define correct answers, extended the HTML feature coverage to lock in the visible correct and incorrect counts and percentages, and verified the change with the full suite and typecheck.
+
+50. Added a seeded visual correctness showcase container.
+    Created a dedicated visual preparation path and Docker-backed `npm run test:visual` workflow that serves a seeded scored survey with prefilled answer files, verifies the report exposes correctness summaries, and leaves the container running for manual visual inspection of the survey and report pages.

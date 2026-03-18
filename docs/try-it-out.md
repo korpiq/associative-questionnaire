@@ -148,6 +148,14 @@ There is also a broader integration test that seeds two surveys into one contain
 npm run test:integration
 ```
 
+For manual visual verification of correctness reporting across question types, start the seeded showcase container:
+
+```bash
+npm run test:visual
+```
+
+That command builds a dedicated image, starts a container with prefilled answers, verifies the report is reachable, and prints the survey URL, report URL, and stop command. It leaves the container running for inspection.
+
 ## Stop the container
 
 ```bash

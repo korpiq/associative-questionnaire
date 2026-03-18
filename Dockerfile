@@ -11,10 +11,12 @@ COPY deploy ./deploy
 
 RUN npm ci
 RUN npm run build
-RUN npm run prepare:container
+ARG PREPARE_COMMAND=prepare:container
+RUN npm run ${PREPARE_COMMAND}
 
 RUN mkdir -p /home/app/.local/share/associative-survey/surveys /home/app/.local/share/associative-survey/answers
 RUN cp deploy/generated/runtime/surveys/*.json /home/app/.local/share/associative-survey/surveys/
+RUN if [ -d deploy/generated/runtime/answers ]; then cp -R deploy/generated/runtime/answers/. /home/app/.local/share/associative-survey/answers/; fi
 
 ENV HOME=/home/app
 EXPOSE 8080
