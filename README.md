@@ -2,6 +2,8 @@
 
 Survey system based on single HTML page. Main feature is presenting a group of phrases that the user answering the survey should link with matching phrases in another group.
 
+To try the current containerized survey flow, see [docs/try-it-out.md](/home/kato/omat/associative-questionnaire/docs/try-it-out.md) under "Run the container and answer the seeded survey".
+
 Client-side scripting must be kept to minimum and done in javascript compatible with major browsers for both desktop and mobile. Styles should be progressive.
 
 ## Design
