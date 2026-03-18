@@ -7,6 +7,8 @@ import {
   generateSurveyHtml,
   loadDeploymentTarget,
   parseSurvey,
+  prepareReporterCgiAsset,
+  prepareSaverCgiAsset,
   prepareReporterProtectionSecret
 } from '../index'
 
@@ -62,11 +64,18 @@ function main(): void {
   const saveScriptTargetPath = join(publicCgiRoot, 'save-survey.js')
   const reportScriptTargetPath = join(publicCgiRoot, 'report-survey.js')
 
-  copyFileSync(saveScriptTemplatePath, saveScriptTargetPath)
+  writeFileSync(
+    saveScriptTargetPath,
+    prepareSaverCgiAsset({
+      saverScriptTemplate: readFileSync(saveScriptTemplatePath, 'utf8'),
+      saverCgiSettings: generatedTargetSettings.saverCgi
+    })
+  )
   chmodSync(saveScriptTargetPath, 0o755)
 
-  const preparedReporter = prepareReporterProtectionSecret({
+  const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
+    reporterCgiSettings: generatedTargetSettings.reporterCgi,
     deploymentWorkspaceDirectory: workspaceRoot
   })
 

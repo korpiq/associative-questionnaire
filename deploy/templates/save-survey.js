@@ -7,6 +7,9 @@ import {
   saveSurveyAnswerSubmission
 } from '/opt/associative-survey/app/deploy/generated/runtime/runtime-cgi.js'
 
+const SURVEYS_DATA_DIR = '__SURVEYS_DATA_DIR__'
+const ANSWERS_DATA_DIR = '__ANSWERS_DATA_DIR__'
+
 function toOptional(value) {
   return value === null || value === '' ? undefined : value
 }
@@ -35,7 +38,6 @@ function writeResponse(response) {
 
 const query = new URLSearchParams(process.env.QUERY_STRING || '')
 const surveyName = query.get('surveyName') || ''
-const effectiveHomeDirectory = process.env.HOME || '/home/app'
 
 try {
   if (!surveyName) {
@@ -43,7 +45,8 @@ try {
   }
 
   const requestBody = await readRequestBody()
-  const { survey } = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
+  const { survey } = resolveStoredReporterSurvey(surveyName, '', {
+    dataDir: SURVEYS_DATA_DIR.replace(/\/surveys$/, ''),
     protectionSecret: undefined,
     protectionHash: undefined
   })
@@ -54,7 +57,8 @@ try {
     surveyName,
     requestBody,
     respondentId: respondent.respondentId,
-    effectiveHomeDirectory
+    effectiveHomeDirectory: '',
+    answersDataDir: ANSWERS_DATA_DIR
   })
 
   writeResponse(

@@ -15,6 +15,8 @@ export { buildGeneratedTargetSettings } from './deploy/build-generated-target-se
 export { loadDeploymentTarget } from './deploy/load-deployment-target'
 export { parseDeploymentTargetConfig } from './deploy/parse-deployment-target-config'
 export { parseDeploymentPath } from './deploy/parse-deployment-path'
+export { prepareReporterCgiAsset } from './deploy/prepare-reporter-cgi-asset'
+export { prepareSaverCgiAsset } from './deploy/prepare-saver-cgi-asset'
 export { deriveProtectedSurveyAccessHash } from './reporter/derive-protected-survey-access-hash'
 export { buildReporterStatistics } from './reporter/build-reporter-statistics'
 export { renderReporterHtmlPage } from './reporter/render-reporter-html-page'

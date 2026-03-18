@@ -8,6 +8,7 @@ COPY package.json package-lock.json tsconfig.json ./
 COPY src ./src
 COPY docs ./docs
 COPY deploy ./deploy
+COPY targets ./targets
 
 RUN npm ci
 RUN npm run build

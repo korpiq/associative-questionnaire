@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { parseAnswerFile, parseSurvey, type AnswerFile, type Survey } from '../schema/survey'
 
 import { deriveProtectedSurveyAccessHash } from './derive-protected-survey-access-hash'
-import { getReporterRuntimePaths } from './runtime-paths'
+import { getReporterRuntimePaths, getReporterRuntimePathsFromDataDir } from './runtime-paths'
 
 export function resolveStoredReporterSurvey(
   surveyName: string,
@@ -12,6 +12,7 @@ export function resolveStoredReporterSurvey(
   access?: {
     protectionSecret?: string
     protectionHash?: string
+    dataDir?: string
   }
 ): {
   survey: Survey
@@ -20,7 +21,9 @@ export function resolveStoredReporterSurvey(
   answerFilePaths: string[]
   validatedAnswerFiles: AnswerFile[]
 } {
-  const { surveysRoot, answersRoot } = getReporterRuntimePaths(effectiveHomeDirectory)
+  const { surveysRoot, answersRoot } = access?.dataDir
+    ? getReporterRuntimePathsFromDataDir(access.dataDir)
+    : getReporterRuntimePaths(effectiveHomeDirectory)
   const storedSurveyFilePath = join(surveysRoot, `${surveyName}.json`)
   const answerDirectoryPath = join(answersRoot, surveyName)
   const survey = parseSurvey(JSON.parse(readFileSync(storedSurveyFilePath, 'utf8')))

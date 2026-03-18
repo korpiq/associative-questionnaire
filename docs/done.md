@@ -170,3 +170,6 @@
 
 57. Switched generated survey pages to target-backed HTML settings.
     Updated container asset preparation to drive generated survey filenames and form actions from the shared generated target settings, verified the prepared survey HTML includes the target-configured saver URL, and kept the full suite and typecheck green.
+
+58. Switched generated CGI assets to injected target runtime settings.
+    Added target-based saver and reporter CGI asset preparation helpers, injected configured data directories into the generated CGI scripts, introduced explicit runtime-dir helpers so saver and reporter logic no longer depend on `HOME` when paths are injected, copied target configs into the container build, aligned the sample target data root with the container runtime, and verified the change with feature coverage, the full suite, typecheck, and the Docker-backed container test.

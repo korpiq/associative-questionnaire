@@ -3,7 +3,7 @@
   "containerName": "associative-survey-local",
   "publicPath": "/srv/www/./surveys",
   "cgiPath": "/srv/www/./cgi-bin",
-  "dataDir": "/srv/data/./surveys",
+  "dataDir": "/home/app/.local/share/associative-survey",
   "publicBaseUrl": "http://127.0.0.1:18080",
   "saverUrl": "http://127.0.0.1:18080/cgi-bin/save-survey.js",
   "reporterUrl": "http://127.0.0.1:18080/cgi-bin/report-survey.js"

@@ -4,7 +4,7 @@ import { basename, extname, join } from 'node:path'
 import { parseSurvey } from '../schema/survey'
 
 import { deriveProtectedSurveyAccessHash } from './derive-protected-survey-access-hash'
-import { ensureReporterSurveyStorage } from './runtime-paths'
+import { ensureReporterSurveyStorage, ensureReporterSurveyStorageAtRoot } from './runtime-paths'
 
 function deriveStoredSurveyName(uploadedFilename: string): string {
   const filename = basename(uploadedFilename)
@@ -43,6 +43,7 @@ export function storeUploadedReporterSurvey(input: {
   uploadedFilename: string
   uploadedJson: string
   effectiveHomeDirectory: string
+  surveysDataDir?: string
   protectionSecret?: string
   protectionHash?: string
 }): {
@@ -52,7 +53,9 @@ export function storeUploadedReporterSurvey(input: {
   const surveyName = deriveStoredSurveyName(input.uploadedFilename)
   parseSurvey(JSON.parse(input.uploadedJson))
 
-  const { surveysRoot } = ensureReporterSurveyStorage(input.effectiveHomeDirectory)
+  const { surveysRoot } = input.surveysDataDir
+    ? ensureReporterSurveyStorageAtRoot(input.surveysDataDir)
+    : ensureReporterSurveyStorage(input.effectiveHomeDirectory)
   const storedSurveyFilePath = join(surveysRoot, `${surveyName}.json`)
 
   assertProtectedSurveyUploadAllowed({

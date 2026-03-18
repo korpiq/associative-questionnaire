@@ -7,6 +7,9 @@ import {
   storeUploadedReporterSurvey
 } from '/opt/associative-survey/app/deploy/generated/runtime/runtime-cgi.js'
 
+const SURVEYS_DATA_DIR = '__SURVEYS_DATA_DIR__'
+const ANSWERS_DATA_DIR = '__ANSWERS_DATA_DIR__'
+const PROTECTION_FILE = '__PROTECTION_FILE__'
 const REPORTER_PROTECTION_SECRET = '__REPORTER_PROTECTION_SECRET__'
 
 function toOptional(value) {
@@ -33,7 +36,6 @@ function writeHtml(statusCode, title, message) {
 
 const query = new URLSearchParams(process.env.QUERY_STRING || '')
 const method = process.env.REQUEST_METHOD || 'GET'
-const effectiveHomeDirectory = process.env.HOME || '/home/app'
 
 try {
   if (method === 'POST') {
@@ -47,7 +49,8 @@ try {
     const stored = storeUploadedReporterSurvey({
       uploadedFilename,
       uploadedJson,
-      effectiveHomeDirectory,
+      effectiveHomeDirectory: '',
+      surveysDataDir: SURVEYS_DATA_DIR,
       protectionSecret: REPORTER_PROTECTION_SECRET,
       protectionHash: toOptional(query.get('hash'))
     })
@@ -60,7 +63,8 @@ try {
       throw new Error('Missing surveyName')
     }
 
-    const resolved = resolveStoredReporterSurvey(surveyName, effectiveHomeDirectory, {
+    const resolved = resolveStoredReporterSurvey(surveyName, '', {
+      dataDir: SURVEYS_DATA_DIR.replace(/\/surveys$/, ''),
       protectionSecret: REPORTER_PROTECTION_SECRET,
       protectionHash: toOptional(query.get('hash'))
     })
