@@ -85,3 +85,73 @@ The reported path should stay the same, and the JSON file content should reflect
 npm test
 npm run check
 ```
+
+## Run the container and answer the seeded survey
+
+Build the current image:
+
+```bash
+npm run build
+npm run prepare:container
+docker build -t associative-survey:test .
+```
+
+Run the container:
+
+```bash
+docker rm -f associative-survey-local >/dev/null 2>&1 || true
+docker run -d --name associative-survey-local -p 18080:8080 associative-survey:test
+```
+
+Open the seeded survey page in a browser:
+
+```text
+http://127.0.0.1:18080/surveys/survey.html
+```
+
+Fill in some answers and submit the form. The seeded survey is stored as `survey`, so the built-in report URL is:
+
+```text
+http://127.0.0.1:18080/cgi-bin/report-survey.js?surveyName=survey
+```
+
+Open that report URL in the browser after submitting. You should see:
+
+- the survey title
+- `Respondents: 1` after one submission
+- per-question counts and percentages
+- visual percentage bars
+
+## Submit to the container without a browser
+
+If you want a quick non-interactive check, submit one response with `curl`:
+
+```bash
+curl --fail --silent --show-error \
+  -X POST \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'favorite-color=blue&notes=Container+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
+  'http://127.0.0.1:18080/cgi-bin/save-survey.js?surveyName=survey'
+```
+
+Then fetch the report:
+
+```bash
+curl --fail --silent 'http://127.0.0.1:18080/cgi-bin/report-survey.js?surveyName=survey'
+```
+
+## Use the automated container test
+
+The repository also includes an end-to-end container test:
+
+```bash
+npm run test:container
+```
+
+That command builds the image, runs the container, submits one answer, and verifies that the report shows one respondent.
+
+## Stop the container
+
+```bash
+docker rm -f associative-survey-local
+```
