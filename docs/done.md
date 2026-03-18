@@ -182,3 +182,6 @@
 
 61. Switched SSH installation to target-backed deployment paths.
     Reworked the SSH install plan and CLI around loaded SSH targets instead of raw install arguments, applied `/./` path splitting to configured public, CGI, data, and protection-file destinations, copied public pages, CGI scripts, survey JSON seeds, and the local protection secret into their configured remote locations, updated the VPS deployment docs to match the new target-based workflow, and verified the change with SSH feature coverage plus the full suite and typecheck.
+
+62. Switched visual testing to the sample target surveys.
+    Added `visual-showcase` under `targets/sample`, updated `prepare:visual` to load that survey and the target-backed CGI asset settings from the sample target instead of the old docs example, kept seeded answers and runtime data manifest generation intact, and verified the change with the full suite, typecheck, and the Docker-backed visual test.

@@ -2,7 +2,14 @@ import { chmodSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from 
 import { dirname, join, resolve } from 'node:path'
 import { buildSync } from 'esbuild'
 
-import { generateSurveyHtml, parseSurvey, prepareReporterProtectionSecret } from '../index'
+import {
+  buildGeneratedTargetSettings,
+  generateSurveyHtml,
+  loadDeploymentTarget,
+  parseSurvey,
+  prepareReporterCgiAsset,
+  prepareSaverCgiAsset
+} from '../index'
 
 function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
@@ -11,6 +18,7 @@ function ensureDirectory(path: string): void {
 function main(): void {
   const workspaceRoot = process.cwd()
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
+  const generatedTargetSettingsPath = join(generatedRoot, 'container-target-settings.json')
   const publicRoot = join(generatedRoot, 'public')
   const publicCgiRoot = join(publicRoot, 'cgi-bin')
   const publicSurveyRoot = join(publicRoot, 'surveys')
@@ -18,9 +26,22 @@ function main(): void {
   const runtimeSurveyRoot = join(runtimeRoot, 'surveys')
   const runtimeAnswerRoot = join(runtimeRoot, 'answers')
   const runtimeBundlePath = join(runtimeRoot, 'runtime-cgi.js')
-  const surveyPath = resolve(workspaceRoot, 'docs/examples/visual-correctness-showcase/survey.json')
-  const templatePath = resolve(workspaceRoot, 'docs/examples/basic/template.html')
-  const surveyName = 'visual-showcase'
+  const deploymentTarget = loadDeploymentTarget({
+    workspaceDirectory: workspaceRoot,
+    targetName: 'sample'
+  })
+  const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
+  const generatedSurvey = generatedTargetSettings.surveyHtml.find(
+    (survey) => survey.surveyName === 'visual-showcase'
+  )
+
+  if (!generatedSurvey) {
+    throw new Error('Expected visual-showcase in the sample target')
+  }
+
+  const surveyPath = generatedSurvey.surveyPath
+  const templatePath = generatedSurvey.templatePath
+  const surveyName = generatedSurvey.surveyName
   const surveyAnswerRoot = join(runtimeAnswerRoot, surveyName)
 
   ensureDirectory(publicCgiRoot)
@@ -41,11 +62,12 @@ function main(): void {
   const template = readFileSync(templatePath, 'utf8')
   const surveyHtml = generateSurveyHtml(survey, template, {
     surveyName,
-    formAction: '/cgi-bin/save-survey.js'
+    formAction: generatedSurvey.formAction
   })
 
-  writeFileSync(join(publicSurveyRoot, 'visual-showcase.html'), surveyHtml)
+  writeFileSync(join(publicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
   copyFileSync(surveyPath, join(runtimeSurveyRoot, `${surveyName}.json`))
+  writeFileSync(generatedTargetSettingsPath, JSON.stringify(generatedTargetSettings, null, 2))
 
   const seededAnswers = [
     {
@@ -110,11 +132,18 @@ function main(): void {
   const saveScriptTargetPath = join(publicCgiRoot, 'save-survey.js')
   const reportScriptTargetPath = join(publicCgiRoot, 'report-survey.js')
 
-  copyFileSync(saveScriptTemplatePath, saveScriptTargetPath)
+  writeFileSync(
+    saveScriptTargetPath,
+    prepareSaverCgiAsset({
+      saverScriptTemplate: readFileSync(saveScriptTemplatePath, 'utf8'),
+      saverCgiSettings: generatedTargetSettings.saverCgi
+    })
+  )
   chmodSync(saveScriptTargetPath, 0o755)
 
-  const preparedReporter = prepareReporterProtectionSecret({
+  const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
+    reporterCgiSettings: generatedTargetSettings.reporterCgi,
     deploymentWorkspaceDirectory: workspaceRoot
   })
 
@@ -129,6 +158,7 @@ function main(): void {
         runtimeSurveyRoot,
         runtimeAnswerRoot,
         runtimeBundlePath,
+        generatedTargetSettingsPath,
         surveyName,
         saveScriptTargetPath,
         reportScriptTargetPath,

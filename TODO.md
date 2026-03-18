@@ -10,9 +10,3 @@ Add success and fail portions to the default template for that.
 ## Custom CSS and scripts should override defaults individually 
 
 Custom CSS and script sections should add to or override existing individual entries or functions in the respective sets.
-
-## deployment targets
-
-## visual testing should use sample target
-
-Convert visual testing to use a sample target container with sample surveys under /targets/sample/.
