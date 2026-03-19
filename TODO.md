@@ -1,5 +1,13 @@
 # TODO
 
+## Sample container deployment fixes
+
+- container httpd server serves from directory different than specified in sample/target.json: /opt/associative-survey/app/deploy/generated/public
+- files should be deployed according to paths in target.json
+- whole project workspace should not be visible anywhere in the container, as it is now under /opt
+- override-survey is listed in sample but missing in container
+- save fails with ENOENT: no such file or directory, open '/home/app/.local/share/associative-survey/surveys/visual-showcase.json'
+
 ## Keep survey answers in local storage
 
 - whenever form state changes, save it to local storage
