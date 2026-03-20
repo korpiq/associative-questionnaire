@@ -3,12 +3,13 @@ import type {
   GeneratedSurveyDeploymentSettings
 } from './build-generated-target-settings'
 import { bundleGeneratedCgiSource } from './bundle-generated-cgi-source'
+import { relative } from 'node:path'
 
 const SURVEYS_DATA_DIR_PLACEHOLDER = '__SURVEYS_DATA_DIR__'
 const ANSWERS_DATA_DIR_PLACEHOLDER = '__ANSWERS_DATA_DIR__'
 const SURVEY_NAME_PLACEHOLDER = '__SURVEY_NAME__'
-const PRIVATE_SURVEY_PATH_PLACEHOLDER = '__PRIVATE_SURVEY_PATH__'
-const PRIVATE_ANSWERS_DIR_PLACEHOLDER = '__PRIVATE_ANSWERS_DIR__'
+const PRIVATE_SURVEY_RELATIVE_PATH_PLACEHOLDER = '__PRIVATE_SURVEY_RELATIVE_PATH__'
+const PRIVATE_ANSWERS_RELATIVE_PATH_PLACEHOLDER = '__PRIVATE_ANSWERS_RELATIVE_PATH__'
 
 function hasPerSurveyPrivatePaths(
   settings: GeneratedReporterCgiSettings | GeneratedSurveyDeploymentSettings
@@ -23,12 +24,21 @@ export function prepareReporterCgiAsset(input: {
   preparedReporterScript: string
 } {
   if (hasPerSurveyPrivatePaths(input.reporterCgiSettings)) {
+    const privateSurveyRelativePath = relative(
+      input.reporterCgiSettings.cgiDir,
+      input.reporterCgiSettings.privateSurveyPath
+    )
+    const privateAnswersRelativePath = relative(
+      input.reporterCgiSettings.cgiDir,
+      input.reporterCgiSettings.privateAnswersDir
+    )
+
     return {
       preparedReporterScript: bundleGeneratedCgiSource(
         input.reporterScriptTemplate
           .replaceAll(SURVEY_NAME_PLACEHOLDER, input.reporterCgiSettings.surveyName)
-          .replaceAll(PRIVATE_SURVEY_PATH_PLACEHOLDER, input.reporterCgiSettings.privateSurveyPath)
-          .replaceAll(PRIVATE_ANSWERS_DIR_PLACEHOLDER, input.reporterCgiSettings.privateAnswersDir)
+          .replaceAll(PRIVATE_SURVEY_RELATIVE_PATH_PLACEHOLDER, privateSurveyRelativePath)
+          .replaceAll(PRIVATE_ANSWERS_RELATIVE_PATH_PLACEHOLDER, privateAnswersRelativePath)
       )
     }
   }

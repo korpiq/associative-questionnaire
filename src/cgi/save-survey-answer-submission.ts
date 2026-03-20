@@ -13,14 +13,18 @@ export function saveSurveyAnswerSubmission(input: {
   respondentId: string
   effectiveHomeDirectory: string
   answersDataDir?: string
+  surveyAnswersDirectory?: string
 }): {
   savedAnswerFilePath: string
 } {
   const answerFile = normalizeSurveyAnswerRequestBody(input.survey, input.requestBody)
   const respondentFilename = `${input.respondentId}.json`
-  const { surveyAnswersDirectory } = input.answersDataDir
-    ? ensureSurveyAnswerStorageAtRoot(input.surveyName, input.answersDataDir)
-    : ensureSurveyAnswerStorage(input.surveyName, input.effectiveHomeDirectory)
+  const surveyAnswersDirectory =
+    input.surveyAnswersDirectory ??
+    (input.answersDataDir
+      ? ensureSurveyAnswerStorageAtRoot(input.surveyName, input.answersDataDir).surveyAnswersDirectory
+      : ensureSurveyAnswerStorage(input.surveyName, input.effectiveHomeDirectory)
+          .surveyAnswersDirectory)
   const savedAnswerFilePath = join(surveyAnswersDirectory, respondentFilename)
 
   writeFileSync(savedAnswerFilePath, JSON.stringify(answerFile))

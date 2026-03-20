@@ -218,3 +218,6 @@
 
 73. Bundled generated CGI assets into self-contained files with esbuild.
     Added a shared `esbuild` bundling helper for generated CGI source, preserved shebang lines through bundling, updated saver and reporter CGI asset preparation to bundle their prepared source into one deployed file each, added coverage that project-local import specifiers are removed from prepared CGI outputs, and verified the change with targeted asset coverage, the full suite, and typecheck.
+
+74. Switched CGI runtime path resolution to `SCRIPT_FILENAME` and the canonical per-survey layout.
+    Added production feature coverage for resolving deployed CGI runtime paths from `SCRIPT_FILENAME`, injected per-survey private survey and answers paths into generated CGI assets as paths relative to each script directory, updated the generated saver and reporter templates to read only their own private `survey.json` and `answers/` locations, and verified the change with focused CGI-path and CGI-asset coverage plus the full suite and typecheck.

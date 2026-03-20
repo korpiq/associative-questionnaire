@@ -1,14 +1,16 @@
 #!/usr/local/bin/node --experimental-specifier-resolution=node
 
+import { readFileSync } from 'node:fs'
 import {
-  renderSaverCgiResponse,
-  resolveStoredReporterSurvey,
-  resolveRespondentCookie,
-  saveSurveyAnswerSubmission
-} from '/opt/associative-survey/app/deploy/generated/runtime/runtime-cgi.js'
+  renderSaverCgiResponse
+} from '../cgi/render-saver-cgi-response'
+import { resolveRespondentCookie } from '../cgi/respondent-cookie'
+import { resolveCgiScriptRuntimePaths } from '../cgi/resolve-cgi-script-runtime-paths'
+import { saveSurveyAnswerSubmission } from '../cgi/save-survey-answer-submission'
+import { parseSurvey } from '../schema/survey'
 
-const SURVEYS_DATA_DIR = '__SURVEYS_DATA_DIR__'
-const ANSWERS_DATA_DIR = '__ANSWERS_DATA_DIR__'
+const PRIVATE_SURVEY_RELATIVE_PATH = '__PRIVATE_SURVEY_RELATIVE_PATH__'
+const PRIVATE_ANSWERS_RELATIVE_PATH = '__PRIVATE_ANSWERS_RELATIVE_PATH__'
 
 function toOptional(value) {
   return value === null || value === '' ? undefined : value
@@ -37,28 +39,24 @@ function writeResponse(response) {
 }
 
 const query = new URLSearchParams(process.env.QUERY_STRING || '')
-const surveyName = query.get('surveyName') || ''
 
 try {
-  if (!surveyName) {
-    throw new Error('Missing surveyName')
-  }
-
+  const runtimePaths = resolveCgiScriptRuntimePaths(
+    process.env.SCRIPT_FILENAME || '',
+    PRIVATE_SURVEY_RELATIVE_PATH,
+    PRIVATE_ANSWERS_RELATIVE_PATH
+  )
   const requestBody = await readRequestBody()
-  const { survey } = resolveStoredReporterSurvey(surveyName, '', {
-    dataDir: SURVEYS_DATA_DIR.replace(/\/surveys$/, ''),
-    protectionSecret: undefined,
-    protectionHash: undefined
-  })
+  const survey = parseSurvey(JSON.parse(readFileSync(runtimePaths.privateSurveyPath, 'utf8')))
   const respondent = resolveRespondentCookie(process.env.HTTP_COOKIE)
 
   saveSurveyAnswerSubmission({
     survey,
-    surveyName,
+    surveyName: runtimePaths.surveyName,
     requestBody,
     respondentId: respondent.respondentId,
     effectiveHomeDirectory: '',
-    answersDataDir: ANSWERS_DATA_DIR
+    surveyAnswersDirectory: runtimePaths.privateAnswersDir
   })
 
   writeResponse(

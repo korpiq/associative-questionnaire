@@ -7,6 +7,7 @@ export {
 export { normalizeSurveyAnswerRequestBody } from './cgi/normalize-survey-answer-request-body'
 export { normalizeSurveyAnswerFields } from './cgi/normalize-survey-answer-fields'
 export { resolveRespondentCookie } from './cgi/respondent-cookie'
+export { resolveCgiScriptRuntimePaths } from './cgi/resolve-cgi-script-runtime-paths'
 export { ensureSurveyAnswerStorage } from './cgi/ensure-survey-answer-storage'
 export { renderSaverCgiResponse } from './cgi/render-saver-cgi-response'
 export { saveSurveyAnswerSubmission } from './cgi/save-survey-answer-submission'
