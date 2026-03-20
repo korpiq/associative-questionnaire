@@ -1,5 +1,5 @@
 Feature: Build generated target settings for production assets
-  Scenario: A loaded target produces survey HTML and CGI settings
+  Scenario: A loaded target produces per-survey public, CGI, and private-data settings
     Given the loaded deployment target is:
       """
       {
@@ -31,36 +31,40 @@ Feature: Build generated target settings for production assets
       }
       """
     When the generated target settings are built
-    Then the generated survey HTML settings are:
+    Then the generated survey deployment settings are:
       """
       [
         {
           "surveyName": "basic",
           "surveyPath": "/workspace/targets/example-vps/surveys/basic/survey.json",
           "templatePath": "/workspace/targets/example-vps/surveys/basic/template.html",
-          "publicHtmlFilename": "basic.html",
-          "formAction": "https://example.test/cgi-bin/save.cgi"
+          "publicDir": "/srv/sites/example.test/www/surveys/basic",
+          "publicUrl": "https://example.test/basic/",
+          "publicHtmlFilename": "index.html",
+          "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
+          "saveCgiFilename": "save.cgi",
+          "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",
+          "reportCgiFilename": "report.cgi",
+          "reportUrl": "https://example.test/cgi-bin/basic/report.cgi",
+          "privateDataDir": "/srv/sites/example.test/www/data/basic",
+          "privateSurveyPath": "/srv/sites/example.test/www/data/basic/survey.json",
+          "privateAnswersDir": "/srv/sites/example.test/www/data/basic/answers"
         },
         {
           "surveyName": "follow-up",
           "surveyPath": "/workspace/targets/example-vps/surveys/follow-up/survey.json",
           "templatePath": "/workspace/targets/example-vps/surveys/follow-up/template.html",
-          "publicHtmlFilename": "follow-up.html",
-          "formAction": "https://example.test/cgi-bin/save.cgi"
+          "publicDir": "/srv/sites/example.test/www/surveys/follow-up",
+          "publicUrl": "https://example.test/follow-up/",
+          "publicHtmlFilename": "index.html",
+          "cgiDir": "/srv/sites/example.test/www/cgi-bin/follow-up",
+          "saveCgiFilename": "save.cgi",
+          "saveUrl": "https://example.test/cgi-bin/follow-up/save.cgi",
+          "reportCgiFilename": "report.cgi",
+          "reportUrl": "https://example.test/cgi-bin/follow-up/report.cgi",
+          "privateDataDir": "/srv/sites/example.test/www/data/follow-up",
+          "privateSurveyPath": "/srv/sites/example.test/www/data/follow-up/survey.json",
+          "privateAnswersDir": "/srv/sites/example.test/www/data/follow-up/answers"
         }
       ]
-      """
-    And the generated saver CGI settings are:
-      """
-      {
-        "surveysDataDir": "/srv/sites/example.test/www/data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/data/answers"
-      }
-      """
-    And the generated reporter CGI settings are:
-      """
-      {
-        "surveysDataDir": "/srv/sites/example.test/www/data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/data/answers"
-      }
       """

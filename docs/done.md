@@ -194,3 +194,21 @@
 
 65. Wrote a concise deployment-v2 implementation plan.
     Added `docs/deployment-v2-implementation-plan.md` as an ordered implementation sequence covering the new target contract, per-survey artifact layout, CGI runtime path resolution from `SCRIPT_FILENAME`, tarball packaging, setup behavior, container alignment, and the portability test coverage still required.
+
+66. Removed reporter protection handling from the production runtime.
+    Dropped survey-level `protected` handling from the schema-normalization and reporter-survey runtime flow, removed the protected-reporter feature coverage, added compatibility coverage showing legacy `protected` metadata is ignored, and verified the change with the full suite.
+
+67. Removed reporter protection handling from build and deployment code.
+    Stopped generating reporter protection secrets, removed secret injection from prepared reporter CGI assets, removed secret-copy behavior from SSH installation and visual/container preparation outputs, deleted the obsolete protection-secret feature coverage, and verified the change with targeted deployment tests plus the full suite and typecheck.
+
+68. Removed `/./` split-path behavior from the shared deployment-path parser.
+    Reworked deployment-path feature coverage to treat `/./` as plain path text, simplified `parseDeploymentPath()` to return configured paths unchanged, and verified the change with parser-focused feature coverage and typecheck.
+
+69. Removed `/./` split-path and directory-creation behavior from deployment planning.
+    Simplified the SSH install plan to preserve configured target paths literally, removed the pre-copy SSH setup command and the remaining `/./`-aware path handling, and verified the change with SSH install coverage plus the full suite and typecheck.
+
+70. Switched target parsing to the deployment-v2 config schema.
+    Replaced the old target configuration fields with `publicDir`, `cgiDir`, `cgiBaseUrl`, `nodeExecutable`, and `cgiExtension`, updated parser/discovery/settings/SSH fixtures to the new contract, derived the temporary save form action from `cgiBaseUrl` plus `cgiExtension`, and verified the change with parser-focused coverage, the full suite, and typecheck.
+
+71. Switched generated target settings to per-survey deployment settings.
+    Replaced the old shared target-level manifest shape with one `surveys[]` array describing each survey's public directory and URL, CGI directory and URLs, and private data paths, updated container and visual preparation to consume those per-survey settings while temporarily deriving shared CGI runtime placeholders locally, adjusted container runtime-data installation to seed each survey's private paths from the new manifest, and verified the change with targeted generated-settings coverage, the full suite, and typecheck.

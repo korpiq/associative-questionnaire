@@ -21,7 +21,9 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('A loaded target produces survey HTML and CGI settings', ({ Given, When, Then, And }) => {
+  Scenario(
+    'A loaded target produces per-survey public, CGI, and private-data settings',
+    ({ Given, When, Then }) => {
     Given('the loaded deployment target is:', (_ctx, docString) => {
       loadedTarget = parseYamlDocString<LoadedDeploymentTarget>(docString)
       generatedTargetSettings = undefined
@@ -35,16 +37,9 @@ describeFeature(feature, ({ Scenario }) => {
       generatedTargetSettings = buildGeneratedTargetSettings(loadedTarget)
     })
 
-    Then('the generated survey HTML settings are:', (_ctx, docString) => {
-      expect(generatedTargetSettings?.surveyHtml).toEqual(parseYamlDocString(docString))
+    Then('the generated survey deployment settings are:', (_ctx, docString) => {
+      expect(generatedTargetSettings?.surveys).toEqual(parseYamlDocString(docString))
     })
-
-    And('the generated saver CGI settings are:', (_ctx, docString) => {
-      expect(generatedTargetSettings?.saverCgi).toEqual(parseYamlDocString(docString))
-    })
-
-    And('the generated reporter CGI settings are:', (_ctx, docString) => {
-      expect(generatedTargetSettings?.reporterCgi).toEqual(parseYamlDocString(docString))
-    })
-  })
+  }
+  )
 })

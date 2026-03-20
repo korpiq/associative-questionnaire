@@ -9,12 +9,6 @@ Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md`
 
 Ordered steps to reach the first working deployment:
 
-- remove everything related to `protection` in production code
-- remove everything related to `protection` in build/deployment code
-- remove everything related to `/./` subpaths in production code
-- remove everything related to `/./` subpaths or directory creation in build/deployment code
-- replace the target config parser with the v2 `target.json` schema
-- update generated target settings from shared target-level runtime paths to per-survey public, CGI, and private-data settings
 - update generated survey HTML and CGI assets to use per-survey URLs and private-data paths
 - make CGI runtime path resolution depend on `SCRIPT_FILENAME` and the canonical per-survey layout only
 - generate per-survey deployable artifacts: `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, `report<cgiExtension>`, and private `survey.json`

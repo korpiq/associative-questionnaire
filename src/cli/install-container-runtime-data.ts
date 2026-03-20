@@ -1,13 +1,12 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
-
-import { installGeneratedContainerRuntimeData } from '../deploy/install-generated-container-runtime-data'
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 
 type ContainerTargetSettingsManifest = {
-  saverCgi: {
-    surveysDataDir: string
-    answersDataDir: string
-  }
+  surveys: Array<{
+    surveyName: string
+    privateSurveyPath: string
+    privateAnswersDir: string
+  }>
 }
 
 function readManifest(path: string): ContainerTargetSettingsManifest | undefined {
@@ -23,14 +22,21 @@ function main(): void {
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
   const manifestPath = join(generatedRoot, 'container-target-settings.json')
   const manifest = readManifest(manifestPath)
+  const generatedSurveyRoot = join(generatedRoot, 'runtime', 'surveys')
+  const generatedAnswersRoot = join(generatedRoot, 'runtime', 'answers')
 
-  installGeneratedContainerRuntimeData({
-    generatedSurveyRoot: join(generatedRoot, 'runtime', 'surveys'),
-    generatedAnswersRoot: join(generatedRoot, 'runtime', 'answers'),
-    surveysDataDir:
-      manifest?.saverCgi.surveysDataDir ?? '/home/app/.local/share/associative-survey/surveys',
-    answersDataDir:
-      manifest?.saverCgi.answersDataDir ?? '/home/app/.local/share/associative-survey/answers'
+  manifest?.surveys.forEach((survey) => {
+    mkdirSync(dirname(survey.privateSurveyPath), { recursive: true })
+    mkdirSync(survey.privateAnswersDir, { recursive: true })
+    copyFileSync(
+      join(generatedSurveyRoot, `${survey.surveyName}.json`),
+      survey.privateSurveyPath
+    )
+
+    const seededSurveyAnswersRoot = join(generatedAnswersRoot, survey.surveyName)
+    if (existsSync(seededSurveyAnswersRoot)) {
+      cpSync(seededSurveyAnswersRoot, survey.privateAnswersDir, { recursive: true })
+    }
   })
 }
 

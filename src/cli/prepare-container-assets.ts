@@ -16,6 +16,16 @@ function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
 }
 
+function buildSharedCgiSettings(dataDir: string): {
+  surveysDataDir: string
+  answersDataDir: string
+} {
+  return {
+    surveysDataDir: dataDir.endsWith('/') ? `${dataDir}surveys` : `${dataDir}/surveys`,
+    answersDataDir: dataDir.endsWith('/') ? `${dataDir}answers` : `${dataDir}/answers`
+  }
+}
+
 function main(): void {
   const workspaceRoot = process.cwd()
   const targetName = readTargetNameArgument(process.argv, 'sample')
@@ -46,12 +56,12 @@ function main(): void {
     outfile: runtimeBundlePath
   })
 
-  generatedTargetSettings.surveyHtml.forEach((generatedSurvey) => {
+  generatedTargetSettings.surveys.forEach((generatedSurvey) => {
     const survey = parseSurvey(JSON.parse(readFileSync(generatedSurvey.surveyPath, 'utf8')))
     const template = readFileSync(generatedSurvey.templatePath, 'utf8')
     const surveyHtml = generateSurveyHtml(survey, template, {
       surveyName: generatedSurvey.surveyName,
-      formAction: generatedSurvey.formAction
+      formAction: generatedSurvey.saveUrl
     })
 
     writeFileSync(join(publicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
@@ -62,6 +72,7 @@ function main(): void {
   })
 
   writeFileSync(generatedTargetSettingsPath, JSON.stringify(generatedTargetSettings, null, 2))
+  const sharedCgiSettings = buildSharedCgiSettings(deploymentTarget.dataDir)
 
   const saveScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/save-survey.js')
   const reporterScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/report-survey.template.js')
@@ -72,14 +83,14 @@ function main(): void {
     saveScriptTargetPath,
     prepareSaverCgiAsset({
       saverScriptTemplate: readFileSync(saveScriptTemplatePath, 'utf8'),
-      saverCgiSettings: generatedTargetSettings.saverCgi
+      saverCgiSettings: sharedCgiSettings
     })
   )
   chmodSync(saveScriptTargetPath, 0o755)
 
   const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
-    reporterCgiSettings: generatedTargetSettings.reporterCgi
+    reporterCgiSettings: sharedCgiSettings
   })
 
   ensureDirectory(dirname(reportScriptTargetPath))
@@ -94,7 +105,7 @@ function main(): void {
         runtimeBundlePath,
         generatedTargetSettingsPath,
         deploymentTargetName: deploymentTarget.targetName,
-        deployedSurveys: generatedTargetSettings.surveyHtml,
+        deployedSurveys: generatedTargetSettings.surveys,
         saveScriptTargetPath,
         reportScriptTargetPath
       },
