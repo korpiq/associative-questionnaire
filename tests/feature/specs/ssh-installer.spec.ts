@@ -14,6 +14,8 @@ describeFeature(feature, ({ Scenario }) => {
         remotePublicRoot: string
         remoteCgiRoot: string
         remoteDataRoot: string
+        remoteStagingRoot: string
+        localTarballPath: string
         commands: Array<[string, ...string[]]>
       }
     | undefined
@@ -27,7 +29,7 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('An SSH target produces remote copy commands from configured paths', ({ Given, And, When, Then }) => {
+  Scenario('An SSH target produces tarball deployment commands from configured paths', ({ Given, And, When, Then }) => {
     Given('the loaded SSH deployment target is:', (_ctx, docString) => {
       target = parseYamlDocString<LoadedDeploymentTarget>(docString)
       plan = undefined
@@ -63,6 +65,16 @@ describeFeature(feature, ({ Scenario }) => {
     And('the remote data root is {string}', (_ctx, value) => {
       expect(planError).toBeNull()
       expect(plan?.remoteDataRoot).toBe(value)
+    })
+
+    And('the remote SSH staging root is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.remoteStagingRoot).toBe(value)
+    })
+
+    And('the local SSH deployment tarball is {string}', (_ctx, value) => {
+      expect(planError).toBeNull()
+      expect(plan?.localTarballPath).toBe(value)
     })
 
     And('the SSH install commands are:', (_ctx, docString) => {

@@ -233,3 +233,6 @@
 
 78. Added a Docker-backed integration test for the first working container deployment flow.
     Updated the integration deployment script to use the deployed v2 survey and CGI URLs, verified one survey page load, one save, and one report count through the running container image, and verified the change with `npm run test:integration` plus the full suite and typecheck.
+
+79. Replaced SSH deployment packaging with a v2 tarball and setup script.
+    Added an integration test for generated SSH deployment packages, introduced a pure-Node tarball builder that packages `payload/public`, `payload/cgi`, `payload/data`, and `setup.sh`, updated the SSH install plan to transfer one generated tarball to a remote staging directory and run the extracted setup script, switched the SSH CLI to build that package instead of reusing container prep, and verified the change with focused SSH feature and integration coverage plus the full suite and typecheck.

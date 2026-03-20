@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import { buildSshInstallPlan } from '../deploy/build-ssh-install-plan'
 import { loadDeploymentTarget } from '../deploy/load-deployment-target'
+import { prepareGeneratedSshDeploymentPackage } from '../deploy/prepare-generated-ssh-deployment-package'
 import { readTargetNameArgument } from './read-target-name-argument'
 
 function main(): void {
@@ -12,7 +13,10 @@ function main(): void {
   }
 
   execFileSync('npm', ['run', 'build'], { stdio: 'inherit' })
-  execFileSync('npm', ['run', 'prepare:container', '--', targetName], { stdio: 'inherit' })
+  prepareGeneratedSshDeploymentPackage({
+    workspaceDirectory: workspaceRoot,
+    targetName
+  })
 
   const target = loadDeploymentTarget({
     workspaceDirectory: workspaceRoot,
@@ -34,7 +38,9 @@ function main(): void {
         sshTarget: target.type === 'ssh' ? target.sshTarget : undefined,
         remotePublicRoot: plan.remotePublicRoot,
         remoteCgiRoot: plan.remoteCgiRoot,
-        remoteDataRoot: plan.remoteDataRoot
+        remoteDataRoot: plan.remoteDataRoot,
+        remoteStagingRoot: plan.remoteStagingRoot,
+        localTarballPath: plan.localTarballPath
       },
       null,
       2

@@ -24,6 +24,8 @@ export function buildSshInstallPlan(input: {
   remotePublicRoot: string
   remoteCgiRoot: string
   remoteDataRoot: string
+  remoteStagingRoot: string
+  localTarballPath: string
   commands: Array<[string, ...string[]]>
 } {
   if (input.target.type !== 'ssh') {
@@ -33,34 +35,31 @@ export function buildSshInstallPlan(input: {
   const remotePublicRoot = toRemoteShellPath(input.target.publicDir)
   const remoteCgiRoot = toRemoteShellPath(input.target.cgiDir)
   const remoteDataRoot = toRemoteShellPath(input.target.dataDir)
+  const remoteStagingRoot = `$HOME/.cache/associative-survey-deploy/${input.target.targetName}`
+  const remoteTarballPath = `${remoteStagingRoot}/${input.target.targetName}.tar.gz`
+  const localTarballPath = `deploy/generated/${input.target.targetName}.tar.gz`
 
   return {
     remotePublicRoot,
     remoteCgiRoot,
     remoteDataRoot,
+    remoteStagingRoot,
+    localTarballPath,
     commands: [
       [
-        'scp',
-        '-r',
-        'deploy/generated/public/surveys/.',
-        `${input.target.sshTarget}:${remotePublicRoot}/`
+        'ssh',
+        input.target.sshTarget,
+        `mkdir -p ${quoteRemotePath(remoteStagingRoot)}`
       ],
       [
         'scp',
-        '-r',
-        'deploy/generated/public/cgi-bin/.',
-        `${input.target.sshTarget}:${remoteCgiRoot}/`
-      ],
-      [
-        'scp',
-        '-r',
-        'deploy/generated/runtime/surveys/.',
-        `${input.target.sshTarget}:${remoteDataRoot}/surveys/`
+        localTarballPath,
+        `${input.target.sshTarget}:${remoteTarballPath}`
       ],
       [
         'ssh',
         input.target.sshTarget,
-        `chmod 755 ${quoteRemotePath(remoteCgiRoot)}/*.js`
+        `tar -xzf ${quoteRemotePath(remoteTarballPath)} -C ${quoteRemotePath(remoteStagingRoot)} && ${quoteRemotePath(`${remoteStagingRoot}/setup.sh`)} ${quoteRemotePath(remoteTarballPath)}`
       ]
     ]
   }

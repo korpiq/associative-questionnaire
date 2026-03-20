@@ -53,20 +53,20 @@ CSS is embedded:
 
 - Build one tarball per target containing only the selected surveys and a setup script.
 - Package only deployed files:
-- public survey directories
-- CGI survey directories
-- private survey seed-data directories containing `survey.json`
-- setup script
+- `payload/public/<surveyName>/`
+- `payload/cgi/<surveyName>/`
+- `payload/data/<surveyName>/`
+- `setup.sh`
 - Do not package source workspace files or build tooling.
 
 ## 7. Write the setup script
 
-- Extract files into the configured `publicDir`, `cgiDir`, and `dataDir`.
-- Let tar extraction create missing deployed directories under those target-wide roots.
+- Copy extracted payload files into the configured `publicDir`, `cgiDir`, and `dataDir`.
+- Let tar extraction create the temporary package workspace and the setup script copy create the deployed directories.
 - Never remove existing files from the target host.
 - Leave undeployed surveys untouched.
 - Mark CGI files executable.
-- Remove the deployed tarball after successful extraction and setup.
+- Remove the deployed tarball and extracted package workspace after successful setup.
 
 ## 8. Simplify deployment commands
 

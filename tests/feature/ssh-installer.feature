@@ -1,5 +1,5 @@
 Feature: Build an SSH install plan from a target configuration
-  Scenario: An SSH target produces remote copy commands from configured paths
+  Scenario: An SSH target produces tarball deployment commands from configured paths
     Given the loaded SSH deployment target is:
       """
       {
@@ -28,31 +28,25 @@ Feature: Build an SSH install plan from a target configuration
     Then the remote public root is "$HOME/sites/example.test/www/surveys"
     And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
     And the remote data root is "$HOME/sites/example.test/www/data"
+    And the remote SSH staging root is "$HOME/.cache/associative-survey-deploy/example-vps"
+    And the local SSH deployment tarball is "deploy/generated/example-vps.tar.gz"
     And the SSH install commands are:
       """
       [
         [
-          "scp",
-          "-r",
-          "deploy/generated/public/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/surveys/"
+          "ssh",
+          "deploy@example.test",
+          "mkdir -p \"$HOME/.cache/associative-survey-deploy/example-vps\""
         ],
         [
           "scp",
-          "-r",
-          "deploy/generated/public/cgi-bin/.",
-          "deploy@example.test:$HOME/sites/example.test/www/cgi-bin/"
-        ],
-        [
-          "scp",
-          "-r",
-          "deploy/generated/runtime/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/data/surveys/"
+          "deploy/generated/example-vps.tar.gz",
+          "deploy@example.test:$HOME/.cache/associative-survey-deploy/example-vps/example-vps.tar.gz"
         ],
         [
           "ssh",
           "deploy@example.test",
-          "chmod 755 \"$HOME/sites/example.test/www/cgi-bin\"/*.js"
+          "tar -xzf \"$HOME/.cache/associative-survey-deploy/example-vps/example-vps.tar.gz\" -C \"$HOME/.cache/associative-survey-deploy/example-vps\" && \"$HOME/.cache/associative-survey-deploy/example-vps/setup.sh\" \"$HOME/.cache/associative-survey-deploy/example-vps/example-vps.tar.gz\""
         ]
       ]
       """

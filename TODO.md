@@ -9,7 +9,6 @@ Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md`
 
 Ordered steps to reach the first working deployment:
 
-- replace SSH deployment packaging with target tarball plus setup script based on the same per-survey artifact layout
 - add an integration test for the first working SSH-style deployment to a containerized host with distinct public, CGI, and private-data roots
 
 ## Keep survey answers in local storage
