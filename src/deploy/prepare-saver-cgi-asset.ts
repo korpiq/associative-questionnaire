@@ -2,6 +2,7 @@ import type {
   GeneratedSaverCgiSettings,
   GeneratedSurveyDeploymentSettings
 } from './build-generated-target-settings'
+import { bundleGeneratedCgiSource } from './bundle-generated-cgi-source'
 
 const SURVEYS_DATA_DIR_PLACEHOLDER = '__SURVEYS_DATA_DIR__'
 const ANSWERS_DATA_DIR_PLACEHOLDER = '__ANSWERS_DATA_DIR__'
@@ -19,12 +20,16 @@ export function prepareSaverCgiAsset(input: {
   saverCgiSettings: GeneratedSaverCgiSettings | GeneratedSurveyDeploymentSettings
 }): string {
   if (hasPerSurveyPrivatePaths(input.saverCgiSettings)) {
-    return input.saverScriptTemplate
-      .replaceAll(PRIVATE_SURVEY_PATH_PLACEHOLDER, input.saverCgiSettings.privateSurveyPath)
-      .replaceAll(PRIVATE_ANSWERS_DIR_PLACEHOLDER, input.saverCgiSettings.privateAnswersDir)
+    return bundleGeneratedCgiSource(
+      input.saverScriptTemplate
+        .replaceAll(PRIVATE_SURVEY_PATH_PLACEHOLDER, input.saverCgiSettings.privateSurveyPath)
+        .replaceAll(PRIVATE_ANSWERS_DIR_PLACEHOLDER, input.saverCgiSettings.privateAnswersDir)
+    )
   }
 
-  return input.saverScriptTemplate
-    .replaceAll(SURVEYS_DATA_DIR_PLACEHOLDER, input.saverCgiSettings.surveysDataDir)
-    .replaceAll(ANSWERS_DATA_DIR_PLACEHOLDER, input.saverCgiSettings.answersDataDir)
+  return bundleGeneratedCgiSource(
+    input.saverScriptTemplate
+      .replaceAll(SURVEYS_DATA_DIR_PLACEHOLDER, input.saverCgiSettings.surveysDataDir)
+      .replaceAll(ANSWERS_DATA_DIR_PLACEHOLDER, input.saverCgiSettings.answersDataDir)
+  )
 }

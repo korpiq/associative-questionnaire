@@ -9,8 +9,6 @@ Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md`
 
 Ordered steps to reach the first working deployment:
 
-- bundle generated CGI scripts with `esbuild` into one self-contained deployed file each
-  Keep runtime data-file access as an explicit supported dependency.
 - make CGI runtime path resolution depend on `SCRIPT_FILENAME` and the canonical per-survey layout only
 - generate per-survey deployable artifacts: `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, `report<cgiExtension>`, and private `survey.json`
 - update container preparation to place files according to `publicDir`, `cgiDir`, and `dataDir` from `target.json`

@@ -2,8 +2,12 @@ Feature: Prepare target-based CGI assets
   Scenario: A saver CGI asset injects per-survey private data paths
     Given the saver CGI template is:
       """
+      import { ensureSurveyAnswerStorageAtRoot } from "../cgi/ensure-survey-answer-storage";
       const PRIVATE_SURVEY_PATH = "__PRIVATE_SURVEY_PATH__";
       const PRIVATE_ANSWERS_DIR = "__PRIVATE_ANSWERS_DIR__";
+      export function readSaverPaths() {
+        return ensureSurveyAnswerStorageAtRoot("basic", PRIVATE_ANSWERS_DIR);
+      }
       export { PRIVATE_SURVEY_PATH, PRIVATE_ANSWERS_DIR };
       """
     And the saver CGI settings are:
@@ -29,6 +33,7 @@ Feature: Prepare target-based CGI assets
     Then the prepared saver CGI asset omits:
       """
       [
+        "../cgi/ensure-survey-answer-storage",
         "__PRIVATE_SURVEY_PATH__",
         "__PRIVATE_ANSWERS_DIR__"
       ]
@@ -44,9 +49,13 @@ Feature: Prepare target-based CGI assets
   Scenario: A reporter CGI asset injects survey name and per-survey private data paths
     Given the reporter CGI template is:
       """
+      import { getReporterRuntimePathsFromDataDir } from "../reporter/runtime-paths";
       const SURVEY_NAME = "__SURVEY_NAME__";
       const PRIVATE_SURVEY_PATH = "__PRIVATE_SURVEY_PATH__";
       const PRIVATE_ANSWERS_DIR = "__PRIVATE_ANSWERS_DIR__";
+      export function readReporterPaths() {
+        return getReporterRuntimePathsFromDataDir(PRIVATE_ANSWERS_DIR);
+      }
       export { SURVEY_NAME, PRIVATE_SURVEY_PATH, PRIVATE_ANSWERS_DIR };
       """
     And the reporter CGI settings are:
@@ -72,6 +81,7 @@ Feature: Prepare target-based CGI assets
     Then the prepared reporter CGI asset omits:
       """
       [
+        "../reporter/runtime-paths",
         "__SURVEY_NAME__",
         "__PRIVATE_SURVEY_PATH__",
         "__PRIVATE_ANSWERS_DIR__"

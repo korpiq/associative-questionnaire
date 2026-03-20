@@ -215,3 +215,6 @@
 
 72. Switched generated survey HTML and CGI asset helpers to per-survey URLs and private paths.
     Updated generated survey pages to use the configured per-survey save URL directly instead of appending `surveyName`, taught saver and reporter CGI asset preparation to inject direct per-survey private survey and answers paths plus the configured survey name, kept the old shared-root replacement path only as a temporary compatibility branch for current prep commands, and verified the change with targeted HTML/CGI asset coverage, the full suite, and typecheck.
+
+73. Bundled generated CGI assets into self-contained files with esbuild.
+    Added a shared `esbuild` bundling helper for generated CGI source, preserved shebang lines through bundling, updated saver and reporter CGI asset preparation to bundle their prepared source into one deployed file each, added coverage that project-local import specifiers are removed from prepared CGI outputs, and verified the change with targeted asset coverage, the full suite, and typecheck.
