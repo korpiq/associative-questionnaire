@@ -89,7 +89,7 @@ describe('prepareGeneratedSshDeploymentPackage', () => {
 
     expect(existsSync(result.tarballPath)).toBe(true)
     expect(existsSync(result.setupScriptPath)).toBe(true)
-    expect(readFileSync(result.setupScriptPath, 'utf8')).toContain('~/sites/example.test/www/surveys')
+    expect(readFileSync(result.setupScriptPath, 'utf8')).toContain('$HOME/sites/example.test/www/surveys')
     expect(readFileSync(result.setupScriptPath, 'utf8')).toContain('chmod 755')
 
     const tarballListing = listTarEntries(readFileSync(result.tarballPath))

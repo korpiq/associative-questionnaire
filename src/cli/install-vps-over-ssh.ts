@@ -4,6 +4,21 @@ import { loadDeploymentTarget } from '../deploy/load-deployment-target'
 import { prepareGeneratedSshDeploymentPackage } from '../deploy/prepare-generated-ssh-deployment-package'
 import { readTargetNameArgument } from './read-target-name-argument'
 
+function applyConfiguredSshOptions(command: [string, ...string[]]): [string, ...string[]] {
+  const sshConfigPath = process.env.ASSOCIATIVE_SURVEY_SSH_CONFIG
+
+  if (!sshConfigPath) {
+    return command
+  }
+
+  const [file, ...args] = command
+  if (file !== 'ssh' && file !== 'scp') {
+    return command
+  }
+
+  return [file, '-F', sshConfigPath, ...args]
+}
+
 function main(): void {
   const workspaceRoot = process.cwd()
   const targetName = readTargetNameArgument(process.argv, '')
@@ -27,7 +42,7 @@ function main(): void {
   })
 
   plan.commands.forEach((command) => {
-    const [file, ...args] = command
+    const [file, ...args] = applyConfiguredSshOptions(command)
     execFileSync(file, args, { stdio: 'inherit' })
   })
 

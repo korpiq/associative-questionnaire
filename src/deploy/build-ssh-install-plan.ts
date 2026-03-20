@@ -36,7 +36,8 @@ export function buildSshInstallPlan(input: {
   const remoteCgiRoot = toRemoteShellPath(input.target.cgiDir)
   const remoteDataRoot = toRemoteShellPath(input.target.dataDir)
   const remoteStagingRoot = `$HOME/.cache/associative-survey-deploy/${input.target.targetName}`
-  const remoteTarballPath = `${remoteStagingRoot}/${input.target.targetName}.tar.gz`
+  const remoteScpTarballPath = `~/.cache/associative-survey-deploy/${input.target.targetName}/${input.target.targetName}.tar.gz`
+  const remoteShellTarballPath = `${remoteStagingRoot}/${input.target.targetName}.tar.gz`
   const localTarballPath = `deploy/generated/${input.target.targetName}.tar.gz`
 
   return {
@@ -54,12 +55,12 @@ export function buildSshInstallPlan(input: {
       [
         'scp',
         localTarballPath,
-        `${input.target.sshTarget}:${remoteTarballPath}`
+        `${input.target.sshTarget}:${remoteScpTarballPath}`
       ],
       [
         'ssh',
         input.target.sshTarget,
-        `tar -xzf ${quoteRemotePath(remoteTarballPath)} -C ${quoteRemotePath(remoteStagingRoot)} && ${quoteRemotePath(`${remoteStagingRoot}/setup.sh`)} ${quoteRemotePath(remoteTarballPath)}`
+        `tar -xzf ${quoteRemotePath(remoteShellTarballPath)} -C ${quoteRemotePath(remoteStagingRoot)} && ${quoteRemotePath(`${remoteStagingRoot}/setup.sh`)} ${quoteRemotePath(remoteShellTarballPath)}`
       ]
     ]
   }

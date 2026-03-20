@@ -236,3 +236,6 @@
 
 79. Replaced SSH deployment packaging with a v2 tarball and setup script.
     Added an integration test for generated SSH deployment packages, introduced a pure-Node tarball builder that packages `payload/public`, `payload/cgi`, `payload/data`, and `setup.sh`, updated the SSH install plan to transfer one generated tarball to a remote staging directory and run the extracted setup script, switched the SSH CLI to build that package instead of reusing container prep, and verified the change with focused SSH feature and integration coverage plus the full suite and typecheck.
+
+80. Added a containerized end-to-end integration test for the first working SSH deployment flow.
+    Added `scripts/test-ssh-deployment.sh` plus an `npm run test:ssh-deployment` entry that provisions a disposable SSH-and-HTTP host container, deploys a v2 target with distinct public, CGI, and private-data roots through the real SSH installer, verifies the deployed survey page, save CGI, report CGI, and private survey data in place, updated the SSH install plan and setup-script generation so `scp` and runtime `$HOME` expansion work correctly, and verified the change with focused SSH coverage, the Docker-backed deployment test, the full suite, and typecheck.

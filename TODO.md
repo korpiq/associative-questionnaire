@@ -1,16 +1,5 @@
 # TODO
 
-## Deployment v2 test-first steps
-
-Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md` as the contract. For each step, start by adding or extending a failing test:
-
-- use `tests/feature` for production-code behavior
-- use `tests/integration` for deployment-side behavior
-
-Ordered steps to reach the first working deployment:
-
-- add an integration test for the first working SSH-style deployment to a containerized host with distinct public, CGI, and private-data roots
-
 ## Keep survey answers in local storage
 
 - whenever form state changes, save it to local storage

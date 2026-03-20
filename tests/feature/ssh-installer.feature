@@ -41,7 +41,7 @@ Feature: Build an SSH install plan from a target configuration
         [
           "scp",
           "deploy/generated/example-vps.tar.gz",
-          "deploy@example.test:$HOME/.cache/associative-survey-deploy/example-vps/example-vps.tar.gz"
+          "deploy@example.test:~/.cache/associative-survey-deploy/example-vps/example-vps.tar.gz"
         ],
         [
           "ssh",

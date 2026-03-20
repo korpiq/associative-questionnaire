@@ -10,6 +10,18 @@ function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
 }
 
+function toRemoteShellPath(path: string): string {
+  if (path === '~') {
+    return '$HOME'
+  }
+
+  if (path.startsWith('~/')) {
+    return `$HOME/${path.slice(2)}`
+  }
+
+  return path
+}
+
 function writeArtifactFiles(
   outputRoot: string,
   files: Array<{ relativePath: string; contents: string }>,
@@ -139,10 +151,10 @@ function renderSetupScript(input: {
     '#!/usr/bin/env sh',
     'set -eu',
     '',
-    `PUBLIC_DIR='${input.publicDir}'`,
-    `CGI_DIR='${input.cgiDir}'`,
-    `DATA_DIR='${input.dataDir}'`,
-    `CGI_EXTENSION='${input.cgiExtension}'`,
+    `PUBLIC_DIR="${toRemoteShellPath(input.publicDir)}"`,
+    `CGI_DIR="${toRemoteShellPath(input.cgiDir)}"`,
+    `DATA_DIR="${toRemoteShellPath(input.dataDir)}"`,
+    `CGI_EXTENSION="${input.cgiExtension}"`,
     '',
     'ARCHIVE_PATH="${1:-}"',
     'SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)',

@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:container": "bash scripts/test-container.sh",
     "test:integration": "bash scripts/test-integration.sh",
+    "test:ssh-deployment": "bash scripts/test-ssh-deployment.sh",
     "test:visual": "bash scripts/test-visual.sh",
     "test:watch": "vitest"
   },
