@@ -25,39 +25,34 @@ Feature: Build an SSH install plan from a target configuration
       }
       """
     When the SSH install plan is built
-    Then the remote public root is "$HOME/sites/example.test/www/surveys"
-    And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
-    And the remote data root is "$HOME/sites/example.test/www/data"
+    Then the remote public root is "$HOME/sites/example.test/www/./surveys"
+    And the remote CGI root is "$HOME/sites/example.test/www/./cgi-bin"
+    And the remote data root is "$HOME/sites/example.test/www/./data"
     And the SSH install commands are:
       """
       [
         [
-          "ssh",
-          "deploy@example.test",
-          "test -d \"$HOME/sites/example.test/www\" && test -d \"$HOME/sites/example.test/www\" && test -d \"$HOME/sites/example.test/www\" && mkdir -p \"$HOME/sites/example.test/www/surveys\" \"$HOME/sites/example.test/www/cgi-bin\" \"$HOME/sites/example.test/www/data\" \"$HOME/sites/example.test/www/data/surveys\" \"$HOME/sites/example.test/www/data/answers\""
-        ],
-        [
           "scp",
           "-r",
           "deploy/generated/public/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/surveys/"
+          "deploy@example.test:$HOME/sites/example.test/www/./surveys/"
         ],
         [
           "scp",
           "-r",
           "deploy/generated/public/cgi-bin/.",
-          "deploy@example.test:$HOME/sites/example.test/www/cgi-bin/"
+          "deploy@example.test:$HOME/sites/example.test/www/./cgi-bin/"
         ],
         [
           "scp",
           "-r",
           "deploy/generated/runtime/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/data/surveys/"
+          "deploy@example.test:$HOME/sites/example.test/www/./data/surveys/"
         ],
         [
           "ssh",
           "deploy@example.test",
-          "chmod 755 \"$HOME/sites/example.test/www/cgi-bin\"/*.js"
+          "chmod 755 \"$HOME/sites/example.test/www/./cgi-bin\"/*.js"
         ]
       ]
       """
