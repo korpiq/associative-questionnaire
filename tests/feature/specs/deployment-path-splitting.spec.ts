@@ -14,26 +14,17 @@ describeFeature(feature, ({ Scenario }) => {
         fullPath: string
       }
     | undefined
-  let parseError: Error | null = null
-
   function resetState(): void {
     configuredPath = ''
     parsedPath = undefined
-    parseError = null
   }
 
   function parseConfiguredPath(): void {
-    try {
-      parsedPath = parseDeploymentPath(configuredPath)
-      parseError = null
-    } catch (error) {
-      parsedPath = undefined
-      parseError = error as Error
-    }
+    parsedPath = parseDeploymentPath(configuredPath)
   }
 
   Scenario(
-    'A path with /./ separates an existing root from a deploy-created subpath',
+    'A path containing /./ is treated as a plain path',
     ({ Given, When, Then, And }) => {
       Given('the configured deployment path is {string}', (_ctx, value) => {
         resetState()
@@ -45,77 +36,39 @@ describeFeature(feature, ({ Scenario }) => {
       })
 
       Then('the parsed existing root is {string}', (_ctx, value) => {
-        expect(parseError).toBeNull()
         expect(parsedPath?.existingRoot).toBe(value)
       })
 
-      And('the parsed createable subpath is {string}', (_ctx, value) => {
-        expect(parseError).toBeNull()
-        expect(parsedPath?.createableSubpath).toBe(value)
+      And('the parsed createable subpath is empty', () => {
+        expect(parsedPath?.createableSubpath).toBe('')
       })
 
       And('the parsed full deployment path is {string}', (_ctx, value) => {
-        expect(parseError).toBeNull()
         expect(parsedPath?.fullPath).toBe(value)
       })
     }
   )
 
-  Scenario('A path without /./ is treated as fully pre-existing', ({ Given, When, Then, And }) => {
+  Scenario('A path without /./ is also treated as a plain path', ({ Given, When, Then, And }) => {
     Given('the configured deployment path is {string}', (_ctx, value) => {
       resetState()
       configuredPath = value
     })
 
-    When('the deployment path is parsed', () => {
-      parseConfiguredPath()
-    })
+      When('the deployment path is parsed', () => {
+        parseConfiguredPath()
+      })
 
-    Then('the parsed existing root is {string}', (_ctx, value) => {
-      expect(parseError).toBeNull()
-      expect(parsedPath?.existingRoot).toBe(value)
-    })
+      Then('the parsed existing root is {string}', (_ctx, value) => {
+        expect(parsedPath?.existingRoot).toBe(value)
+      })
 
-    And('the parsed createable subpath is empty', () => {
-      expect(parseError).toBeNull()
-      expect(parsedPath?.createableSubpath).toBe('')
-    })
+      And('the parsed createable subpath is empty', () => {
+        expect(parsedPath?.createableSubpath).toBe('')
+      })
 
-    And('the parsed full deployment path is {string}', (_ctx, value) => {
-      expect(parseError).toBeNull()
-      expect(parsedPath?.fullPath).toBe(value)
+      And('the parsed full deployment path is {string}', (_ctx, value) => {
+        expect(parsedPath?.fullPath).toBe(value)
+      })
     })
-  })
-
-  Scenario('A path with more than one /./ is rejected', ({ Given, When, Then }) => {
-    Given('the configured deployment path is {string}', (_ctx, value) => {
-      resetState()
-      configuredPath = value
-    })
-
-    When('the deployment path is parsed', () => {
-      parseConfiguredPath()
-    })
-
-    Then('the deployment path is rejected with {string}', (_ctx, message) => {
-      expect(parsedPath).toBeUndefined()
-      expect(parseError?.message).toBe(message)
-    })
-  })
-
-  Scenario('A path with /./ but no createable subpath is rejected', ({ Given, When, Then }) => {
-    Given('the configured deployment path is {string}', (_ctx, value) => {
-      resetState()
-      configuredPath = value
-    })
-
-    When('the deployment path is parsed', () => {
-      parseConfiguredPath()
-    })
-
-    Then('the deployment path is rejected with {string}', (_ctx, message) => {
-      expect(parsedPath).toBeUndefined()
-      expect(parseError?.message).toBe(message)
-    })
-  })
 })
