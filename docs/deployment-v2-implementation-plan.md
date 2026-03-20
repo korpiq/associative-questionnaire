@@ -39,7 +39,9 @@ CSS is embedded:
 - Build each survey into its own artifact set under `targets/<targetName>/`.
 - Generate `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, and `report<cgiExtension>` per survey.
 - Inline CSS into generated HTML and CGI outputs.
-- Make CGI scripts self-contained and use `nodeExecutable` in the shebang.
+- Use `esbuild` to bundle each generated CGI script into one self-contained deployed file.
+- Keep runtime data-file access as part of the CGI runtime contract; self-contained means code packaging, not the removal of survey JSON or answer-file reads.
+- Make bundled CGI scripts use `nodeExecutable` in the shebang.
 
 ## 5. Refactor CGI runtime path resolution
 
@@ -84,6 +86,7 @@ CSS is embedded:
 - Gherkin coverage for target parsing with the new schema.
 - Gherkin coverage for per-survey generated artifact layout.
 - Gherkin coverage for CGI runtime path resolution from `SCRIPT_FILENAME`.
+- Docker-backed integration coverage for the first working container deployment through deployed survey and CGI URLs.
 - End-to-end deployment tests to a container acting as an SSH host with:
 - different public, CGI, and private data roots
 - multiple surveys on one target

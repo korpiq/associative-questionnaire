@@ -230,3 +230,6 @@
 
 77. Switched the container image to serve only deployed v2 artifacts from target-configured paths.
     Updated the generated CGI bundles to executable CommonJS output for `.cgi` shebang execution, fixed saver-side creation of direct per-survey answer directories, made container preparation mark CGI files executable, changed the Docker image to copy only the generated container root into `/` and serve `/srv/www`, aligned the sample target and container smoke test with the configured `/surveys` public root and per-survey CGI URLs, and verified the change with focused CGI/runtime coverage, the full suite, typecheck, and `npm run test:container`.
+
+78. Added a Docker-backed integration test for the first working container deployment flow.
+    Updated the integration deployment script to use the deployed v2 survey and CGI URLs, verified one survey page load, one save, and one report count through the running container image, and verified the change with `npm run test:integration` plus the full suite and typecheck.

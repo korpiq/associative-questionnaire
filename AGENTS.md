@@ -17,3 +17,5 @@
 - When working interactively with user, do not commit until user accepts.
 - When told to do several TODO steps alone, commit after each verified TODO step before starting the next one.
 - Commit messages must use a single-line task topic, then a blank line, then concise lines describing decisions, concrete actions, and any later follow-up ideas.
+- For deployment v2, prefer `esbuild` for bundling generated CGI scripts into single self-contained files, and do not treat runtime data-file access as something to eliminate.
+- If tracked documentation files already have updates in the worktree, include them in commits; do not sweep in new untracked documentation files unless they are part of the current task.
