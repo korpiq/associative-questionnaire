@@ -9,7 +9,6 @@ Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md`
 
 Ordered steps to reach the first working deployment:
 
-- update container preparation to place files according to `publicDir`, `cgiDir`, and `dataDir` from `target.json`
 - update the container runtime image so only deployed artifacts are present and served from configured target paths
 - add an integration test for the first working container deployment covering survey load, save, and report through deployed URLs
 - replace SSH deployment packaging with target tarball plus setup script based on the same per-survey artifact layout

@@ -224,3 +224,6 @@
 
 75. Added a canonical per-survey deployment-artifact builder.
     Added feature coverage for generating one survey's `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, `report<cgiExtension>`, and private `survey.json`, introduced a shared builder that wires the save form to the per-survey `ok` and `fail` pages, reuses the prepared CGI assets, and enforces the target node shebang on generated CGI files, and verified the change with focused artifact coverage plus the full suite and typecheck.
+
+76. Switched container preparation to the target-configured per-survey layout.
+    Added an integration test for generated container layout placement, introduced a shared container-preparation helper that writes each survey's public, CGI, and private files under the configured absolute `publicDir`, `cgiDir`, and `dataDir` inside a generated container root, simplified `prepare:container` to use that helper, updated the sample container target to the v2 config fields, and verified the change with focused integration coverage plus the full suite and typecheck.
