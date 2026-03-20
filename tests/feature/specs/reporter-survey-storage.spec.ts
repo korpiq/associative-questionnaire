@@ -132,4 +132,69 @@ describeFeature(feature, ({ Scenario }) => {
       expect(resolvedReporterSurvey.answerFilePaths).toHaveLength(count)
     })
   })
+
+  Scenario(
+    'Legacy protected stored surveys can be replaced and resolved without protection inputs',
+    ({ Given, And, When, Then }) => {
+      Given('an empty reporter home directory', () => {
+        effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-reporter-home-'))
+        createdHomeDirectories.push(effectiveHomeDirectory)
+        uploadedSurveyFilename = ''
+        uploadedSurveyJson = ''
+        storedSurveyResult = { surveyName: '', storedSurveyFilePath: '' }
+        resolvedReporterSurvey = { survey: { title: '' }, answerFilePaths: [] }
+      })
+
+      And('a legacy protected stored reporter survey named {string} exists', (_ctx, surveyName) => {
+        const surveysRoot = join(
+          effectiveHomeDirectory,
+          '.local',
+          'share',
+          'associative-survey',
+          'surveys'
+        )
+
+        mkdirSync(surveysRoot, { recursive: true })
+        writeFileSync(
+          join(surveysRoot, `${surveyName}.json`),
+          JSON.stringify({
+            title: 'Legacy protected survey',
+            protected: true,
+            sections: {
+              basics: {
+                title: 'Basics'
+              }
+            }
+          })
+        )
+      })
+
+      And('the uploaded survey filename is {string}', (_ctx, filename) => {
+        uploadedSurveyFilename = filename
+      })
+
+      And('the uploaded survey JSON is:', (_ctx, docString) => {
+        uploadedSurveyJson = docString ?? ''
+      })
+
+      When('the uploaded survey is stored for the reporter', () => {
+        storedSurveyResult = storeUploadedReporterSurvey({
+          uploadedFilename: uploadedSurveyFilename,
+          uploadedJson: uploadedSurveyJson,
+          effectiveHomeDirectory
+        })
+      })
+
+      And('the reporter resolves the stored survey by survey name', () => {
+        resolvedReporterSurvey = resolveStoredReporterSurvey(
+          storedSurveyResult.surveyName,
+          effectiveHomeDirectory
+        )
+      })
+
+      Then('the resolved survey title is {string}', (_ctx, title) => {
+        expect(resolvedReporterSurvey.survey.title).toBe(title)
+      })
+    }
+  )
 })

@@ -57,3 +57,22 @@ Feature: Store and resolve reporter surveys by survey name
     And the reporter resolves the stored survey by survey name
     Then the resolved survey title is "Example survey"
     And the resolved answer file count is 1
+
+  Scenario: Legacy protected stored surveys can be replaced and resolved without protection inputs
+    Given an empty reporter home directory
+    And a legacy protected stored reporter survey named "example-survey" exists
+    And the uploaded survey filename is "example-survey.json"
+    And the uploaded survey JSON is:
+      """
+      {
+        "title": "Replacement survey",
+        "sections": {
+          "basics": {
+            "title": "Basics"
+          }
+        }
+      }
+      """
+    When the uploaded survey is stored for the reporter
+    And the reporter resolves the stored survey by survey name
+    Then the resolved survey title is "Replacement survey"

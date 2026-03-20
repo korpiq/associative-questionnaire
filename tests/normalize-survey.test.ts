@@ -54,7 +54,6 @@ describe('normalizeSurvey', () => {
 
     expect(normalized).toMatchObject({
       title: 'Example survey',
-      protected: true,
       sections: [
         {
           id: 'basics',

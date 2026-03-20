@@ -4,7 +4,6 @@ Feature: Survey schema validation
       """
       {
         title: Example survey,
-        protected: true,
         sections: {
           basics: {
             title: Basics,
@@ -57,7 +56,6 @@ Feature: Survey schema validation
       """
       {
         title: Example survey,
-        protected: true,
         sections: {
           basics: {
             title: Basics,
@@ -118,12 +116,12 @@ Feature: Survey schema validation
       ]
       """
 
-  Scenario: Invalid survey-level protected metadata is rejected
+  Scenario: Legacy survey-level protected metadata is ignored
     Given survey content:
       """
       {
-        title: Bad protection,
-        protected: yes,
+        title: Legacy protection,
+        protected: true,
         sections: {
           basics: {
             title: Basics
@@ -132,15 +130,16 @@ Feature: Survey schema validation
       }
       """
     When the survey content is parsed with the schema
-    Then the survey content is rejected
-    And the schema issues are:
+    Then the parsed survey exactly is:
       """
-      [
-        {
-          path: [protected],
-          message: "Expected boolean, received string"
+      {
+        title: Legacy protection,
+        sections: {
+          basics: {
+            title: Basics
+          }
         }
-      ]
+      }
       """
 
   Scenario: Invalid correct answers are rejected
