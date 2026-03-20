@@ -1,12 +1,28 @@
 # TODO
 
-## Sample container deployment fixes
+## Deployment v2 test-first steps
 
-- container httpd server serves from directory different than specified in sample/target.json: /opt/associative-survey/app/deploy/generated/public
-- files should be deployed according to paths in target.json
-- whole project workspace should not be visible anywhere in the container, as it is now under /opt
-- override-survey is listed in sample but missing in container
-- save fails with ENOENT: no such file or directory, open '/home/app/.local/share/associative-survey/surveys/visual-showcase.json'
+Use `docs/deployment-v2-implementation-plan.md` and `docs/deployment-targets.md` as the contract. For each step, start by adding or extending a failing test:
+
+- use `tests/feature` for production-code behavior
+- use `tests/integration` for deployment-side behavior
+
+Ordered steps to reach the first working deployment:
+
+- remove everything related to `protection` in production code
+- remove everything related to `protection` in build/deployment code
+- remove everything related to `/./` subpaths in production code
+- remove everything related to `/./` subpaths or directory creation in build/deployment code
+- replace the target config parser with the v2 `target.json` schema
+- update generated target settings from shared target-level runtime paths to per-survey public, CGI, and private-data settings
+- update generated survey HTML and CGI assets to use per-survey URLs and private-data paths
+- make CGI runtime path resolution depend on `SCRIPT_FILENAME` and the canonical per-survey layout only
+- generate per-survey deployable artifacts: `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, `report<cgiExtension>`, and private `survey.json`
+- update container preparation to place files according to `publicDir`, `cgiDir`, and `dataDir` from `target.json`
+- update the container runtime image so only deployed artifacts are present and served from configured target paths
+- add an integration test for the first working container deployment covering survey load, save, and report through deployed URLs
+- replace SSH deployment packaging with target tarball plus setup script based on the same per-survey artifact layout
+- add an integration test for the first working SSH-style deployment to a containerized host with distinct public, CGI, and private-data roots
 
 ## Keep survey answers in local storage
 

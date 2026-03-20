@@ -40,7 +40,7 @@ When an optional source file does not exist, first look for it under `targets/<t
 #### Target host deployment artifacts
 
 Generated based on `target.json` in `targets/<targetName>` and previously generated survey build artifacts in its `surveys/` subdirectories:
-- `<targetName>.tar.gz` containing all files to deploy, including setup script
+- `<targetName>.tar.gz` containing all files to deploy, including setup script to run on the target host
 - `deploy.sh` shell script
 
 ### Deployment
@@ -74,7 +74,8 @@ Generated based on `target.json` in `targets/<targetName>` and previously genera
    - must be self-contained (no imports except from `node`)
    - nodejs version 20
    - exact location of `nodejs` for the shebang line is configured in `target.json` as `nodejs`.
-   - file extension `.cgi`.
+   - file extension `.cgi`
+   - executable bit on.
 
 ### Remote host testing
 
@@ -92,7 +93,3 @@ Generated based on `target.json` in `targets/<targetName>` and previously genera
 4. Each survey is fully self-contained:
    - files in survey web directory may refer only to each other and same survey's data directory
    - data directory must be referred to by relative path, because webserver may see it in a different path
-
-### Deployment target configuration
-
-Deployment source material lives under `/targets/`. `sample/` should contain demonstration / test material

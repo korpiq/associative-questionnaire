@@ -188,3 +188,9 @@
 
 63. Documented the currently supported `target.json` contents from implementation.
     Added `docs/deployment-.targets.md` based only on the zod deployment-target schema plus the code that loads and consumes it, called out strict-key validation and defaults, and distinguished fields actively used by container prep and SSH installation from fields that are only parsed today.
+
+64. Specified the deployment-v2 target contract and canonical layout.
+    Replaced `docs/deployment-targets.md` with a v2 `target.json` contract covering target-wide roots, URLs, Node executable, CGI extension, and target-type-specific fields, and aligned it with one canonical per-survey public, CGI, and private-data layout.
+
+65. Wrote a concise deployment-v2 implementation plan.
+    Added `docs/deployment-v2-implementation-plan.md` as an ordered implementation sequence covering the new target contract, per-survey artifact layout, CGI runtime path resolution from `SCRIPT_FILENAME`, tarball packaging, setup behavior, container alignment, and the portability test coverage still required.
