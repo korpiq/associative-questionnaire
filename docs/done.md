@@ -185,3 +185,6 @@
 
 62. Switched visual testing to the sample target surveys.
     Added `visual-showcase` under `targets/sample`, updated `prepare:visual` to load that survey and the target-backed CGI asset settings from the sample target instead of the old docs example, kept seeded answers and runtime data manifest generation intact, and verified the change with the full suite, typecheck, and the Docker-backed visual test.
+
+63. Documented the currently supported `target.json` contents from implementation.
+    Added `docs/deployment-.targets.md` based only on the zod deployment-target schema plus the code that loads and consumes it, called out strict-key validation and defaults, and distinguished fields actively used by container prep and SSH installation from fields that are only parsed today.
