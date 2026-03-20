@@ -21,12 +21,12 @@ cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
 sleep 2
 
-curl --fail --silent "http://127.0.0.1:${PORT}/surveys/survey.html" | grep "Submit survey" >/dev/null
+curl --fail --silent "http://127.0.0.1:${PORT}/surveys/survey/" | grep "Submit survey" >/dev/null
 
 curl --fail --silent --show-error \
   -X POST \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'favorite-color=blue&notes=Container+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
-  "http://127.0.0.1:${PORT}/cgi-bin/save-survey.js?surveyName=survey" | grep "Survey saved" >/dev/null
+  "http://127.0.0.1:${PORT}/cgi-bin/survey/save.cgi" | grep "Survey saved" >/dev/null
 
-curl --fail --silent "http://127.0.0.1:${PORT}/cgi-bin/report-survey.js?surveyName=survey" | grep "Respondents: 1" >/dev/null
+curl --fail --silent "http://127.0.0.1:${PORT}/cgi-bin/survey/report.cgi" | grep "Respondents: 1" >/dev/null

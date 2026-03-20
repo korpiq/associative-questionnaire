@@ -15,9 +15,9 @@ RUN npm run build
 ARG PREPARE_COMMAND=prepare:container
 ARG PREPARE_TARGET=sample
 RUN npm run ${PREPARE_COMMAND} -- ${PREPARE_TARGET}
-RUN node --import tsx src/cli/install-container-runtime-data.ts
+RUN cp -R deploy/generated/root/. /
 
 ENV HOME=/home/app
 EXPOSE 8080
 
-CMD ["httpd", "-f", "-p", "8080", "-h", "/opt/associative-survey/app/deploy/generated/public"]
+CMD ["httpd", "-f", "-p", "8080", "-h", "/srv/www"]

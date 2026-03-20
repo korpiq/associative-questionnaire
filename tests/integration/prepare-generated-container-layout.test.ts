@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
@@ -101,6 +101,7 @@ describe('prepareGeneratedContainerLayout', () => {
       'action="https://example.test/cgi-bin/basic/save.cgi?ok=https%3A%2F%2Fexample.test%2Fbasic%2Fok.html&fail=https%3A%2F%2Fexample.test%2Fbasic%2Ffail.html"'
     )
     expect(readFileSync(join(cgiSurveyDirectory, 'save.cgi'), 'utf8').startsWith('#!/usr/bin/node')).toBe(true)
+    expect(statSync(join(cgiSurveyDirectory, 'save.cgi')).mode & 0o111).not.toBe(0)
     expect(readFileSync(join(privateSurveyDirectory, 'survey.json'), 'utf8')).toContain(
       '"title": "Example survey"'
     )

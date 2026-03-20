@@ -40,40 +40,44 @@ function writeResponse(response) {
 
 const query = new URLSearchParams(process.env.QUERY_STRING || '')
 
-try {
-  const runtimePaths = resolveCgiScriptRuntimePaths(
-    process.env.SCRIPT_FILENAME || '',
-    PRIVATE_SURVEY_RELATIVE_PATH,
-    PRIVATE_ANSWERS_RELATIVE_PATH
-  )
-  const requestBody = await readRequestBody()
-  const survey = parseSurvey(JSON.parse(readFileSync(runtimePaths.privateSurveyPath, 'utf8')))
-  const respondent = resolveRespondentCookie(process.env.HTTP_COOKIE)
+async function main() {
+  try {
+    const runtimePaths = resolveCgiScriptRuntimePaths(
+      process.env.SCRIPT_FILENAME || '',
+      PRIVATE_SURVEY_RELATIVE_PATH,
+      PRIVATE_ANSWERS_RELATIVE_PATH
+    )
+    const requestBody = await readRequestBody()
+    const survey = parseSurvey(JSON.parse(readFileSync(runtimePaths.privateSurveyPath, 'utf8')))
+    const respondent = resolveRespondentCookie(process.env.HTTP_COOKIE)
 
-  saveSurveyAnswerSubmission({
-    survey,
-    surveyName: runtimePaths.surveyName,
-    requestBody,
-    respondentId: respondent.respondentId,
-    effectiveHomeDirectory: '',
-    surveyAnswersDirectory: runtimePaths.privateAnswersDir
-  })
+    saveSurveyAnswerSubmission({
+      survey,
+      surveyName: runtimePaths.surveyName,
+      requestBody,
+      respondentId: respondent.respondentId,
+      effectiveHomeDirectory: '',
+      surveyAnswersDirectory: runtimePaths.privateAnswersDir
+    })
 
-  writeResponse(
-    renderSaverCgiResponse({
-      success: true,
-      ok: toOptional(query.get('ok')),
-      css: toOptional(query.get('css')),
-      setCookieHeader: respondent.setCookieHeader
-    })
-  )
-} catch (error) {
-  writeResponse(
-    renderSaverCgiResponse({
-      success: false,
-      message: error instanceof Error ? error.message : String(error),
-      fail: toOptional(query.get('fail')),
-      css: toOptional(query.get('css'))
-    })
-  )
+    writeResponse(
+      renderSaverCgiResponse({
+        success: true,
+        ok: toOptional(query.get('ok')),
+        css: toOptional(query.get('css')),
+        setCookieHeader: respondent.setCookieHeader
+      })
+    )
+  } catch (error) {
+    writeResponse(
+      renderSaverCgiResponse({
+        success: false,
+        message: error instanceof Error ? error.message : String(error),
+        fail: toOptional(query.get('fail')),
+        css: toOptional(query.get('css'))
+      })
+    )
+  }
 }
+
+main()

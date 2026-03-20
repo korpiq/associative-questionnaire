@@ -1,5 +1,5 @@
-import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 
 import type { Survey } from '../schema/survey'
 
@@ -25,6 +25,7 @@ export function saveSurveyAnswerSubmission(input: {
       ? ensureSurveyAnswerStorageAtRoot(input.surveyName, input.answersDataDir).surveyAnswersDirectory
       : ensureSurveyAnswerStorage(input.surveyName, input.effectiveHomeDirectory)
           .surveyAnswersDirectory)
+  mkdirSync(dirname(join(surveyAnswersDirectory, respondentFilename)), { recursive: true })
   const savedAnswerFilePath = join(surveyAnswersDirectory, respondentFilename)
 
   writeFileSync(savedAnswerFilePath, JSON.stringify(answerFile))

@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 import { buildGeneratedSurveyArtifacts } from './build-generated-survey-artifacts'
@@ -16,12 +16,16 @@ function resolveContainerPath(containerRoot: string, absoluteTargetPath: string)
 function writeArtifactFiles(
   containerRoot: string,
   baseTargetPath: string,
-  files: Array<{ relativePath: string; contents: string }>
+  files: Array<{ relativePath: string; contents: string }>,
+  executableMode?: number
 ): void {
   files.forEach((file) => {
     const outputPath = join(resolveContainerPath(containerRoot, baseTargetPath), file.relativePath)
     ensureDirectory(resolve(outputPath, '..'))
     writeFileSync(outputPath, file.contents)
+    if (executableMode !== undefined) {
+      chmodSync(outputPath, executableMode)
+    }
   })
 }
 
@@ -65,7 +69,7 @@ export function prepareGeneratedContainerLayout(input: {
     })
 
     writeArtifactFiles(containerRoot, surveySettings.publicDir, artifacts.publicFiles)
-    writeArtifactFiles(containerRoot, surveySettings.cgiDir, artifacts.cgiFiles)
+    writeArtifactFiles(containerRoot, surveySettings.cgiDir, artifacts.cgiFiles, 0o755)
     writeArtifactFiles(containerRoot, surveySettings.privateDataDir, artifacts.privateFiles)
   })
 

@@ -36,7 +36,7 @@ export function bundleGeneratedCgiSource(source: string): string {
     },
     bundle: true,
     write: false,
-    format: 'esm',
+    format: 'cjs',
     platform: 'node',
     target: 'node20'
   }

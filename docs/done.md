@@ -227,3 +227,6 @@
 
 76. Switched container preparation to the target-configured per-survey layout.
     Added an integration test for generated container layout placement, introduced a shared container-preparation helper that writes each survey's public, CGI, and private files under the configured absolute `publicDir`, `cgiDir`, and `dataDir` inside a generated container root, simplified `prepare:container` to use that helper, updated the sample container target to the v2 config fields, and verified the change with focused integration coverage plus the full suite and typecheck.
+
+77. Switched the container image to serve only deployed v2 artifacts from target-configured paths.
+    Updated the generated CGI bundles to executable CommonJS output for `.cgi` shebang execution, fixed saver-side creation of direct per-survey answer directories, made container preparation mark CGI files executable, changed the Docker image to copy only the generated container root into `/` and serve `/srv/www`, aligned the sample target and container smoke test with the configured `/surveys` public root and per-survey CGI URLs, and verified the change with focused CGI/runtime coverage, the full suite, typecheck, and `npm run test:container`.
