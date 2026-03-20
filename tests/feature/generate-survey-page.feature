@@ -48,7 +48,7 @@ Feature: Generate survey HTML page
       }
       """
     And the survey file path is "surveys/example-survey.json"
-    And the form action URL is "https://example.test/cgi-bin/save-survey.js"
+    And the form action URL is "https://example.test/cgi-bin/example-survey/save.cgi"
     And HTML template:
       """
       {{> root}}
@@ -118,13 +118,13 @@ Feature: Generate survey HTML page
       }
       """
     And the survey file path is "surveys/example-survey.json"
-    And the form action URL is "https://example.test/cgi-bin/save-survey.js"
+    And the form action URL is "https://example.test/cgi-bin/example-survey/save.cgi"
     And HTML template:
       """
       {{> root}}
       """
     When the survey HTML page is generated
-    And the result posts to "https://example.test/cgi-bin/save-survey.js?surveyName=example-survey"
+    And the result posts to "https://example.test/cgi-bin/example-survey/save.cgi"
     And the result uses method "post"
     And the result contains the submit button text "Submit survey"
 
@@ -177,7 +177,7 @@ Feature: Generate survey HTML page
       }
       """
     And the survey file path is "surveys/example-survey.json"
-    And the form action URL is "https://example.test/cgi-bin/save-survey.js"
+    And the form action URL is "https://example.test/cgi-bin/example-survey/save.cgi"
     And HTML template:
       """
       {{> root}}

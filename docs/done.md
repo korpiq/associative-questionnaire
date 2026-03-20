@@ -212,3 +212,6 @@
 
 71. Switched generated target settings to per-survey deployment settings.
     Replaced the old shared target-level manifest shape with one `surveys[]` array describing each survey's public directory and URL, CGI directory and URLs, and private data paths, updated container and visual preparation to consume those per-survey settings while temporarily deriving shared CGI runtime placeholders locally, adjusted container runtime-data installation to seed each survey's private paths from the new manifest, and verified the change with targeted generated-settings coverage, the full suite, and typecheck.
+
+72. Switched generated survey HTML and CGI asset helpers to per-survey URLs and private paths.
+    Updated generated survey pages to use the configured per-survey save URL directly instead of appending `surveyName`, taught saver and reporter CGI asset preparation to inject direct per-survey private survey and answers paths plus the configured survey name, kept the old shared-root replacement path only as a temporary compatibility branch for current prep commands, and verified the change with targeted HTML/CGI asset coverage, the full suite, and typecheck.

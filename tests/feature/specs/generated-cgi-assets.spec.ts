@@ -3,15 +3,46 @@ import { expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 
 import { prepareReporterCgiAsset, prepareSaverCgiAsset } from '../../../src'
+import type { GeneratedSurveyDeploymentSettings } from '../../../src/deploy/build-generated-target-settings'
 
 const feature = await loadFeature('tests/feature/generated-cgi-assets.feature')
 
 describeFeature(feature, ({ Scenario }) => {
   let saverCgiTemplate = ''
-  let saverCgiSettings = { surveysDataDir: '', answersDataDir: '' }
+  let saverCgiSettings: GeneratedSurveyDeploymentSettings = {
+    surveyName: '',
+    surveyPath: '',
+    templatePath: '',
+    publicDir: '',
+    publicUrl: '',
+    publicHtmlFilename: '',
+    cgiDir: '',
+    saveCgiFilename: '',
+    saveUrl: '',
+    reportCgiFilename: '',
+    reportUrl: '',
+    privateDataDir: '',
+    privateSurveyPath: '',
+    privateAnswersDir: ''
+  }
   let preparedSaverCgiAsset = ''
   let reporterCgiTemplate = ''
-  let reporterCgiSettings = { surveysDataDir: '', answersDataDir: '' }
+  let reporterCgiSettings: GeneratedSurveyDeploymentSettings = {
+    surveyName: '',
+    surveyPath: '',
+    templatePath: '',
+    publicDir: '',
+    publicUrl: '',
+    publicHtmlFilename: '',
+    cgiDir: '',
+    saveCgiFilename: '',
+    saveUrl: '',
+    reportCgiFilename: '',
+    reportUrl: '',
+    privateDataDir: '',
+    privateSurveyPath: '',
+    privateAnswersDir: ''
+  }
   let preparedReporterCgiAsset = ''
 
   function parseYamlDocString<T>(docString: string | null | undefined): T {
@@ -22,10 +53,25 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('A saver CGI asset injects the configured runtime data directories', ({ Given, And, When, Then }) => {
+  Scenario('A saver CGI asset injects per-survey private data paths', ({ Given, And, When, Then }) => {
     Given('the saver CGI template is:', (_ctx, docString) => {
       saverCgiTemplate = docString ?? ''
-      saverCgiSettings = { surveysDataDir: '', answersDataDir: '' }
+      saverCgiSettings = {
+        surveyName: '',
+        surveyPath: '',
+        templatePath: '',
+        publicDir: '',
+        publicUrl: '',
+        publicHtmlFilename: '',
+        cgiDir: '',
+        saveCgiFilename: '',
+        saveUrl: '',
+        reportCgiFilename: '',
+        reportUrl: '',
+        privateDataDir: '',
+        privateSurveyPath: '',
+        privateAnswersDir: ''
+      }
       preparedSaverCgiAsset = ''
     })
 
@@ -54,12 +100,26 @@ describeFeature(feature, ({ Scenario }) => {
   })
 
   Scenario(
-    'A reporter CGI asset injects runtime data directories only',
+    'A reporter CGI asset injects survey name and per-survey private data paths',
     ({ Given, And, When, Then }) => {
       Given('the reporter CGI template is:', (_ctx, docString) => {
-        reporterCgiTemplate = ''
         reporterCgiTemplate = docString ?? ''
-        reporterCgiSettings = { surveysDataDir: '', answersDataDir: '' }
+        reporterCgiSettings = {
+          surveyName: '',
+          surveyPath: '',
+          templatePath: '',
+          publicDir: '',
+          publicUrl: '',
+          publicHtmlFilename: '',
+          cgiDir: '',
+          saveCgiFilename: '',
+          saveUrl: '',
+          reportCgiFilename: '',
+          reportUrl: '',
+          privateDataDir: '',
+          privateSurveyPath: '',
+          privateAnswersDir: ''
+        }
         preparedReporterCgiAsset = ''
       })
 

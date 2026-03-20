@@ -1,60 +1,87 @@
 Feature: Prepare target-based CGI assets
-  Scenario: A saver CGI asset injects the configured runtime data directories
+  Scenario: A saver CGI asset injects per-survey private data paths
     Given the saver CGI template is:
       """
-      const SURVEYS_DATA_DIR = "__SURVEYS_DATA_DIR__";
-      const ANSWERS_DATA_DIR = "__ANSWERS_DATA_DIR__";
-      export { SURVEYS_DATA_DIR, ANSWERS_DATA_DIR };
+      const PRIVATE_SURVEY_PATH = "__PRIVATE_SURVEY_PATH__";
+      const PRIVATE_ANSWERS_DIR = "__PRIVATE_ANSWERS_DIR__";
+      export { PRIVATE_SURVEY_PATH, PRIVATE_ANSWERS_DIR };
       """
     And the saver CGI settings are:
       """
       {
-        "surveysDataDir": "/srv/sites/example.test/www/./data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/./data/answers"
+        "surveyName": "basic",
+        "surveyPath": "/workspace/targets/example-vps/surveys/basic/survey.json",
+        "templatePath": "/workspace/targets/example-vps/surveys/basic/template.html",
+        "publicDir": "/srv/sites/example.test/www/surveys/basic",
+        "publicUrl": "https://example.test/basic/",
+        "publicHtmlFilename": "index.html",
+        "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
+        "saveCgiFilename": "save.cgi",
+        "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",
+        "reportCgiFilename": "report.cgi",
+        "reportUrl": "https://example.test/cgi-bin/basic/report.cgi",
+        "privateDataDir": "/srv/sites/example.test/www/data/basic",
+        "privateSurveyPath": "/srv/sites/example.test/www/data/basic/survey.json",
+        "privateAnswersDir": "/srv/sites/example.test/www/data/basic/answers"
       }
       """
     When the saver CGI asset is prepared
     Then the prepared saver CGI asset omits:
       """
       [
-        "__SURVEYS_DATA_DIR__",
-        "__ANSWERS_DATA_DIR__"
+        "__PRIVATE_SURVEY_PATH__",
+        "__PRIVATE_ANSWERS_DIR__"
       ]
       """
     And the prepared saver CGI asset contains:
       """
       [
-        "/srv/sites/example.test/www/./data/surveys",
-        "/srv/sites/example.test/www/./data/answers"
+        "/srv/sites/example.test/www/data/basic/survey.json",
+        "/srv/sites/example.test/www/data/basic/answers"
       ]
       """
 
-  Scenario: A reporter CGI asset injects runtime data directories only
+  Scenario: A reporter CGI asset injects survey name and per-survey private data paths
     Given the reporter CGI template is:
       """
-      const SURVEYS_DATA_DIR = "__SURVEYS_DATA_DIR__";
-      const ANSWERS_DATA_DIR = "__ANSWERS_DATA_DIR__";
-      export { SURVEYS_DATA_DIR, ANSWERS_DATA_DIR };
+      const SURVEY_NAME = "__SURVEY_NAME__";
+      const PRIVATE_SURVEY_PATH = "__PRIVATE_SURVEY_PATH__";
+      const PRIVATE_ANSWERS_DIR = "__PRIVATE_ANSWERS_DIR__";
+      export { SURVEY_NAME, PRIVATE_SURVEY_PATH, PRIVATE_ANSWERS_DIR };
       """
     And the reporter CGI settings are:
       """
       {
-        "surveysDataDir": "/srv/sites/example.test/www/./data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/./data/answers"
+        "surveyName": "basic",
+        "surveyPath": "/workspace/targets/example-vps/surveys/basic/survey.json",
+        "templatePath": "/workspace/targets/example-vps/surveys/basic/template.html",
+        "publicDir": "/srv/sites/example.test/www/surveys/basic",
+        "publicUrl": "https://example.test/basic/",
+        "publicHtmlFilename": "index.html",
+        "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
+        "saveCgiFilename": "save.cgi",
+        "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",
+        "reportCgiFilename": "report.cgi",
+        "reportUrl": "https://example.test/cgi-bin/basic/report.cgi",
+        "privateDataDir": "/srv/sites/example.test/www/data/basic",
+        "privateSurveyPath": "/srv/sites/example.test/www/data/basic/survey.json",
+        "privateAnswersDir": "/srv/sites/example.test/www/data/basic/answers"
       }
       """
     When the reporter CGI asset is prepared
     Then the prepared reporter CGI asset omits:
       """
       [
-        "__SURVEYS_DATA_DIR__",
-        "__ANSWERS_DATA_DIR__"
+        "__SURVEY_NAME__",
+        "__PRIVATE_SURVEY_PATH__",
+        "__PRIVATE_ANSWERS_DIR__"
       ]
       """
     And the prepared reporter CGI asset contains:
       """
       [
-        "/srv/sites/example.test/www/./data/surveys",
-        "/srv/sites/example.test/www/./data/answers"
+        "basic",
+        "/srv/sites/example.test/www/data/basic/survey.json",
+        "/srv/sites/example.test/www/data/basic/answers"
       ]
       """

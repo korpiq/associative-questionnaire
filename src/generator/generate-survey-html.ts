@@ -35,13 +35,7 @@ function buildFormAction(formAction: string, surveyName: string): string {
   if (!formAction) {
     return surveyName ? `?surveyName=${encodeURIComponent(surveyName)}` : ''
   }
-
-  if (!surveyName) {
-    return formAction
-  }
-
-  const separator = formAction.includes('?') ? '&' : '?'
-  return `${formAction}${separator}surveyName=${encodeURIComponent(surveyName)}`
+  return formAction
 }
 
 function renderSingleChoiceContent(question: NormalizedSingleChoiceQuestion): string {
