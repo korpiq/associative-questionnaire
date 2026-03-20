@@ -9,7 +9,6 @@ Feature: Build an SSH install plan from a target configuration
         "publicPath": "~/sites/example.test/www/./surveys",
         "cgiPath": "~/sites/example.test/www/./cgi-bin",
         "dataDir": "~/sites/example.test/www/./data",
-        "protectionFile": "~/sites/example.test/www/./data/protection.txt",
         "publicBaseUrl": "https://example.test",
         "saverUrl": "https://example.test/cgi-bin/save-survey.js",
         "reporterUrl": "https://example.test/cgi-bin/report-survey.js",
@@ -25,12 +24,10 @@ Feature: Build an SSH install plan from a target configuration
         ]
       }
       """
-    And the local reporter protection secret file path is "/workspace/.deploy/reporter-protection-secret.txt"
     When the SSH install plan is built
     Then the remote public root is "$HOME/sites/example.test/www/surveys"
     And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
     And the remote data root is "$HOME/sites/example.test/www/data"
-    And the remote protection file path is "$HOME/sites/example.test/www/data/protection.txt"
     And the SSH install commands are:
       """
       [
@@ -58,11 +55,6 @@ Feature: Build an SSH install plan from a target configuration
           "deploy@example.test:$HOME/sites/example.test/www/data/surveys/"
         ],
         [
-          "scp",
-          "/workspace/.deploy/reporter-protection-secret.txt",
-          "deploy@example.test:$HOME/sites/example.test/www/data/protection.txt"
-        ],
-        [
           "ssh",
           "deploy@example.test",
           "chmod 755 \"$HOME/sites/example.test/www/cgi-bin\"/*.js"
@@ -80,7 +72,6 @@ Feature: Build an SSH install plan from a target configuration
         "publicPath": "/srv/www/./surveys",
         "cgiPath": "/srv/www/./cgi-bin",
         "dataDir": "/home/app/.local/share/associative-survey",
-        "protectionFile": "/home/app/.local/share/associative-survey/protection.txt",
         "publicBaseUrl": "http://127.0.0.1:18080",
         "saverUrl": "http://127.0.0.1:18080/cgi-bin/save-survey.js",
         "reporterUrl": "http://127.0.0.1:18080/cgi-bin/report-survey.js",
@@ -89,6 +80,5 @@ Feature: Build an SSH install plan from a target configuration
         "surveys": []
       }
       """
-    And the local reporter protection secret file path is "/workspace/.deploy/reporter-protection-secret.txt"
     When the SSH install plan is built
     Then the SSH install plan is rejected with "SSH install plans require an ssh target configuration"

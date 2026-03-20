@@ -13,9 +13,7 @@ export type GeneratedSaverCgiSettings = {
   answersDataDir: string
 }
 
-export type GeneratedReporterCgiSettings = GeneratedSaverCgiSettings & {
-  protectionFile: string
-}
+export type GeneratedReporterCgiSettings = GeneratedSaverCgiSettings
 
 export type GeneratedTargetSettings = {
   surveyHtml: GeneratedSurveyHtmlSettings[]
@@ -47,8 +45,7 @@ export function buildGeneratedTargetSettings(
     },
     reporterCgi: {
       surveysDataDir,
-      answersDataDir,
-      protectionFile: target.protectionFile
+      answersDataDir
     }
   }
 }

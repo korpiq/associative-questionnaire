@@ -9,7 +9,6 @@ Feature: Build generated target settings for production assets
         "publicPath": "/srv/sites/example.test/www/./surveys",
         "cgiPath": "/srv/sites/example.test/www/./cgi-bin",
         "dataDir": "/srv/sites/example.test/www/./data",
-        "protectionFile": "/srv/sites/example.test/www/./data/reporter-protection.txt",
         "publicBaseUrl": "https://example.test",
         "saverUrl": "https://example.test/cgi-bin/save-survey.js",
         "reporterUrl": "https://example.test/cgi-bin/report-survey.js",
@@ -62,7 +61,6 @@ Feature: Build generated target settings for production assets
       """
       {
         "surveysDataDir": "/srv/sites/example.test/www/./data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/./data/answers",
-        "protectionFile": "/srv/sites/example.test/www/./data/reporter-protection.txt"
+        "answersDataDir": "/srv/sites/example.test/www/./data/answers"
       }
       """

@@ -9,13 +9,11 @@ const feature = await loadFeature('tests/feature/ssh-installer.feature')
 
 describeFeature(feature, ({ Scenario }) => {
   let target: LoadedDeploymentTarget | undefined
-  let localProtectionSecretFilePath = ''
   let plan:
     | {
         remotePublicRoot: string
         remoteCgiRoot: string
         remoteDataRoot: string
-        remoteProtectionFilePath: string
         commands: Array<[string, ...string[]]>
       }
     | undefined
@@ -32,13 +30,8 @@ describeFeature(feature, ({ Scenario }) => {
   Scenario('An SSH target produces remote copy commands from configured paths', ({ Given, And, When, Then }) => {
     Given('the loaded SSH deployment target is:', (_ctx, docString) => {
       target = parseYamlDocString<LoadedDeploymentTarget>(docString)
-      localProtectionSecretFilePath = ''
       plan = undefined
       planError = null
-    })
-
-    And('the local reporter protection secret file path is {string}', (_ctx, value) => {
-      localProtectionSecretFilePath = value
     })
 
     When('the SSH install plan is built', () => {
@@ -48,8 +41,7 @@ describeFeature(feature, ({ Scenario }) => {
         }
 
         plan = buildSshInstallPlan({
-          target,
-          localProtectionSecretFilePath
+          target
         })
         planError = null
       } catch (error) {
@@ -73,11 +65,6 @@ describeFeature(feature, ({ Scenario }) => {
       expect(plan?.remoteDataRoot).toBe(value)
     })
 
-    And('the remote protection file path is {string}', (_ctx, value) => {
-      expect(planError).toBeNull()
-      expect(plan?.remoteProtectionFilePath).toBe(value)
-    })
-
     And('the SSH install commands are:', (_ctx, docString) => {
       expect(planError).toBeNull()
       expect(plan?.commands).toEqual(parseYamlDocString(docString))
@@ -87,13 +74,8 @@ describeFeature(feature, ({ Scenario }) => {
   Scenario('A non-SSH target is rejected', ({ Given, And, When, Then }) => {
     Given('the loaded SSH deployment target is:', (_ctx, docString) => {
       target = parseYamlDocString<LoadedDeploymentTarget>(docString)
-      localProtectionSecretFilePath = ''
       plan = undefined
       planError = null
-    })
-
-    And('the local reporter protection secret file path is {string}', (_ctx, value) => {
-      localProtectionSecretFilePath = value
     })
 
     When('the SSH install plan is built', () => {
@@ -103,8 +85,7 @@ describeFeature(feature, ({ Scenario }) => {
         }
 
         plan = buildSshInstallPlan({
-          target,
-          localProtectionSecretFilePath
+          target
         })
         planError = null
       } catch (error) {

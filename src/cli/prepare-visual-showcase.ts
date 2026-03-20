@@ -143,8 +143,7 @@ function main(): void {
 
   const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
-    reporterCgiSettings: generatedTargetSettings.reporterCgi,
-    deploymentWorkspaceDirectory: workspaceRoot
+    reporterCgiSettings: generatedTargetSettings.reporterCgi
   })
 
   ensureDirectory(dirname(reportScriptTargetPath))
@@ -161,8 +160,7 @@ function main(): void {
         generatedTargetSettingsPath,
         surveyName,
         saveScriptTargetPath,
-        reportScriptTargetPath,
-        storedSecretFilePath: preparedReporter.storedSecretFilePath
+        reportScriptTargetPath
       },
       null,
       2

@@ -1,6 +1,4 @@
 import { execFileSync } from 'node:child_process'
-import { join } from 'node:path'
-
 import { buildSshInstallPlan } from '../deploy/build-ssh-install-plan'
 import { loadDeploymentTarget } from '../deploy/load-deployment-target'
 import { readTargetNameArgument } from './read-target-name-argument'
@@ -21,8 +19,7 @@ function main(): void {
     targetName
   })
   const plan = buildSshInstallPlan({
-    target,
-    localProtectionSecretFilePath: join(workspaceRoot, '.deploy', 'reporter-protection-secret.txt')
+    target
   })
 
   plan.commands.forEach((command) => {
@@ -37,8 +34,7 @@ function main(): void {
         sshTarget: target.type === 'ssh' ? target.sshTarget : undefined,
         remotePublicRoot: plan.remotePublicRoot,
         remoteCgiRoot: plan.remoteCgiRoot,
-        remoteDataRoot: plan.remoteDataRoot,
-        remoteProtectionFilePath: plan.remoteProtectionFilePath
+        remoteDataRoot: plan.remoteDataRoot
       },
       null,
       2

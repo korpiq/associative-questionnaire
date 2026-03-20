@@ -20,7 +20,6 @@ export { prepareSaverCgiAsset } from './deploy/prepare-saver-cgi-asset'
 export { buildReporterStatistics } from './reporter/build-reporter-statistics'
 export { renderReporterHtmlPage } from './reporter/render-reporter-html-page'
 export { resolveStoredReporterSurvey } from './reporter/resolve-stored-reporter-survey'
-export { prepareReporterProtectionSecret } from './reporter/prepare-reporter-protection-secret'
 export { storeUploadedReporterSurvey } from './reporter/store-uploaded-reporter-survey'
 export { normalizeSurvey } from './schema/normalize-survey'
 export type {

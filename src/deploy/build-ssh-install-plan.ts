@@ -70,12 +70,10 @@ function buildPathSetupCommand(input: {
 
 export function buildSshInstallPlan(input: {
   target: LoadedDeploymentTarget
-  localProtectionSecretFilePath: string
 }): {
   remotePublicRoot: string
   remoteCgiRoot: string
   remoteDataRoot: string
-  remoteProtectionFilePath: string
   commands: Array<[string, ...string[]]>
 } {
   if (input.target.type !== 'ssh') {
@@ -85,13 +83,11 @@ export function buildSshInstallPlan(input: {
   const remotePublicRoot = toParsedRemotePath(input.target.publicPath).fullPath
   const remoteCgiRoot = toParsedRemotePath(input.target.cgiPath).fullPath
   const remoteDataRoot = toParsedRemotePath(input.target.dataDir).fullPath
-  const remoteProtectionFilePath = toResolvedRemoteShellPath(input.target.protectionFile)
 
   return {
     remotePublicRoot,
     remoteCgiRoot,
     remoteDataRoot,
-    remoteProtectionFilePath,
     commands: [
       [
         'ssh',
@@ -120,11 +116,6 @@ export function buildSshInstallPlan(input: {
         '-r',
         'deploy/generated/runtime/surveys/.',
         `${input.target.sshTarget}:${remoteDataRoot}/surveys/`
-      ],
-      [
-        'scp',
-        input.localProtectionSecretFilePath,
-        `${input.target.sshTarget}:${remoteProtectionFilePath}`
       ],
       [
         'ssh',
