@@ -41,10 +41,6 @@ export function bundleGeneratedCgiSource(source: string): string {
     target: 'node20'
   }
 
-  if (shebang) {
-    options.banner = { js: shebang }
-  }
-
   const result = buildSync(options)
 
   const output = result.outputFiles?.[0]?.text
@@ -52,5 +48,5 @@ export function bundleGeneratedCgiSource(source: string): string {
     throw new Error('Expected esbuild to produce one bundled CGI output')
   }
 
-  return output
+  return shebang ? `${shebang}\n${output}` : output
 }

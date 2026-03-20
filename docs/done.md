@@ -221,3 +221,6 @@
 
 74. Switched CGI runtime path resolution to `SCRIPT_FILENAME` and the canonical per-survey layout.
     Added production feature coverage for resolving deployed CGI runtime paths from `SCRIPT_FILENAME`, injected per-survey private survey and answers paths into generated CGI assets as paths relative to each script directory, updated the generated saver and reporter templates to read only their own private `survey.json` and `answers/` locations, and verified the change with focused CGI-path and CGI-asset coverage plus the full suite and typecheck.
+
+75. Added a canonical per-survey deployment-artifact builder.
+    Added feature coverage for generating one survey's `index.html`, `ok.html`, `fail.html`, `save<cgiExtension>`, `report<cgiExtension>`, and private `survey.json`, introduced a shared builder that wires the save form to the per-survey `ok` and `fail` pages, reuses the prepared CGI assets, and enforces the target node shebang on generated CGI files, and verified the change with focused artifact coverage plus the full suite and typecheck.
