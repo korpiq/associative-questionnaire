@@ -6,13 +6,13 @@ Feature: Build an SSH install plan from a target configuration
         "targetName": "example-vps",
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicPath": "~/sites/example.test/www/./surveys",
-        "cgiPath": "~/sites/example.test/www/./cgi-bin",
-        "dataDir": "~/sites/example.test/www/./data",
+        "publicDir": "~/sites/example.test/www/surveys",
+        "cgiDir": "~/sites/example.test/www/cgi-bin",
+        "dataDir": "~/sites/example.test/www/data",
         "publicBaseUrl": "https://example.test",
-        "saverUrl": "https://example.test/cgi-bin/save-survey.js",
-        "reporterUrl": "https://example.test/cgi-bin/report-survey.js",
-        "createMissingSubpaths": true,
+        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi",
         "targetDirectory": "/workspace/targets/example-vps",
         "surveys": [
           {
@@ -25,9 +25,9 @@ Feature: Build an SSH install plan from a target configuration
       }
       """
     When the SSH install plan is built
-    Then the remote public root is "$HOME/sites/example.test/www/./surveys"
-    And the remote CGI root is "$HOME/sites/example.test/www/./cgi-bin"
-    And the remote data root is "$HOME/sites/example.test/www/./data"
+    Then the remote public root is "$HOME/sites/example.test/www/surveys"
+    And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
+    And the remote data root is "$HOME/sites/example.test/www/data"
     And the SSH install commands are:
       """
       [
@@ -35,24 +35,24 @@ Feature: Build an SSH install plan from a target configuration
           "scp",
           "-r",
           "deploy/generated/public/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/./surveys/"
+          "deploy@example.test:$HOME/sites/example.test/www/surveys/"
         ],
         [
           "scp",
           "-r",
           "deploy/generated/public/cgi-bin/.",
-          "deploy@example.test:$HOME/sites/example.test/www/./cgi-bin/"
+          "deploy@example.test:$HOME/sites/example.test/www/cgi-bin/"
         ],
         [
           "scp",
           "-r",
           "deploy/generated/runtime/surveys/.",
-          "deploy@example.test:$HOME/sites/example.test/www/./data/surveys/"
+          "deploy@example.test:$HOME/sites/example.test/www/data/surveys/"
         ],
         [
           "ssh",
           "deploy@example.test",
-          "chmod 755 \"$HOME/sites/example.test/www/./cgi-bin\"/*.js"
+          "chmod 755 \"$HOME/sites/example.test/www/cgi-bin\"/*.js"
         ]
       ]
       """
@@ -64,13 +64,13 @@ Feature: Build an SSH install plan from a target configuration
         "targetName": "local-container",
         "type": "container",
         "containerName": "associative-survey-local",
-        "publicPath": "/srv/www/./surveys",
-        "cgiPath": "/srv/www/./cgi-bin",
+        "publicDir": "/srv/www/surveys",
+        "cgiDir": "/srv/www/cgi-bin",
         "dataDir": "/home/app/.local/share/associative-survey",
         "publicBaseUrl": "http://127.0.0.1:18080",
-        "saverUrl": "http://127.0.0.1:18080/cgi-bin/save-survey.js",
-        "reporterUrl": "http://127.0.0.1:18080/cgi-bin/report-survey.js",
-        "createMissingSubpaths": true,
+        "cgiBaseUrl": "http://127.0.0.1:18080/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi",
         "targetDirectory": "/workspace/targets/local-container",
         "surveys": []
       }

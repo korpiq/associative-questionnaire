@@ -6,13 +6,13 @@ Feature: Build generated target settings for production assets
         "targetName": "example-vps",
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicPath": "/srv/sites/example.test/www/./surveys",
-        "cgiPath": "/srv/sites/example.test/www/./cgi-bin",
-        "dataDir": "/srv/sites/example.test/www/./data",
+        "publicDir": "/srv/sites/example.test/www/surveys",
+        "cgiDir": "/srv/sites/example.test/www/cgi-bin",
+        "dataDir": "/srv/sites/example.test/www/data",
         "publicBaseUrl": "https://example.test",
-        "saverUrl": "https://example.test/cgi-bin/save-survey.js",
-        "reporterUrl": "https://example.test/cgi-bin/report-survey.js",
-        "createMissingSubpaths": true,
+        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi",
         "targetDirectory": "/workspace/targets/example-vps",
         "surveys": [
           {
@@ -39,28 +39,28 @@ Feature: Build generated target settings for production assets
           "surveyPath": "/workspace/targets/example-vps/surveys/basic/survey.json",
           "templatePath": "/workspace/targets/example-vps/surveys/basic/template.html",
           "publicHtmlFilename": "basic.html",
-          "formAction": "https://example.test/cgi-bin/save-survey.js"
+          "formAction": "https://example.test/cgi-bin/save.cgi"
         },
         {
           "surveyName": "follow-up",
           "surveyPath": "/workspace/targets/example-vps/surveys/follow-up/survey.json",
           "templatePath": "/workspace/targets/example-vps/surveys/follow-up/template.html",
           "publicHtmlFilename": "follow-up.html",
-          "formAction": "https://example.test/cgi-bin/save-survey.js"
+          "formAction": "https://example.test/cgi-bin/save.cgi"
         }
       ]
       """
     And the generated saver CGI settings are:
       """
       {
-        "surveysDataDir": "/srv/sites/example.test/www/./data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/./data/answers"
+        "surveysDataDir": "/srv/sites/example.test/www/data/surveys",
+        "answersDataDir": "/srv/sites/example.test/www/data/answers"
       }
       """
     And the generated reporter CGI settings are:
       """
       {
-        "surveysDataDir": "/srv/sites/example.test/www/./data/surveys",
-        "answersDataDir": "/srv/sites/example.test/www/./data/answers"
+        "surveysDataDir": "/srv/sites/example.test/www/data/surveys",
+        "answersDataDir": "/srv/sites/example.test/www/data/answers"
       }
       """

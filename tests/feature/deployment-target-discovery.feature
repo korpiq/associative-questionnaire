@@ -7,12 +7,13 @@ Feature: Load deployment targets from the workspace
       {
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicPath": "~/sites/example.test/www/./surveys",
-        "cgiPath": "~/sites/example.test/www/./cgi-bin",
-        "dataDir": "~/sites/example.test/www/./data",
+        "publicDir": "~/sites/example.test/www/surveys",
+        "cgiDir": "~/sites/example.test/www/cgi-bin",
+        "dataDir": "~/sites/example.test/www/data",
         "publicBaseUrl": "https://example.test",
-        "saverUrl": "https://example.test/cgi-bin/save-survey.js",
-        "reporterUrl": "https://example.test/cgi-bin/report-survey.js"
+        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi"
       }
       """
     And the target has survey directories:

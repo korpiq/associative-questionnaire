@@ -30,8 +30,8 @@ export function buildSshInstallPlan(input: {
     throw new Error('SSH install plans require an ssh target configuration')
   }
 
-  const remotePublicRoot = toRemoteShellPath(input.target.publicPath)
-  const remoteCgiRoot = toRemoteShellPath(input.target.cgiPath)
+  const remotePublicRoot = toRemoteShellPath(input.target.publicDir)
+  const remoteCgiRoot = toRemoteShellPath(input.target.cgiDir)
   const remoteDataRoot = toRemoteShellPath(input.target.dataDir)
 
   return {

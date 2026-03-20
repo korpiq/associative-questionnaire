@@ -25,6 +25,10 @@ function appendConfiguredPath(path: string, segment: string): string {
   return path.endsWith('/') ? `${path}${segment}` : `${path}/${segment}`
 }
 
+function appendConfiguredUrl(url: string, segment: string): string {
+  return url.endsWith('/') ? `${url}${segment}` : `${url}/${segment}`
+}
+
 export function buildGeneratedTargetSettings(
   target: LoadedDeploymentTarget
 ): GeneratedTargetSettings {
@@ -37,7 +41,7 @@ export function buildGeneratedTargetSettings(
       surveyPath: survey.surveyPath,
       templatePath: survey.templatePath,
       publicHtmlFilename: `${survey.surveyName}.html`,
-      formAction: target.saverUrl
+      formAction: appendConfiguredUrl(target.cgiBaseUrl, `save${target.cgiExtension}`)
     })),
     saverCgi: {
       surveysDataDir,

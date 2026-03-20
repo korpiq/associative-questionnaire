@@ -5,27 +5,25 @@ const deploymentTargetConfigSchema = z
     type: z.enum(['container', 'ssh']),
     sshTarget: z.string().min(1).optional(),
     containerName: z.string().min(1).optional(),
-    publicPath: z.string().min(1),
-    cgiPath: z.string().min(1),
+    publicDir: z.string().min(1),
+    cgiDir: z.string().min(1),
     dataDir: z.string().min(1),
-    protectionFile: z.string().min(1).optional(),
     publicBaseUrl: z.string().url(),
-    saverUrl: z.string().url(),
-    reporterUrl: z.string().url(),
-    createMissingSubpaths: z.boolean().optional()
+    cgiBaseUrl: z.string().url(),
+    nodeExecutable: z.string().min(1),
+    cgiExtension: z.string().regex(/^\./, 'CGI extension must start with a dot')
   })
   .strict()
 
 type ParsedDeploymentTargetConfigBase = {
   targetName: string
-  publicPath: string
-  cgiPath: string
+  publicDir: string
+  cgiDir: string
   dataDir: string
-  protectionFile: string
   publicBaseUrl: string
-  saverUrl: string
-  reporterUrl: string
-  createMissingSubpaths: boolean
+  cgiBaseUrl: string
+  nodeExecutable: string
+  cgiExtension: string
 }
 
 export type ParsedDeploymentTargetConfig =
@@ -64,14 +62,13 @@ export function parseDeploymentTargetConfig(input: {
 
   const baseConfig = {
     targetName,
-    publicPath: parsedConfig.publicPath,
-    cgiPath: parsedConfig.cgiPath,
+    publicDir: parsedConfig.publicDir,
+    cgiDir: parsedConfig.cgiDir,
     dataDir: parsedConfig.dataDir,
-    protectionFile: parsedConfig.protectionFile ?? `${parsedConfig.dataDir}/protection.txt`,
     publicBaseUrl: parsedConfig.publicBaseUrl,
-    saverUrl: parsedConfig.saverUrl,
-    reporterUrl: parsedConfig.reporterUrl,
-    createMissingSubpaths: parsedConfig.createMissingSubpaths ?? true
+    cgiBaseUrl: parsedConfig.cgiBaseUrl,
+    nodeExecutable: parsedConfig.nodeExecutable,
+    cgiExtension: parsedConfig.cgiExtension
   }
 
   if (parsedConfig.type === 'ssh') {
