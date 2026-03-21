@@ -1,6 +1,5 @@
 # TODO
 
-- find out why tests/feature/cgi-script-runtime-paths.feature exists – what was it created for?
 - make sure that tests fail in the future if one of the feature files is not included in the run by default (e.g. grep for each feature file name in specs?)
 - if tests/feature/cgi-script-runtime-paths.feature is not necessary, remove it
 - if tests/feature/cgi-script-runtime-paths.feature is still necessary, implement it

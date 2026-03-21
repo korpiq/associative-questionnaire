@@ -245,3 +245,6 @@
 
 82. Added an `npm run nuke` command for generated workspace artifacts and dependencies.
     Added a dedicated cleanup script that removes `dist/`, `deploy/generated/`, and `node_modules/`, covered it with a Gherkin integration scenario that runs `npm --silent run nuke` inside an isolated workspace, and verified the change with `npm run check` plus the targeted integration spec.
+
+83. Identified the purpose of the stray `cgi-script-runtime-paths` feature file.
+    Confirmed that the untracked `tests/feature/cgi-script-runtime-paths.feature` is a duplicate draft of the already-implemented `tests/feature/cgi-runtime-path-resolution.feature` coverage from the `Resolve CGI runtime paths from SCRIPT_FILENAME` work, so it does not represent new supported behavior.
