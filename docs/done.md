@@ -242,3 +242,6 @@
 
 81. Added an `npm run clean` command for generated workspace artifacts.
     Added a dedicated cleanup script that removes `dist/` and `deploy/generated/` without touching tracked deploy templates, covered it with a Gherkin integration scenario that executes `npm --silent run clean` directly, and verified the change with `npm run check` plus the targeted integration spec.
+
+82. Added an `npm run nuke` command for generated workspace artifacts and dependencies.
+    Added a dedicated cleanup script that removes `dist/`, `deploy/generated/`, and `node_modules/`, covered it with a Gherkin integration scenario that runs `npm --silent run nuke` inside an isolated workspace, and verified the change with `npm run check` plus the targeted integration spec.
