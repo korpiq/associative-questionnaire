@@ -272,3 +272,6 @@
 
 91. Turned the cookie-based container shell integration test into Gherkin coverage.
     Added `tests/integration/cookie-based-container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, zero-respondent report check, cookie-identified save CGI submission, and one-respondent report check directly, and verified it with the standard `npm run check` and `npm test` commands.
+
+92. Turned the SSH deployment shell test into Gherkin integration coverage.
+    Added `tests/integration/ssh-deployment.feature` plus a matching step spec that provisions the disposable SSH-and-HTTP host container, installs a generated target through the real SSH installer CLI, verifies the deployed survey/save/report flow, and checks the deployed public, CGI, and private files, and verified it with the standard `npm run check` and `npm test` commands.
