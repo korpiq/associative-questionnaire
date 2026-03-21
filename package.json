@@ -14,7 +14,7 @@
     "install:ssh": "node --import tsx src/cli/install-vps-over-ssh.ts",
     "manual:container": "bash scripts/manual-container.sh",
     "manual:save": "node --import tsx src/cli/manual-save-survey.ts",
-    "nuke": "rm -rf dist deploy/generated node_modules",
+    "nuke": "npm run clean --silent && rm -rf node_modules",
     "prepare:container": "node --import tsx src/cli/prepare-container-assets.ts",
     "prepare:visual": "node --import tsx src/cli/prepare-visual-showcase.ts",
     "test": "vitest run",

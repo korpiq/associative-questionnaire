@@ -278,3 +278,6 @@
 
 93. Inlined the trivial npm cleanup scripts in `package.json`.
     Replaced the `clean` and `nuke` wrapper shell scripts with direct `rm`-based npm script definitions, removed the obsolete wrapper files, updated the integration coverage to expect silent cleanup commands, and verified the change with the standard `npm run check` and `npm test` commands.
+
+94. Made `nuke` reuse `clean`.
+    Changed the `nuke` npm script to run `clean` first and remove `node_modules/` afterwards so build-artifact cleanup stays defined in one place, and verified the change with the standard `npm run check` and `npm test` commands.
