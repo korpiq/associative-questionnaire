@@ -248,3 +248,6 @@
 
 83. Identified the purpose of the stray `cgi-script-runtime-paths` feature file.
     Confirmed that the untracked `tests/feature/cgi-script-runtime-paths.feature` is a duplicate draft of the already-implemented `tests/feature/cgi-runtime-path-resolution.feature` coverage from the `Resolve CGI runtime paths from SCRIPT_FILENAME` work, so it does not represent new supported behavior.
+
+84. Added a feature-suite integrity check for tracked Gherkin files.
+    Added Gherkin coverage that inspects tracked `tests/feature/*.feature` files through `git ls-files`, verifies that each one is referenced by a `loadFeature(...)` call in `tests/feature/specs/*.spec.ts`, and verified the check with `npm run check` plus the targeted integrity spec.
