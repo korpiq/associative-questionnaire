@@ -1,0 +1,4 @@
+interface:
+  display_name: "TODO-Driven Work"
+  short_description: "Run repository work from TODO to done"
+  default_prompt: "Use $todo-driven-work to complete TODO items in order and move verified work to done."

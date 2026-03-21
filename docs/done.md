@@ -281,3 +281,6 @@
 
 94. Made `nuke` reuse `clean`.
     Changed the `nuke` npm script to run `clean` first and remove `node_modules/` afterwards so build-artifact cleanup stays defined in one place, and verified the change with the standard `npm run check` and `npm test` commands.
+
+95. Added a `todo-driven-work` skill for the repository execution flow.
+    Created `.agents/skills/todo-driven-work` to capture the TODO-first workflow, per-step verification, done-tracking, and one-commit-per-verified-step discipline, and validated the skill structure with `quick_validate.py`.
