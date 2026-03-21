@@ -251,3 +251,6 @@
 
 84. Added a feature-suite integrity check for tracked Gherkin files.
     Added Gherkin coverage that inspects tracked `tests/feature/*.feature` files through `git ls-files`, verifies that each one is referenced by a `loadFeature(...)` call in `tests/feature/specs/*.spec.ts`, and verified the check with `npm run check` plus the targeted integrity spec.
+
+85. Removed the duplicate `cgi-script-runtime-paths` feature draft.
+    Deleted the untracked `tests/feature/cgi-script-runtime-paths.feature` file after confirming it duplicated the tracked runtime-path coverage and added no new supported behavior.

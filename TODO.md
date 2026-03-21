@@ -1,7 +1,5 @@
 # TODO
 
-- if tests/feature/cgi-script-runtime-paths.feature is not necessary, remove it
-- if tests/feature/cgi-script-runtime-paths.feature is still necessary, implement it
 - Dockerfile must not copy over anything but the deployable tarball.
 - turn integration tests into gherkin feature tests, just under tests/integration
 - turn also test shell scripts into gherkin feature tests  under tests/integration
