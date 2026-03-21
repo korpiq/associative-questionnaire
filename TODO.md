@@ -1,7 +1,16 @@
 # TODO
 
-- turn integration tests into gherkin feature tests, just under tests/integration
-- turn also test shell scripts into gherkin feature tests  under tests/integration
+- turn `tests/integration/prepare-generated-ssh-deployment-package.test.ts` into Gherkin feature coverage under `tests/integration`
+- remove the old `.test.ts` integration files after their replacement Gherkin coverage is verified
+- turn `scripts/test-container.sh` into Gherkin feature coverage under `tests/integration`
+- turn `scripts/test-integration.sh` into Gherkin feature coverage under `tests/integration`
+- turn `scripts/test-ssh-deployment.sh` into Gherkin feature coverage under `tests/integration`
+- decide whether `scripts/test-visual.sh` is supported automated test coverage or an intentionally manual helper, and if it is supported, turn it into Gherkin feature coverage under `tests/integration`
+- remove or narrow the old shell-script test entrypoints after their replacement Gherkin coverage is verified
+- each npm script should be inlined in package.json if it is a shell one-liner, like `clean` and `nuke` are; the only essential effect in those is `rm`; non-essential output should be avoided
+- make `nuke` call `clean` so improvement to latter can be done in one place only
+- in general, try to follow DRY (don't repeat yourself) harder
+- in general, try to avoid corner cases and even ignore rare error cases to avoid complicating code.
 
 ## deployment scripting
 
@@ -29,13 +38,6 @@ Report should show all results on a continuous page without sections for easy pr
 ## Custom CSS and scripts should override defaults individually
 
 When generating survey page, custom CSS and script sections should add to or override existing individual entries or functions in the respective sets.
-
-## Survey customization
-
-Surveys should have customizable success and failure pages and CSS file for saver and reporter. So each survey should have its own directory on the webserver to contain all those.
-
-Contents for each of them can come from separate files or the template html.
-Add success and fail portions to the default template for that.
 
 ## Provide a CGI script to upload new surveys
 

@@ -257,3 +257,6 @@
 
 86. Switched the container image to consume only the prepared deployable tarball.
     Extracted shared tarball creation for deployment packaging, updated container preparation to emit `deploy/generated/container-image.tar.gz`, changed the Dockerfile to copy only that tarball into the image and extract it in place, added Dockerfile feature coverage for the tarball-only copy rule, and verified the change with `npm run check`, the targeted Dockerfile spec, and `npm run test:container`.
+
+87. Turned generated container-layout integration coverage into a Gherkin feature test.
+    Added `tests/integration/prepare-generated-container-layout.feature` plus a matching step spec that prepares an isolated container target workspace, verifies the generated public, CGI, and private files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
