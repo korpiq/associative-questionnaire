@@ -263,3 +263,6 @@
 
 88. Turned generated SSH deployment-package integration coverage into a Gherkin feature test.
     Added `tests/integration/prepare-generated-ssh-deployment-package.feature` plus a matching step spec that prepares an isolated SSH target workspace, verifies the generated setup script, tarball presence, and canonical per-survey payload files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
+
+89. Removed the replaced integration `.test.ts` files.
+    Deleted the old generated container-layout and SSH deployment-package `.test.ts` files after their Gherkin replacements were in place, and verified the remaining replacement coverage with `npm run check` plus both targeted integration specs.
