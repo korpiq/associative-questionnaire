@@ -275,3 +275,6 @@
 
 92. Turned the SSH deployment shell test into Gherkin integration coverage.
     Added `tests/integration/ssh-deployment.feature` plus a matching step spec that provisions the disposable SSH-and-HTTP host container, installs a generated target through the real SSH installer CLI, verifies the deployed survey/save/report flow, and checks the deployed public, CGI, and private files, and verified it with the standard `npm run check` and `npm test` commands.
+
+93. Inlined the trivial npm cleanup scripts in `package.json`.
+    Replaced the `clean` and `nuke` wrapper shell scripts with direct `rm`-based npm script definitions, removed the obsolete wrapper files, updated the integration coverage to expect silent cleanup commands, and verified the change with the standard `npm run check` and `npm test` commands.

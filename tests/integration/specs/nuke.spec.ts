@@ -13,15 +13,27 @@ describeFeature(feature, ({ Scenario }) => {
   let commandOutput = ''
   let commandError: Error | null = null
 
-  function scriptContents(scriptName: string): string {
-    return readFileSync(join(process.cwd(), 'scripts', scriptName), 'utf8')
+  function packageScripts(): { clean: string; nuke: string } {
+    const packageJson = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8')) as {
+      scripts?: Record<string, string>
+    }
+
+    if (!packageJson.scripts?.clean || !packageJson.scripts.nuke) {
+      throw new Error('Expected clean and nuke scripts in package.json')
+    }
+
+    return {
+      clean: packageJson.scripts.clean,
+      nuke: packageJson.scripts.nuke
+    }
   }
 
   function writeIsolatedWorkspace(): void {
+    const scripts = packageScripts()
+
     workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-nuke-'))
     createdWorkspaceDirectories.push(workspaceDirectory)
 
-    mkdirSync(join(workspaceDirectory, 'scripts'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'dist', 'src'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'deploy', 'generated', 'runtime'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'deploy', 'templates'), { recursive: true })
@@ -34,16 +46,14 @@ describeFeature(feature, ({ Scenario }) => {
           name: 'nuke-test-workspace',
           private: true,
           scripts: {
-            clean: 'bash scripts/clean.sh',
-            nuke: 'bash scripts/nuke.sh'
+            clean: scripts.clean,
+            nuke: scripts.nuke
           }
         },
         null,
         2
       )
     )
-    writeFileSync(join(workspaceDirectory, 'scripts', 'clean.sh'), scriptContents('clean.sh'))
-    writeFileSync(join(workspaceDirectory, 'scripts', 'nuke.sh'), scriptContents('nuke.sh'))
     writeFileSync(join(workspaceDirectory, 'dist', 'src', 'index.js'), 'export {}\n')
     writeFileSync(
       join(workspaceDirectory, 'deploy', 'generated', 'runtime', 'runtime-cgi.js'),
@@ -93,8 +103,8 @@ describeFeature(feature, ({ Scenario }) => {
             : new Error(`Command failed with status ${result.status}: ${result.stdout}${result.stderr}`)
       })
 
-      Then('the command output is:', (_ctx, docString) => {
-        expect(commandError?.message ?? commandOutput).toBe((docString ?? '').trim())
+      Then('the command output is empty', () => {
+        expect(commandError?.message ?? commandOutput).toBe('')
       })
 
       And('the isolated workspace generated build artifacts are removed', () => {

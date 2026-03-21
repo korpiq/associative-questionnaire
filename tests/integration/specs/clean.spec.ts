@@ -55,8 +55,8 @@ describeFeature(feature, ({ Scenario }) => {
           : new Error(`Command failed with status ${result.status}: ${result.stdout}${result.stderr}`)
     })
 
-    Then('the command output is:', (_ctx, docString) => {
-      expect(commandError?.message ?? commandOutput).toBe((docString ?? '').trim())
+    Then('the command output is empty', () => {
+      expect(commandError?.message ?? commandOutput).toBe('')
     })
 
     And('the generated build artifacts are removed', () => {
