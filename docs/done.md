@@ -254,3 +254,6 @@
 
 85. Removed the duplicate `cgi-script-runtime-paths` feature draft.
     Deleted the untracked `tests/feature/cgi-script-runtime-paths.feature` file after confirming it duplicated the tracked runtime-path coverage and added no new supported behavior.
+
+86. Switched the container image to consume only the prepared deployable tarball.
+    Extracted shared tarball creation for deployment packaging, updated container preparation to emit `deploy/generated/container-image.tar.gz`, changed the Dockerfile to copy only that tarball into the image and extract it in place, added Dockerfile feature coverage for the tarball-only copy rule, and verified the change with `npm run check`, the targeted Dockerfile spec, and `npm run test:container`.

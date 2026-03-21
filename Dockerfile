@@ -1,21 +1,9 @@
 FROM node:20-alpine
 
-WORKDIR /opt/associative-survey/app
-
 RUN apk add --no-cache busybox-extras
 
-COPY package.json package-lock.json tsconfig.json ./
-COPY src ./src
-COPY docs ./docs
-COPY deploy ./deploy
-COPY targets ./targets
-
-RUN npm ci
-RUN npm run build
-ARG PREPARE_COMMAND=prepare:container
-ARG PREPARE_TARGET=sample
-RUN npm run ${PREPARE_COMMAND} -- ${PREPARE_TARGET}
-RUN cp -R deploy/generated/root/. /
+COPY deploy/generated/container-image.tar.gz /tmp/deployable-container.tar.gz
+RUN tar -xzf /tmp/deployable-container.tar.gz -C / && rm /tmp/deployable-container.tar.gz
 
 ENV HOME=/home/app
 EXPOSE 8080

@@ -1,9 +1,6 @@
 # Add to todo later
 
-## Use public key to encrypt answers
-
-- generate public-private key pair as part of survey installation
-- inject secret key into the survey json file seen by report script
-- make survey page encrypt its contents with the public key (is there minimal reliable way to do this in all browsers? crypto?)
-- change save script to save opaque encrypted blobs as answer files
-- make report script decrypt answer files by secret key in survey json
+- each npm script should be inlined in package.json if it is a shell one-liner, like `clean` and `nuke` are; the only essential effect in those is `rm`; non-essential output should be avoided
+- make `nuke` call `clean` so improvement to latter can be done in one place only 
+- in general, try to follow DRY (don't repeat yourself) harder
+- in general, try to avoid corner cases and even ignore rare error cases to avoid complicating code.

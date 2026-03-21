@@ -15,6 +15,7 @@ function main(): void {
         generatedRoot: preparedLayout.generatedRoot,
         containerRoot: preparedLayout.containerRoot,
         manifestPath: preparedLayout.manifestPath,
+        tarballPath: preparedLayout.tarballPath,
         deploymentTargetName: targetName,
         deployedSurveys: preparedLayout.surveys
       },

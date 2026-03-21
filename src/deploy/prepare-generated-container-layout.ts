@@ -1,8 +1,9 @@
-import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 import { buildGeneratedSurveyArtifacts } from './build-generated-survey-artifacts'
 import { buildGeneratedTargetSettings } from './build-generated-target-settings'
+import { createTarGzFromDirectory } from './create-tar-gz-from-directory'
 import { loadDeploymentTarget } from './load-deployment-target'
 
 function ensureDirectory(path: string): void {
@@ -37,12 +38,14 @@ export function prepareGeneratedContainerLayout(input: {
   generatedRoot: string
   containerRoot: string
   manifestPath: string
+  tarballPath: string
   surveys: ReturnType<typeof buildGeneratedTargetSettings>['surveys']
 } {
   const generatedRoot =
     input.generatedRoot ?? resolve(input.workspaceDirectory, 'deploy', 'generated')
   const containerRoot = join(generatedRoot, 'root')
   const manifestPath = join(generatedRoot, 'container-target-settings.json')
+  const tarballPath = join(generatedRoot, 'container-image.tar.gz')
   const deploymentTarget = loadDeploymentTarget({
     workspaceDirectory: input.workspaceDirectory,
     targetName: input.targetName
@@ -57,6 +60,9 @@ export function prepareGeneratedContainerLayout(input: {
   )
   const saverScriptTemplate = readFileSync(saveScriptTemplatePath, 'utf8')
   const reporterScriptTemplate = readFileSync(reporterScriptTemplatePath, 'utf8')
+
+  rmSync(containerRoot, { recursive: true, force: true })
+  rmSync(tarballPath, { force: true })
 
   generatedTargetSettings.surveys.forEach((surveySettings) => {
     const artifacts = buildGeneratedSurveyArtifacts({
@@ -74,11 +80,16 @@ export function prepareGeneratedContainerLayout(input: {
   })
 
   writeFileSync(manifestPath, JSON.stringify(generatedTargetSettings, null, 2))
+  createTarGzFromDirectory({
+    sourceDirectory: containerRoot,
+    tarballPath
+  })
 
   return {
     generatedRoot,
     containerRoot,
     manifestPath,
+    tarballPath,
     surveys: generatedTargetSettings.surveys
   }
 }

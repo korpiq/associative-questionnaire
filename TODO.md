@@ -1,6 +1,5 @@
 # TODO
 
-- Dockerfile must not copy over anything but the deployable tarball.
 - turn integration tests into gherkin feature tests, just under tests/integration
 - turn also test shell scripts into gherkin feature tests  under tests/integration
 
