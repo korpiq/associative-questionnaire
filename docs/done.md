@@ -269,3 +269,6 @@
 
 90. Turned the container shell smoke test into Gherkin integration coverage.
     Added `tests/integration/container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, container startup, save CGI submission, and report verification directly, and verified it with `npm run check` plus the targeted Docker-backed integration spec.
+
+91. Turned the cookie-based container shell integration test into Gherkin coverage.
+    Added `tests/integration/cookie-based-container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, zero-respondent report check, cookie-identified save CGI submission, and one-respondent report check directly, and verified it with the standard `npm run check` and `npm test` commands.
