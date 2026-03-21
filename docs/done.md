@@ -260,3 +260,6 @@
 
 87. Turned generated container-layout integration coverage into a Gherkin feature test.
     Added `tests/integration/prepare-generated-container-layout.feature` plus a matching step spec that prepares an isolated container target workspace, verifies the generated public, CGI, and private files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
+
+88. Turned generated SSH deployment-package integration coverage into a Gherkin feature test.
+    Added `tests/integration/prepare-generated-ssh-deployment-package.feature` plus a matching step spec that prepares an isolated SSH target workspace, verifies the generated setup script, tarball presence, and canonical per-survey payload files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.

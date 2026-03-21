@@ -1,6 +1,5 @@
 # TODO
 
-- turn `tests/integration/prepare-generated-ssh-deployment-package.test.ts` into Gherkin feature coverage under `tests/integration`
 - remove the old `.test.ts` integration files after their replacement Gherkin coverage is verified
 - turn `scripts/test-container.sh` into Gherkin feature coverage under `tests/integration`
 - turn `scripts/test-integration.sh` into Gherkin feature coverage under `tests/integration`
