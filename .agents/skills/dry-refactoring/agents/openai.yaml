@@ -1,0 +1,4 @@
+interface:
+  display_name: "DRY Refactoring"
+  short_description: "Find and extract identical repeated code"
+  default_prompt: "Use $dry-refactoring to replace one set of identical repeated code with a shared helper."

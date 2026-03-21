@@ -2,6 +2,10 @@
 
 - decide whether `scripts/test-visual.sh` is supported automated test coverage or an intentionally manual helper, and if it is supported, turn it into Gherkin feature coverage under `tests/integration`
 - remove or narrow the old shell-script test entrypoints after their replacement Gherkin coverage is verified
+- turn the TODO/done/one-step-at-a-time workflow rules from `AGENTS.md` into a `todo-driven-work` skill under `.agents/skills`
+- turn the Gherkin feature/spec testing rules from `AGENTS.md` into a `gherkin-testing` skill under `.agents/skills`
+- turn the CLI-oriented integration-testing rules from `AGENTS.md` into a `cli-integration-testing` skill under `.agents/skills`
+- turn the README/docs/testing/docs tracking alignment rules from `AGENTS.md` into a `repo-doc-alignment` skill under `.agents/skills`
 - in general, try to follow DRY (don't repeat yourself) harder
 - in general, try to avoid corner cases and even ignore rare error cases to avoid complicating code.
 
