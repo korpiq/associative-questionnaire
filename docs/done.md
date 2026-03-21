@@ -239,3 +239,6 @@
 
 80. Added a containerized end-to-end integration test for the first working SSH deployment flow.
     Added `scripts/test-ssh-deployment.sh` plus an `npm run test:ssh-deployment` entry that provisions a disposable SSH-and-HTTP host container, deploys a v2 target with distinct public, CGI, and private-data roots through the real SSH installer, verifies the deployed survey page, save CGI, report CGI, and private survey data in place, updated the SSH install plan and setup-script generation so `scp` and runtime `$HOME` expansion work correctly, and verified the change with focused SSH coverage, the Docker-backed deployment test, the full suite, and typecheck.
+
+81. Added an `npm run clean` command for generated workspace artifacts.
+    Added a dedicated cleanup script that removes `dist/` and `deploy/generated/` without touching tracked deploy templates, covered it with a Gherkin integration scenario that executes `npm --silent run clean` directly, and verified the change with `npm run check` plus the targeted integration spec.

@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "check": "tsc --noEmit --project tsconfig.json",
+    "clean": "bash scripts/clean.sh",
     "generate": "node --import tsx src/cli/generate-survey-html.ts",
     "install:ssh": "node --import tsx src/cli/install-vps-over-ssh.ts",
     "manual:container": "bash scripts/manual-container.sh",
