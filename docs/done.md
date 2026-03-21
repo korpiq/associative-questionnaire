@@ -266,3 +266,6 @@
 
 89. Removed the replaced integration `.test.ts` files.
     Deleted the old generated container-layout and SSH deployment-package `.test.ts` files after their Gherkin replacements were in place, and verified the remaining replacement coverage with `npm run check` plus both targeted integration specs.
+
+90. Turned the container shell smoke test into Gherkin integration coverage.
+    Added `tests/integration/container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, container startup, save CGI submission, and report verification directly, and verified it with `npm run check` plus the targeted Docker-backed integration spec.

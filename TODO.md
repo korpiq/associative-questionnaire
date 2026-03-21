@@ -1,6 +1,5 @@
 # TODO
 
-- turn `scripts/test-container.sh` into Gherkin feature coverage under `tests/integration`
 - turn `scripts/test-integration.sh` into Gherkin feature coverage under `tests/integration`
 - turn `scripts/test-ssh-deployment.sh` into Gherkin feature coverage under `tests/integration`
 - decide whether `scripts/test-visual.sh` is supported automated test coverage or an intentionally manual helper, and if it is supported, turn it into Gherkin feature coverage under `tests/integration`
