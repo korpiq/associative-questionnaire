@@ -1,5 +1,12 @@
 # Add to todo later
 
+I stopped at the remaining items because I’m not confident they are narrow enough yet:
+•
+scripts/test-visual.sh now needs a deliberate redesign around the current tarball-only container build, plus the manual-helper behavior you specified
+•
+remove or narrow the old shell-script test entrypoints after their replacement Gherkin coverage is verified depends on resolving what stays for the visual helper
+•
+in general, try to follow DRY harder and avoid corner cases... are too broad to verify as discrete TODO completions without turning them into concrete tasks
 
 Needs clarification before I’d claim confidence:
 •

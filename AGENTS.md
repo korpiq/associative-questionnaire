@@ -20,6 +20,7 @@
 - When told to do several TODO steps alone, commit after each verified TODO step before starting the next one.
 - When the user tells you to work through TODO items, complete them in order, commit each step after verification, and continue until you either reach the end or no longer have high confidence in the next step.
 - When working independently, avoid custom or narrowly targeted verification commands that the user is not present to approve; prefer the full standard test set instead.
+- After committing a task result, look for truly identical repeated code in both tests and production code; if extracting it into a shared function makes the code shorter, keeps behavior the same, and tests still pass, commit that DRY refactoring as its own follow-up step, but abandon the refactor if it makes the code longer.
 - Commit messages must use a single-line task topic, then a blank line, then concise lines describing decisions, concrete actions, and any later follow-up ideas.
 - For deployment v2, prefer `esbuild` for bundling generated CGI scripts into single self-contained files, and do not treat runtime data-file access as something to eliminate.
 - If tracked documentation files already have updates in the worktree, include them in commits; do not sweep in new untracked documentation files unless they are part of the current task.
