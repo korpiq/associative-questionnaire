@@ -1,5 +1,24 @@
 # TODO
 
+- find out why tests/feature/cgi-script-runtime-paths.feature exists – what was it created for?
+- make sure that tests fail in the future if one of the feature files is not included in the run by default (e.g. grep for each feature file name in specs?)
+- if tests/feature/cgi-script-runtime-paths.feature is not necessary, remove it
+- if tests/feature/cgi-script-runtime-paths.feature is still necessary, implement it
+- Dockerfile must not copy over anything but the deployable tarball.
+- turn integration tests into gherkin feature tests, just under tests/integration
+- turn also test shell scripts into gherkin feature tests  under tests/integration
+
+## deployment scripting
+
+Both container and ssh deployment shall
+- extract the tarball in place at target
+  - ssh can just run tar there and redirect tarball via stdin
+  - container may have to
+    - copy the whole deployable tarball to target
+    - extract files from it directly into their correct places
+    - remove the tarball
+- if setup script has nothing to do after files are extracted with correct properties, we can omit it.
+
 ## Keep survey answers in local storage
 
 - whenever form state changes, save it to local storage
