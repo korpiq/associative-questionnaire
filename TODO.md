@@ -1,6 +1,5 @@
 # TODO
 
-- make container deployment extract the deployable tarball in-container as described in [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md)
 - remove `setup.sh` from deployment only if tarball extraction alone satisfies [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md); otherwise standardize it as the always-run fallback
 - persist survey state in browser local storage per page URL as described in [docs/local-storage-design.md](/home/kato/omat/associative-questionnaire/docs/local-storage-design.md)
 - remove client-side code paths that prepare to load survey contents from outside local storage, as described in [docs/local-storage-design.md](/home/kato/omat/associative-questionnaire/docs/local-storage-design.md)

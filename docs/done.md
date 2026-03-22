@@ -299,3 +299,6 @@
 
 98. Covered and fixed the visual launcher submit flow on the configured port.
     Extended the tooling executable spec to require a real submit-path check and the configured survey/report URLs, updated `scripts/test-visual.sh` to extract the rendered form action before posting one response through the actual saver CGI, and verified the result with the standard `npm run check`, `npm run test:tooling`, and `npm test` commands.
+
+99. Moved container deployment tarball extraction into the running container.
+    Updated the Docker-backed container deployment specs to require an explicit install step after container startup, kept the runtime image generic by removing deployable-asset baking from the Dockerfile, added a helper and CLI that stream the prepared tarball into the live container and extract it there with `docker exec`, aligned the manual and visual helper scripts with the same runtime install flow, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test`.
