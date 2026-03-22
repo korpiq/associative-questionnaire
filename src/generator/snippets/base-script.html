@@ -1,6 +1,155 @@
 <script>
 (function () {
   document.documentElement.dataset.surveyReady = 'true';
+  var surveyStateMaxAgeMs = 30 * 24 * 60 * 60 * 1000;
+
+  function getSurveyForm() {
+    return document.querySelector('.survey-form');
+  }
+
+  function getSurveyStorageKey() {
+    return window.location.href;
+  }
+
+  function readStoredSurveyRecord() {
+    try {
+      var rawRecord = window.localStorage.getItem(getSurveyStorageKey());
+      var parsedRecord;
+
+      if (!rawRecord) {
+        return null;
+      }
+
+      parsedRecord = JSON.parse(rawRecord);
+
+      if (
+        !parsedRecord ||
+        typeof parsedRecord !== 'object' ||
+        typeof parsedRecord.updatedAt !== 'number' ||
+        !parsedRecord.formState ||
+        typeof parsedRecord.formState !== 'object'
+      ) {
+        window.localStorage.removeItem(getSurveyStorageKey());
+        return null;
+      }
+
+      if (Date.now() - parsedRecord.updatedAt > surveyStateMaxAgeMs) {
+        window.localStorage.removeItem(getSurveyStorageKey());
+        return null;
+      }
+
+      return parsedRecord;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function listFormFields(form) {
+    return form.querySelectorAll('input[name], textarea[name], select[name]');
+  }
+
+  function readCurrentFormState(form) {
+    var formState = {};
+
+    listFormFields(form).forEach(function (field) {
+      if (field.disabled || !field.name) {
+        return;
+      }
+
+      if (field.type === 'radio') {
+        if (!Object.prototype.hasOwnProperty.call(formState, field.name)) {
+          formState[field.name] = '';
+        }
+
+        if (field.checked) {
+          formState[field.name] = field.value;
+        }
+
+        return;
+      }
+
+      if (field.type === 'checkbox') {
+        if (!Object.prototype.hasOwnProperty.call(formState, field.name)) {
+          formState[field.name] = [];
+        }
+
+        if (field.checked) {
+          formState[field.name].push(field.value);
+        }
+
+        return;
+      }
+
+      formState[field.name] = field.value;
+    });
+
+    return formState;
+  }
+
+  function restoreStoredFormState(form, formState) {
+    listFormFields(form).forEach(function (field) {
+      var storedValue;
+
+      if (!field.name || !Object.prototype.hasOwnProperty.call(formState, field.name)) {
+        return;
+      }
+
+      storedValue = formState[field.name];
+
+      if (field.type === 'radio') {
+        field.checked = storedValue === field.value;
+        return;
+      }
+
+      if (field.type === 'checkbox') {
+        field.checked = Array.isArray(storedValue) && storedValue.indexOf(field.value) !== -1;
+        return;
+      }
+
+      if (field.type === 'hidden') {
+        field.value = typeof storedValue === 'string' ? storedValue : JSON.stringify(storedValue);
+        return;
+      }
+
+      field.value = typeof storedValue === 'string' ? storedValue : '';
+    });
+  }
+
+  function persistSurveyState(form) {
+    try {
+      window.localStorage.setItem(
+        getSurveyStorageKey(),
+        JSON.stringify({
+          formState: readCurrentFormState(form),
+          updatedAt: Date.now()
+        })
+      );
+    } catch (_error) {
+      return;
+    }
+  }
+
+  function setupLocalSurveyState() {
+    var form = getSurveyForm();
+    var storedRecord;
+
+    if (!form) {
+      return;
+    }
+
+    storedRecord = readStoredSurveyRecord();
+
+    if (storedRecord) {
+      restoreStoredFormState(form, storedRecord.formState);
+    }
+
+    form.addEventListener('input', function () {
+      persistSurveyState(form);
+    });
+    form.addEventListener('change', function () {
+      persistSurveyState(form);
+    });
+  }
 
   function readAssociations(input) {
     try {
@@ -345,6 +494,7 @@
     hideLiveLine(root);
   }
 
+  setupLocalSurveyState();
   document.querySelectorAll('.associative-groups[data-question-type="associative"]').forEach(setupAssociativeGroups);
 })();
 </script>
