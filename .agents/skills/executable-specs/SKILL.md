@@ -55,6 +55,23 @@ Drive supported behavior through executable specifications first, then implement
 - Prefer `But` over `And` when contrast makes the behavior clearer.
 - Do not rely on leading indentation inside Gherkin doc strings.
 
+## Background
+
+- Use `Background` to collect repeated `Given` steps shared by every scenario in one feature.
+- Prefer `Background` over repeating the same setup lines across multiple scenarios when that setup represents one coherent shared context.
+- A longer `Background` is acceptable when it still applies cleanly to every scenario and describes one understandable setup state.
+- If only some scenarios need a setup step, keep it inside those scenarios instead, or split the feature so each feature has a clearer shared background.
+- Give the feature and any nearby comments enough context that readers can understand what kind of shared setup the `Background` represents.
+
+## Rule
+
+- Use `Rule` when it explains the intent of the enclosed scenarios better than plain scenarios would on their own.
+- A `Rule` should answer: "What promise are these scenarios examples of?"
+- If that answer is weak, cosmetic, or just repeats the feature title, skip `Rule`.
+- If scenarios under one `Rule` need different business-language summaries, they are probably not the same rule.
+- A `Rule` may contain one scenario or many; choose it for clarity of intent, not for scenario count.
+- Prefer a new feature instead of another `Rule` when the scenarios no longer describe the same behavioral promise.
+
 ## CLI, Build, And Deployment Coverage
 
 - For CLI-oriented integration scenarios, execute the real command in the step implementation.
