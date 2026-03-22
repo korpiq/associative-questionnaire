@@ -13,7 +13,7 @@ import { readTargetNameArgument } from '../../../src/cli/read-target-name-argume
 
 const feature = await loadFeature('tests/tooling/repository-helpers.feature')
 
-describeFeature(feature, ({ Scenario }) => {
+describeFeature(feature, ({ Scenario, defineSteps }) => {
   const createdDirectories: string[] = []
   let resolvedTargetName = ''
   let targetForListing: LoadedDeploymentTarget | undefined
@@ -36,6 +36,16 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
+  defineSteps(({ When, Then }) => {
+    When('I read the target name from argv:', (_ctx, docString) => {
+      resolvedTargetName = readTargetNameArgument(parseYamlDocString(docString), 'sample')
+    })
+
+    Then('the resolved target name is {string}', (_ctx, expected) => {
+      expect(resolvedTargetName).toBe(expected)
+    })
+  })
+
   Scenario('Project bootstrap loads the survey parser export', ({ When, Then }) => {
     When('the project bootstrap exports are loaded', () => {
       resolvedTargetName = typeof parseSurvey
@@ -46,25 +56,9 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
-  Scenario('Target-name helper uses the provided target', ({ When, Then }) => {
-    When('I read the target name from argv:', (_ctx, docString) => {
-      resolvedTargetName = readTargetNameArgument(parseYamlDocString(docString), 'sample')
-    })
+  Scenario('Target-name helper uses the provided target', () => {})
 
-    Then('the resolved target name is {string}', (_ctx, expected) => {
-      expect(resolvedTargetName).toBe(expected)
-    })
-  })
-
-  Scenario('Target-name helper falls back to the default target', ({ When, Then }) => {
-    When('I read the target name from argv:', (_ctx, docString) => {
-      resolvedTargetName = readTargetNameArgument(parseYamlDocString(docString), 'sample')
-    })
-
-    Then('the resolved target name is {string}', (_ctx, expected) => {
-      expect(resolvedTargetName).toBe(expected)
-    })
-  })
+  Scenario('Target-name helper falls back to the default target', () => {})
 
   Scenario('Discovered target surveys map to generated public survey pages', ({ Given, When, Then }) => {
     Given('the loaded deployment target for target listing is:', (_ctx, docString) => {
