@@ -261,6 +261,9 @@
 87. Split target URL configuration in `target.json`.
     Replaced separate public and CGI base URLs with `baseUrl`, optional `port`, `staticUriPath`, and `cgiUriPath`, updated generated target settings plus the tracked target, fixtures, and executable specs to the split contract, and kept validation errors readable while the full suite and typecheck stayed green.
 
+88. Switched URL generation and tooling URL usage to one configured port source.
+    Added target-setting coverage for non-default generated URLs, introduced one shared target-survey resolver plus CLI for reading public/save/report URLs and effective ports, switched the shell tooling and launcher expectations to those target-derived URLs, kept the Docker-backed integration specs on one per-spec port source, and verified the result with `npm run check`, `npm run test:tooling`, and the full suite.
+
 87. Turned generated container-layout integration coverage into a Gherkin feature test.
     Added `tests/integration/prepare-generated-container-layout.feature` plus a matching step spec that prepares an isolated container target workspace, verifies the generated public, CGI, and private files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
 
