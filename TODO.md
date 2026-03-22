@@ -1,6 +1,5 @@
 # TODO
 
-- implement the target URL config split from [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md) in `target.json`
 - make URL generation and test/tooling URL usage follow [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md) so configured ports are defined exactly once
 - cover and fix the `npm run test:visual` wrong-port submit bug described in [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md)
 - make container deployment extract the deployable tarball in-container as described in [docs/deployment-tarball-flow.md](/home/kato/omat/associative-questionnaire/docs/deployment-tarball-flow.md)
