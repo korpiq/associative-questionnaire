@@ -10,6 +10,11 @@ describeFeature(feature, ({ Scenario }) => {
   const containerName = 'associative-survey-test'
   const port = '18080'
   let saverResponseBody = ''
+  const surveyUrls = {
+    publicUrl: `http://127.0.0.1:${port}/surveys/survey/`,
+    saveUrl: `http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`,
+    reportUrl: `http://127.0.0.1:${port}/cgi-bin/survey/report.cgi`
+  }
 
   function runCommand(command: string, args: string[], input?: string): string {
     const result = spawnSync(command, args, {
@@ -99,11 +104,11 @@ describeFeature(feature, ({ Scenario }) => {
       })
 
       Then('the sample survey page contains {string}', async (_ctx, expected) => {
-        await waitForBodyContains(`http://127.0.0.1:${port}/surveys/survey/`, expected)
+        await waitForBodyContains(surveyUrls.publicUrl, expected)
       })
 
       When('I submit one survey response through the sample saver CGI', async () => {
-        saverResponseBody = await fetchBody(`http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`, {
+        saverResponseBody = await fetchBody(surveyUrls.saveUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -117,7 +122,7 @@ describeFeature(feature, ({ Scenario }) => {
       })
 
       And('the sample report page contains {string}', async (_ctx, expected) => {
-        const reportBody = await fetchBody(`http://127.0.0.1:${port}/cgi-bin/survey/report.cgi`)
+        const reportBody = await fetchBody(surveyUrls.reportUrl)
         expect(reportBody).toContain(expected)
       })
     }

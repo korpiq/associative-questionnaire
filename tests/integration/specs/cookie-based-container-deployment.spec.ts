@@ -11,6 +11,11 @@ describeFeature(feature, ({ Background, Scenario }) => {
   const port = '18081'
   let saverResponseBody = ''
   let returnedCookie = ''
+  const surveyUrls = {
+    publicUrl: `http://127.0.0.1:${port}/surveys/survey/`,
+    saveUrl: `http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`,
+    reportUrl: `http://127.0.0.1:${port}/cgi-bin/survey/report.cgi`
+  }
 
   function runCommand(command: string, args: string[], input?: string): string {
     const result = spawnSync(command, args, {
@@ -47,7 +52,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
   }
 
   async function expectReportPageContains(_ctx: unknown, expected: string): Promise<void> {
-    await waitForBodyContains(`http://127.0.0.1:${port}/cgi-bin/survey/report.cgi`, expected)
+    await waitForBodyContains(surveyUrls.reportUrl, expected)
   }
 
   async function fetchResponse(
@@ -107,13 +112,13 @@ describeFeature(feature, ({ Background, Scenario }) => {
     'The prepared container image reports zero respondents, saves one cookie-identified response, and reports one respondent',
     ({ Given, When, Then, And }) => {
       Given('the cookie-based sample survey page contains {string}', async (_ctx, expected) => {
-        await waitForBodyContains(`http://127.0.0.1:${port}/surveys/survey/`, expected)
+        await waitForBodyContains(surveyUrls.publicUrl, expected)
       })
 
       And('the cookie-based sample report page contains {string}', expectReportPageContains)
 
       When('I submit one survey response without cookie through the sample saver CGI', async () => {
-        const response = await fetchResponse(`http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`, {
+        const response = await fetchResponse(surveyUrls.saveUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -126,7 +131,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
       })
 
       When('I submit another survey response without cookie through the sample saver CGI', async () => {
-        const response = await fetchResponse(`http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`, {
+        const response = await fetchResponse(surveyUrls.saveUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -165,7 +170,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
       And('the cookie-based sample report page still contains {string}', expectReportPageContains)
 
       When('I submit one survey response with the returned cookie through the sample saver CGI', async () => {
-        const response = await fetchResponse(`http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`, {
+        const response = await fetchResponse(surveyUrls.saveUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

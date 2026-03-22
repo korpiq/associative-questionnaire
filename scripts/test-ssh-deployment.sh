@@ -29,12 +29,18 @@ cat > "${TARGET_DIRECTORY}/target.json" <<EOF
   "publicDir": "~/web-root/surveys",
   "cgiDir": "~/web-root/cgi-bin",
   "dataDir": "~/private-data",
-  "publicBaseUrl": "http://127.0.0.1:${HTTP_PORT}/surveys",
-  "cgiBaseUrl": "http://127.0.0.1:${HTTP_PORT}/cgi-bin",
+  "baseUrl": "http://127.0.0.1",
+  "port": ${HTTP_PORT},
+  "staticUriPath": "/surveys",
+  "cgiUriPath": "/cgi-bin",
   "nodeExecutable": "/usr/local/bin/node",
   "cgiExtension": ".cgi"
 }
 EOF
+
+SURVEY_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey publicUrl)"
+SAVE_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey saveUrl)"
+REPORT_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey reportUrl)"
 
 ssh-keygen -q -t ed25519 -N '' -f "${TEST_ROOT}/keys/id_ed25519" >/dev/null
 chmod 700 "${TEST_ROOT}/home/.ssh"
@@ -81,16 +87,16 @@ ASSOCIATIVE_SURVEY_SSH_CONFIG="${TEST_ROOT}/home/.ssh/config" \
 HOME="${TEST_ROOT}/home" \
 node --import tsx src/cli/install-vps-over-ssh.ts "${TARGET_NAME}"
 
-curl --fail --silent "http://127.0.0.1:${HTTP_PORT}/surveys/survey/" | grep "Associative survey example" >/dev/null
+curl --fail --silent "${SURVEY_URL}" | grep "Associative survey example" >/dev/null
 echo "survey page ok"
 curl --fail --silent --show-error \
   -X POST \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -H 'Cookie: associativeSurveyRespondentId=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
   --data 'favorite-color=blue&notes=SSH+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
-  "http://127.0.0.1:${HTTP_PORT}/cgi-bin/survey/save.cgi" | grep "Survey saved" >/dev/null
+  "${SAVE_URL}" | grep "Survey saved" >/dev/null
 echo "save ok"
-curl --fail --silent "http://127.0.0.1:${HTTP_PORT}/cgi-bin/survey/report.cgi" | grep "Respondents: 1" >/dev/null
+curl --fail --silent "${REPORT_URL}" | grep "Respondents: 1" >/dev/null
 echo "report ok"
 
 docker exec "${HOST_CONTAINER}" test -f /root/web-root/surveys/survey/index.html

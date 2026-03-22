@@ -5,6 +5,8 @@ import { spawnSync } from 'node:child_process'
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { afterAll, expect } from 'vitest'
 
+import { resolveSurveyUrlPort, resolveTargetSurveySettings } from '../../../src'
+
 const feature = await loadFeature('tests/integration/ssh-deployment.feature')
 
 describeFeature(feature, ({ Scenario }) => {
@@ -16,6 +18,12 @@ describeFeature(feature, ({ Scenario }) => {
   let testRoot = ''
   let targetDirectory = ''
   let saverResponseBody = ''
+  let surveyUrls = {
+    publicUrl: '',
+    saveUrl: '',
+    reportUrl: '',
+    port: ''
+  }
 
   function runCommand(command: string, args: string[], options?: { env?: NodeJS.ProcessEnv }): string {
     const result = spawnSync(command, args, {
@@ -105,6 +113,18 @@ describeFeature(feature, ({ Scenario }) => {
         2
       )
     )
+    const surveySettings = resolveTargetSurveySettings({
+      workspaceDirectory: process.cwd(),
+      targetName,
+      surveyName: 'survey'
+    })
+
+    surveyUrls = {
+      publicUrl: surveySettings.publicUrl,
+      saveUrl: surveySettings.saveUrl,
+      reportUrl: surveySettings.reportUrl,
+      port: resolveSurveyUrlPort(surveySettings.publicUrl)
+    }
 
     runCommand('ssh-keygen', ['-q', '-t', 'ed25519', '-N', '', '-f', join(testRoot, 'keys', 'id_ed25519')])
     runCommand('chmod', ['700', join(testRoot, 'home', '.ssh')])
@@ -182,7 +202,7 @@ describeFeature(feature, ({ Scenario }) => {
         '--name',
         hostContainer,
         '-p',
-        `${httpPort}:8080`,
+        `${surveyUrls.port}:8080`,
         '-p',
         `${sshPort}:22`,
         hostImage
@@ -204,11 +224,11 @@ describeFeature(feature, ({ Scenario }) => {
     })
 
     Then('the deployed SSH survey page contains {string}', async (_ctx, expected) => {
-      await waitForBodyContains(`http://127.0.0.1:${httpPort}/surveys/survey/`, expected)
+      await waitForBodyContains(surveyUrls.publicUrl, expected)
     })
 
     When('I submit one survey response through the deployed SSH saver CGI', async () => {
-      saverResponseBody = await fetchBody(`http://127.0.0.1:${httpPort}/cgi-bin/survey/save.cgi`, {
+      saverResponseBody = await fetchBody(surveyUrls.saveUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -223,10 +243,7 @@ describeFeature(feature, ({ Scenario }) => {
     })
 
     And('the deployed SSH report page contains {string}', async (_ctx, expected) => {
-      const reportBody = await waitForBodyContains(
-        `http://127.0.0.1:${httpPort}/cgi-bin/survey/report.cgi`,
-        expected
-      )
+      const reportBody = await waitForBodyContains(surveyUrls.reportUrl, expected)
 
       expect(reportBody).toContain(expected)
     })

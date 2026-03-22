@@ -88,6 +88,9 @@ function main(): void {
     formAction: generatedSurvey.saveUrl
   })
 
+  ensureDirectory(publicSurveyRoot)
+  ensureDirectory(containerPublicSurveyRoot)
+  ensureDirectory(dirname(containerPrivateSurveyPath))
   writeFileSync(join(publicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
   writeFileSync(join(containerPublicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
   copyFileSync(surveyPath, join(runtimeSurveyRoot, `${surveyName}.json`))
@@ -149,6 +152,7 @@ function main(): void {
   ]
 
   seededAnswers.forEach(({ filename, answerFile }) => {
+    ensureDirectory(containerPrivateAnswersRoot)
     writeFileSync(join(surveyAnswerRoot, filename), JSON.stringify(answerFile, null, 2))
     writeFileSync(
       join(containerPrivateAnswersRoot, filename),
@@ -160,6 +164,8 @@ function main(): void {
   const saveScriptTargetPath = join(publicCgiRoot, generatedSurvey.saveCgiFilename)
   const reportScriptTargetPath = join(publicCgiRoot, generatedSurvey.reportCgiFilename)
 
+  ensureDirectory(publicCgiRoot)
+  ensureDirectory(containerCgiRoot)
   writeFileSync(
     saveScriptTargetPath,
     prepareSaverCgiAsset({
@@ -180,6 +186,7 @@ function main(): void {
   })
 
   ensureDirectory(dirname(reportScriptTargetPath))
+  ensureDirectory(containerCgiRoot)
   writeFileSync(reportScriptTargetPath, preparedReporter.preparedReporterScript)
   chmodSync(reportScriptTargetPath, 0o755)
   const containerReportScriptPath = join(containerCgiRoot, generatedSurvey.reportCgiFilename)

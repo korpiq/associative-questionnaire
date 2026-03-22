@@ -19,6 +19,10 @@ export { parseDeploymentTargetConfig } from './deploy/parse-deployment-target-co
 export { parseDeploymentPath } from './deploy/parse-deployment-path'
 export { prepareReporterCgiAsset } from './deploy/prepare-reporter-cgi-asset'
 export { prepareSaverCgiAsset } from './deploy/prepare-saver-cgi-asset'
+export {
+  resolveSurveyUrlPort,
+  resolveTargetSurveySettings
+} from './deploy/resolve-target-survey-settings'
 export { buildReporterStatistics } from './reporter/build-reporter-statistics'
 export { renderReporterHtmlPage } from './reporter/render-reporter-html-page'
 export { resolveStoredReporterSurvey } from './reporter/resolve-stored-reporter-survey'

@@ -3,10 +3,13 @@ set -euo pipefail
 
 IMAGE_TAG="associative-survey:test"
 CONTAINER_NAME="associative-survey-manual"
-PORT="18080"
 
 npm run build
 npm run prepare:container
+
+PORT="$(node --import tsx src/cli/read-target-survey-field.ts sample survey port)"
+SURVEY_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample survey publicUrl)"
+REPORT_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample survey reportUrl)"
 
 docker build -t "${IMAGE_TAG}" .
 docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
@@ -16,10 +19,10 @@ cat <<EOF
 Container is running.
 
 Survey:
-http://127.0.0.1:${PORT}/surveys/survey/
+${SURVEY_URL}
 
 Report:
-http://127.0.0.1:${PORT}/cgi-bin/survey/report.cgi
+${REPORT_URL}
 
 Stop it with:
 docker rm -f ${CONTAINER_NAME}

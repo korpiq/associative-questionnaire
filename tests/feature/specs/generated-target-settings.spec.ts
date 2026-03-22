@@ -42,4 +42,27 @@ describeFeature(feature, ({ Scenario }) => {
     })
   }
   )
+
+  Scenario('A loaded target uses its configured non-default port in generated URLs', ({
+    Given,
+    When,
+    Then
+  }) => {
+    Given('the loaded deployment target is:', (_ctx, docString) => {
+      loadedTarget = parseYamlDocString<LoadedDeploymentTarget>(docString)
+      generatedTargetSettings = undefined
+    })
+
+    When('the generated target settings are built', () => {
+      if (!loadedTarget) {
+        throw new Error('Expected a loaded deployment target')
+      }
+
+      generatedTargetSettings = buildGeneratedTargetSettings(loadedTarget)
+    })
+
+    Then('the generated survey deployment settings are:', (_ctx, docString) => {
+      expect(generatedTargetSettings?.surveys).toEqual(parseYamlDocString(docString))
+    })
+  })
 })
