@@ -4,8 +4,10 @@
   "publicDir": "/srv/www/surveys",
   "cgiDir": "/srv/www/cgi-bin",
   "dataDir": "/srv/www/data",
-  "publicBaseUrl": "http://127.0.0.1:18080/surveys",
-  "cgiBaseUrl": "http://127.0.0.1:18080/cgi-bin",
+  "baseUrl": "http://127.0.0.1",
+  "port": 18080,
+  "staticUriPath": "/surveys",
+  "cgiUriPath": "/cgi-bin",
   "nodeExecutable": "/usr/local/bin/node",
   "cgiExtension": ".cgi"
 }

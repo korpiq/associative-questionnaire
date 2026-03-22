@@ -8,8 +8,17 @@ const deploymentTargetConfigSchema = z
     publicDir: z.string().min(1),
     cgiDir: z.string().min(1),
     dataDir: z.string().min(1),
-    publicBaseUrl: z.string().url(),
-    cgiBaseUrl: z.string().url(),
+    baseUrl: z
+      .string()
+      .url()
+      .refine((value) => {
+        const url = new URL(value)
+
+        return !url.port && (!url.pathname || url.pathname === '/') && !url.search && !url.hash
+      }, 'baseUrl must include only scheme and host'),
+    port: z.number().int().positive().max(65535).optional(),
+    staticUriPath: z.string().min(1).regex(/^\//, 'URI paths must start with /'),
+    cgiUriPath: z.string().min(1).regex(/^\//, 'URI paths must start with /'),
     nodeExecutable: z.string().min(1),
     cgiExtension: z.string().regex(/^\./, 'CGI extension must start with a dot')
   })
@@ -20,8 +29,10 @@ type ParsedDeploymentTargetConfigBase = {
   publicDir: string
   cgiDir: string
   dataDir: string
-  publicBaseUrl: string
-  cgiBaseUrl: string
+  baseUrl: string
+  port?: number
+  staticUriPath: string
+  cgiUriPath: string
   nodeExecutable: string
   cgiExtension: string
 }
@@ -50,7 +61,17 @@ export function parseDeploymentTargetConfig(input: {
 }): ParsedDeploymentTargetConfig {
   const targetName = normalizeTargetName(input.targetName)
   const parsedJson = JSON.parse(input.targetConfigurationJson) as unknown
-  const parsedConfig = deploymentTargetConfigSchema.parse(parsedJson)
+  let parsedConfig: z.infer<typeof deploymentTargetConfigSchema>
+
+  try {
+    parsedConfig = deploymentTargetConfigSchema.parse(parsedJson)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(error.issues[0]?.message ?? 'Invalid deployment target configuration')
+    }
+
+    throw error
+  }
 
   if (parsedConfig.type === 'ssh' && !parsedConfig.sshTarget) {
     throw new Error('SSH targets must define sshTarget')
@@ -65,8 +86,10 @@ export function parseDeploymentTargetConfig(input: {
     publicDir: parsedConfig.publicDir,
     cgiDir: parsedConfig.cgiDir,
     dataDir: parsedConfig.dataDir,
-    publicBaseUrl: parsedConfig.publicBaseUrl,
-    cgiBaseUrl: parsedConfig.cgiBaseUrl,
+    baseUrl: parsedConfig.baseUrl,
+    ...(parsedConfig.port === undefined ? {} : { port: parsedConfig.port }),
+    staticUriPath: parsedConfig.staticUriPath,
+    cgiUriPath: parsedConfig.cgiUriPath,
     nodeExecutable: parsedConfig.nodeExecutable,
     cgiExtension: parsedConfig.cgiExtension
   }

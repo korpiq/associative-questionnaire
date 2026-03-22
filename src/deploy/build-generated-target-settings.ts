@@ -32,8 +32,25 @@ function appendConfiguredPath(path: string, segment: string): string {
   return path.endsWith('/') ? `${path}${segment}` : `${path}/${segment}`
 }
 
-function appendConfiguredUrl(url: string, segment: string): string {
-  return url.endsWith('/') ? `${url}${segment}` : `${url}/${segment}`
+function normalizeUrlSegment(segment: string): string {
+  return segment.replace(/^\/+|\/+$/g, '')
+}
+
+function buildConfiguredUrl(
+  baseUrl: string,
+  port: number | undefined,
+  uriPath: string,
+  ...segments: string[]
+): string {
+  const url = new URL(baseUrl)
+
+  if (port !== undefined) {
+    url.port = String(port)
+  }
+
+  url.pathname = `/${[uriPath, ...segments].map(normalizeUrlSegment).filter(Boolean).join('/')}`
+
+  return url.toString()
 }
 
 function ensureTrailingSlash(url: string): string {
@@ -50,12 +67,18 @@ export function buildGeneratedTargetSettings(
       const privateDataDir = appendConfiguredPath(target.dataDir, survey.surveyName)
       const saveCgiFilename = `save${target.cgiExtension}`
       const reportCgiFilename = `report${target.cgiExtension}`
-      const saveUrl = appendConfiguredUrl(
-        appendConfiguredUrl(target.cgiBaseUrl, survey.surveyName),
+      const saveUrl = buildConfiguredUrl(
+        target.baseUrl,
+        target.port,
+        target.cgiUriPath,
+        survey.surveyName,
         saveCgiFilename
       )
-      const reportUrl = appendConfiguredUrl(
-        appendConfiguredUrl(target.cgiBaseUrl, survey.surveyName),
+      const reportUrl = buildConfiguredUrl(
+        target.baseUrl,
+        target.port,
+        target.cgiUriPath,
+        survey.surveyName,
         reportCgiFilename
       )
 
@@ -64,7 +87,9 @@ export function buildGeneratedTargetSettings(
         surveyPath: survey.surveyPath,
         templatePath: survey.templatePath,
         publicDir,
-        publicUrl: ensureTrailingSlash(appendConfiguredUrl(target.publicBaseUrl, survey.surveyName)),
+        publicUrl: ensureTrailingSlash(
+          buildConfiguredUrl(target.baseUrl, target.port, target.staticUriPath, survey.surveyName)
+        ),
         publicHtmlFilename: 'index.html',
         cgiDir,
         saveCgiFilename,

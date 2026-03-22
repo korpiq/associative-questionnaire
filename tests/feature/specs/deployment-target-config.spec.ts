@@ -63,4 +63,6 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   Scenario('An SSH target requires an SSH address', () => {})
 
   Scenario('A container target requires a container name', () => {})
+
+  Scenario('A target base URL excludes ports and paths', () => {})
 })

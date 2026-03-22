@@ -9,8 +9,9 @@ Feature: Parse deployment target configuration
         "publicDir": "~/sites/example.test/www/surveys",
         "cgiDir": "~/sites/example.test/www/cgi-bin",
         "dataDir": "~/sites/example.test/www/data",
-        "publicBaseUrl": "https://example.test/surveys",
-        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
@@ -25,8 +26,9 @@ Feature: Parse deployment target configuration
         "publicDir": "~/sites/example.test/www/surveys",
         "cgiDir": "~/sites/example.test/www/cgi-bin",
         "dataDir": "~/sites/example.test/www/data",
-        "publicBaseUrl": "https://example.test/surveys",
-        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
@@ -42,8 +44,10 @@ Feature: Parse deployment target configuration
         "publicDir": "/srv/www/surveys",
         "cgiDir": "/srv/www/cgi-bin",
         "dataDir": "/srv/data/surveys",
-        "publicBaseUrl": "http://127.0.0.1:18080/surveys",
-        "cgiBaseUrl": "http://127.0.0.1:18080/cgi-bin",
+        "baseUrl": "http://127.0.0.1",
+        "port": 18080,
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
@@ -58,8 +62,10 @@ Feature: Parse deployment target configuration
         "publicDir": "/srv/www/surveys",
         "cgiDir": "/srv/www/cgi-bin",
         "dataDir": "/srv/data/surveys",
-        "publicBaseUrl": "http://127.0.0.1:18080/surveys",
-        "cgiBaseUrl": "http://127.0.0.1:18080/cgi-bin",
+        "baseUrl": "http://127.0.0.1",
+        "port": 18080,
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
@@ -74,8 +80,9 @@ Feature: Parse deployment target configuration
         "publicDir": "~/sites/example.test/www/surveys",
         "cgiDir": "~/sites/example.test/www/cgi-bin",
         "dataDir": "~/sites/example.test/www/data",
-        "publicBaseUrl": "https://example.test/surveys",
-        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
@@ -92,11 +99,33 @@ Feature: Parse deployment target configuration
         "publicDir": "/srv/www/surveys",
         "cgiDir": "/srv/www/cgi-bin",
         "dataDir": "/srv/data/surveys",
-        "publicBaseUrl": "http://127.0.0.1:18080/surveys",
-        "cgiBaseUrl": "http://127.0.0.1:18080/cgi-bin",
+        "baseUrl": "http://127.0.0.1",
+        "port": 18080,
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi"
+      }
+    """
+    When the deployment target configuration is parsed
+    Then the deployment target configuration is rejected with "Container targets must define containerName"
+
+  Scenario: A target base URL excludes ports and paths
+    Given the target directory name is "local-container"
+    And the target configuration JSON is:
+      """
+      {
+        "type": "container",
+        "containerName": "associative-survey-local",
+        "publicDir": "/srv/www/surveys",
+        "cgiDir": "/srv/www/cgi-bin",
+        "dataDir": "/srv/data/surveys",
+        "baseUrl": "http://127.0.0.1:18080/surveys",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }
       """
     When the deployment target configuration is parsed
-    Then the deployment target configuration is rejected with "Container targets must define containerName"
+    Then the deployment target configuration is rejected with "baseUrl must include only scheme and host"

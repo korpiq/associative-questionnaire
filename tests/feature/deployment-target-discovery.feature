@@ -10,8 +10,9 @@ Feature: Load deployment targets from the workspace
         "publicDir": "~/sites/example.test/www/surveys",
         "cgiDir": "~/sites/example.test/www/cgi-bin",
         "dataDir": "~/sites/example.test/www/data",
-        "publicBaseUrl": "https://example.test",
-        "cgiBaseUrl": "https://example.test/cgi-bin",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
         "nodeExecutable": "/usr/local/bin/node",
         "cgiExtension": ".cgi"
       }

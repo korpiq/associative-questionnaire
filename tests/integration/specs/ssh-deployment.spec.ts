@@ -94,8 +94,10 @@ describeFeature(feature, ({ Scenario }) => {
           publicDir: '~/web-root/surveys',
           cgiDir: '~/web-root/cgi-bin',
           dataDir: '~/private-data',
-          publicBaseUrl: `http://127.0.0.1:${httpPort}/surveys`,
-          cgiBaseUrl: `http://127.0.0.1:${httpPort}/cgi-bin`,
+          baseUrl: 'http://127.0.0.1',
+          port: Number(httpPort),
+          staticUriPath: '/surveys',
+          cgiUriPath: '/cgi-bin',
           nodeExecutable: '/usr/local/bin/node',
           cgiExtension: '.cgi'
         },
