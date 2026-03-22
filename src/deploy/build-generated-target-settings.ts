@@ -57,6 +57,21 @@ function ensureTrailingSlash(url: string): string {
   return url.endsWith('/') ? url : `${url}/`
 }
 
+function buildSurveyUrl(
+  target: Pick<LoadedDeploymentTarget, 'baseUrl' | 'port'>,
+  uriPath: string,
+  surveyName: string,
+  filename?: string
+): string {
+  return buildConfiguredUrl(
+    target.baseUrl,
+    target.port,
+    uriPath,
+    surveyName,
+    ...(filename ? [filename] : [])
+  )
+}
+
 export function buildGeneratedTargetSettings(
   target: LoadedDeploymentTarget
 ): GeneratedTargetSettings {
@@ -67,16 +82,9 @@ export function buildGeneratedTargetSettings(
       const privateDataDir = appendConfiguredPath(target.dataDir, survey.surveyName)
       const saveCgiFilename = `save${target.cgiExtension}`
       const reportCgiFilename = `report${target.cgiExtension}`
-      const saveUrl = buildConfiguredUrl(
-        target.baseUrl,
-        target.port,
-        target.cgiUriPath,
-        survey.surveyName,
-        saveCgiFilename
-      )
-      const reportUrl = buildConfiguredUrl(
-        target.baseUrl,
-        target.port,
+      const saveUrl = buildSurveyUrl(target, target.cgiUriPath, survey.surveyName, saveCgiFilename)
+      const reportUrl = buildSurveyUrl(
+        target,
         target.cgiUriPath,
         survey.surveyName,
         reportCgiFilename
@@ -87,9 +95,7 @@ export function buildGeneratedTargetSettings(
         surveyPath: survey.surveyPath,
         templatePath: survey.templatePath,
         publicDir,
-        publicUrl: ensureTrailingSlash(
-          buildConfiguredUrl(target.baseUrl, target.port, target.staticUriPath, survey.surveyName)
-        ),
+        publicUrl: ensureTrailingSlash(buildSurveyUrl(target, target.staticUriPath, survey.surveyName)),
         publicHtmlFilename: 'index.html',
         cgiDir,
         saveCgiFilename,
