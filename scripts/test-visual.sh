@@ -26,6 +26,17 @@ wait_for_contains() {
   done
 }
 
+extract_form_action() {
+  local survey_url="$1"
+  local survey_html
+
+  survey_html="$(curl --fail --silent "${survey_url}")"
+  printf '%s' "${survey_html}" \
+    | tr '\n' ' ' \
+    | sed -n 's/.*action="\([^"]*\)".*/\1/p' \
+    | sed 's/&amp;/\&/g'
+}
+
 trap cleanup EXIT
 
 npm run build
@@ -45,7 +56,19 @@ wait_for_contains "${SURVEY_URL}" "Correctness showcase"
 wait_for_contains "${REPORT_URL}" "Correct: 2 (66.66666666666666%)"
 wait_for_contains "${REPORT_URL}" "Incorrect: 1 (33.33333333333333%)"
 
+FORM_ACTION="$(extract_form_action "${SURVEY_URL}")"
+
+curl --fail --silent --show-error \
+  -X POST \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -H 'Cookie: associativeSurveyRespondentId=visualshowcasesubmit000000000001' \
+  --data 'favorite-color=blue&hobbies=music&notes=Visual+submit&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
+  "${FORM_ACTION}" >/dev/null
+
+wait_for_contains "${REPORT_URL}" "Respondents: 4"
+
 echo "Visual showcase smoke check passed."
+echo "Visual showcase submit check passed."
 echo "Visual showcase container is running."
 echo "Survey: ${SURVEY_URL}"
 echo "Report: ${REPORT_URL}"
