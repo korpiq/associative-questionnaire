@@ -284,3 +284,6 @@
 
 95. Added a `todo-driven-work` skill for the repository execution flow.
     Created `.agents/skills/todo-driven-work` to capture the TODO-first workflow, per-step verification, done-tracking, and one-commit-per-verified-step discipline, and validated the skill structure with `quick_validate.py`.
+
+96. Added an `executable-specs` skill for repository-wide automated coverage.
+    Created `.agents/skills/executable-specs` from `docs/testing.md`, `AGENTS.md`, `README.md`, and the deployment/runtime docs so test work across product behavior, CLI flows, build output, and deployment support is driven through executable specifications implemented as Gherkin features with sibling `@amiceli/vitest-cucumber` step specs, updated `AGENTS.md` to point testing changes at the skill, and retired the overlapping TODO items for separate Gherkin and CLI-integration testing skills.

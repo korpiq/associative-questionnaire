@@ -114,43 +114,9 @@ Only features described there are considered as supported.
 
 ## Tests
 
-Tests are written with `@amiceli/vitest-cucumber` under `tests/feature/specs` in files associated with the feature specification files by name.
+Automated tests are written through the `executable-specs` skill.
 
-See `docs/testing.md` for the current project testing method and step-structure conventions.
-
-Tests are written as `@amiceli/vitest-cucumber` says:
-
-```typescript
-import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber'
-import { expect } from 'vitest'
-
-const feature = await loadFeature('path/to/my/file.feature')
-
-describeFeature(feature, ({ Scenario }) => {
-    let answerFilename = '';
-    let answers: Record<string, string> = {};
-    let report: object = {};
-
-    Scenario('sample Gherkin spec', ({ Given, When, Then, And }) => {
-        Given('Answers are stored in file {givenFilename}', (_ctx, givenFilename ) => {
-          answerFilename = givenFilename;
-        })
-        And('Answer to {string} is {string}', (_ctx, question, answer) => {
-            answers[question] = answer;
-        })
-        When('Survey report is generated', () => {
-          // first complete the setup descibed above
-          fs.writeFileSync(answerFilename, JSON.stringify(answers));
-          // proceed to do what the spec line says
-          report = reportSurveyResults(survey, [answerFilename]);
-        })
-        Then('Report contains results of one answer', () => {
-          expect(report.answers.count).toEqual(1);
-        })
-    })
-
-})
-```
+See `docs/testing.md` for the pointer to the current primary testing instructions.
 
 ## Data integrity
 
@@ -159,5 +125,3 @@ We use Zod schemas to verify data integrity.
 ## Anonymity
 
 We avoid doing anything identifying the users. A survey may or may not contain questions to identify users.
-
-Note that each step must do exactly what its Gherkin description says. If not otherwise applicable, they must populate a shared variable that is then used in a later step to actually execute the setup built by earlier steps.

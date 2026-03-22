@@ -22,21 +22,19 @@
 
 ### Tests
 
-- Keep feature coverage aligned with `@amiceli/vitest-cucumber`, and make each step implementation do exactly what its Gherkin text says.
-- Keep all automated tests, including integration coverage, as Gherkin feature tests under `tests/**` with matching TypeScript step specs in sibling `specs/*.spec.ts` directories.
-- Do not use `.js` file extensions in TypeScript import specifiers in this repository.
-- Prefer concise YAML doc strings in Gherkin steps when tests need to show structured input, output, or validation errors.
-- For CLI-oriented integration coverage, execute the real CLI command in the step implementation and assert against the full captured output so failures show the command output clearly.
+- Keep the `executable-specs` skill as the primary source for automated test-writing instructions.
+- Use the `executable-specs` skill for automated test coverage changes, including CLI, build, and deployment behavior.
 
 ### Code And Files
 
 - Keep HTML and CSS indented for readability in templates, examples, and generated snippet source files.
+- Do not use `.js` file extensions in TypeScript import specifiers in this repository.
 - Do not use `/tmp` for repository work; write generated files either to the current directory for user-facing command examples or to a dedicated directory inside the workspace.
 
 ### Workflow
 
 - When working interactively with user, do not commit until user accepts.
-- When working through TODO items, use the `todo-driven-work` skill so steps are completed in dependency order, verified, moved from `TODO.md` to `docs/done.md`, and handed off for the follow-up commit/refactoring round before the next step.
+- When working through TODO items, use the `todo-driven-work` skill.
 - When working independently, avoid custom or narrowly targeted verification commands that the user is not present to approve; prefer the full standard test set instead.
 
 ### Commits
