@@ -153,6 +153,13 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     )
   }
 
+  function seedStorageState(docString: string | null | undefined, updatedAt: number): void {
+    seededStorageRecord = {
+      formState: parseYamlDocString(docString) as Record<string, unknown>,
+      updatedAt
+    }
+  }
+
   defineSteps(({ Given, When, Then, And }) => {
     Given('generated survey HTML with local-storage coverage at page URL {string}', (_ctx, url) => {
       pageUrl = url
@@ -237,10 +244,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     })
 
     And('the current page already has local survey state with:', (_ctx, docString) => {
-      seededStorageRecord = {
-        formState: parseYamlDocString(docString) as Record<string, unknown>,
-        updatedAt: Date.now()
-      }
+      seedStorageState(docString, Date.now())
     })
 
     When('I load the survey page with saved local state', () => {
@@ -269,10 +273,7 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     )
 
     And('the current page has expired local survey state with:', (_ctx, docString) => {
-      seededStorageRecord = {
-        formState: parseYamlDocString(docString) as Record<string, unknown>,
-        updatedAt: Date.now() - 32 * 24 * 60 * 60 * 1000
-      }
+      seedStorageState(docString, Date.now() - 32 * 24 * 60 * 60 * 1000)
     })
 
     Then('no local survey state remains for the current page URL', () => {
