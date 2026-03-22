@@ -305,3 +305,6 @@
 
 100. Persisted survey form state in browser local storage per page URL.
     Added executable coverage for edit persistence, same-URL reload restore, default override, submit retention, and rolling-expiry cleanup, updated the generated survey page script to store form state under the full page URL in `localStorage` with a 30-day rolling timestamp, restored saved answers before associative visual setup so linked lines come back too, and verified the result with the standard `npm run check` and `npm test` commands.
+
+101. Replaced the remaining standalone root-level Vitest files with executable specs.
+    Added Gherkin coverage for survey normalization plus the remaining bootstrap and helper behaviors under the feature and tooling suites, deleted the replaced `tests/*.test.ts` files, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test` so the remaining automated coverage now follows the executable-spec layout.
