@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+. scripts/lib/target-survey-urls.sh
+
 HOST_IMAGE="associative-survey:ssh-host"
 HOST_CONTAINER="associative-survey-ssh-host"
 TARGET_NAME="ssh-integration"
@@ -38,9 +40,10 @@ cat > "${TARGET_DIRECTORY}/target.json" <<EOF
 }
 EOF
 
-SURVEY_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey publicUrl)"
-SAVE_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey saveUrl)"
-REPORT_URL="$(node --import tsx src/cli/read-target-survey-field.ts "${TARGET_NAME}" survey reportUrl)"
+load_target_survey_urls "${TARGET_NAME}" survey SSH_SURVEY
+SURVEY_URL="${SSH_SURVEY_PUBLIC_URL}"
+SAVE_URL="${SSH_SURVEY_SAVE_URL}"
+REPORT_URL="${SSH_SURVEY_REPORT_URL}"
 
 ssh-keygen -q -t ed25519 -N '' -f "${TEST_ROOT}/keys/id_ed25519" >/dev/null
 chmod 700 "${TEST_ROOT}/home/.ssh"

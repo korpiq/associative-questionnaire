@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+. scripts/lib/target-survey-urls.sh
+
 IMAGE_TAG="associative-survey:visual"
 CONTAINER_NAME="associative-survey-visual"
 
@@ -29,9 +31,10 @@ trap cleanup EXIT
 npm run build
 npm run prepare:visual
 
-PORT="$(node --import tsx src/cli/read-target-survey-field.ts sample visual-showcase port)"
-SURVEY_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample visual-showcase publicUrl)"
-REPORT_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample visual-showcase reportUrl)"
+load_target_survey_urls sample visual-showcase VISUAL_SURVEY
+PORT="${VISUAL_SURVEY_PORT}"
+SURVEY_URL="${VISUAL_SURVEY_PUBLIC_URL}"
+REPORT_URL="${VISUAL_SURVEY_REPORT_URL}"
 
 docker build -t "${IMAGE_TAG}" .
 

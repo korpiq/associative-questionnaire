@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+. scripts/lib/target-survey-urls.sh
+
 IMAGE_TAG="associative-survey:test"
 CONTAINER_NAME="associative-survey-manual"
 
 npm run build
 npm run prepare:container
 
-PORT="$(node --import tsx src/cli/read-target-survey-field.ts sample survey port)"
-SURVEY_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample survey publicUrl)"
-REPORT_URL="$(node --import tsx src/cli/read-target-survey-field.ts sample survey reportUrl)"
+load_target_survey_urls sample survey
+PORT="${TARGET_SURVEY_PORT}"
+SURVEY_URL="${TARGET_SURVEY_PUBLIC_URL}"
+REPORT_URL="${TARGET_SURVEY_REPORT_URL}"
 
 docker build -t "${IMAGE_TAG}" .
 docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true

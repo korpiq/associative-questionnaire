@@ -174,11 +174,10 @@ function main(): void {
     })
   )
   chmodSync(saveScriptTargetPath, 0o755)
-  writeFileSync(
-    join(containerCgiRoot, generatedSurvey.saveCgiFilename),
-    readFileSync(saveScriptTargetPath, 'utf8')
-  )
-  chmodSync(join(containerCgiRoot, generatedSurvey.saveCgiFilename), 0o755)
+  const containerSaveScriptPath = join(containerCgiRoot, generatedSurvey.saveCgiFilename)
+  ensureDirectory(dirname(containerSaveScriptPath))
+  writeFileSync(containerSaveScriptPath, readFileSync(saveScriptTargetPath, 'utf8'))
+  chmodSync(containerSaveScriptPath, 0o755)
 
   const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
@@ -190,6 +189,7 @@ function main(): void {
   writeFileSync(reportScriptTargetPath, preparedReporter.preparedReporterScript)
   chmodSync(reportScriptTargetPath, 0o755)
   const containerReportScriptPath = join(containerCgiRoot, generatedSurvey.reportCgiFilename)
+  ensureDirectory(dirname(containerReportScriptPath))
   writeFileSync(containerReportScriptPath, preparedReporter.preparedReporterScript)
   chmodSync(containerReportScriptPath, 0o755)
 
