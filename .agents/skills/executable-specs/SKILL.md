@@ -63,6 +63,24 @@ Drive supported behavior through executable specifications first, then implement
 - If only some scenarios need a setup step, keep it inside those scenarios instead, or split the feature so each feature has a clearer shared background.
 - Give the feature and any nearby comments enough context that readers can understand what kind of shared setup the `Background` represents.
 
+Example:
+
+```gherkin
+Feature: Reporter output
+
+  Background:
+    Given survey "team-fit" exists
+    And stored answers exist for "team-fit"
+
+  Scenario: Reporter shows respondent count
+    When the report is generated for "team-fit"
+    Then the report contains "Respondents: 3"
+
+  Scenario: Reporter shows per-question totals
+    When the report is generated for "team-fit"
+    Then the report contains "Question totals"
+```
+
 ## Rule
 
 - Use `Rule` when it explains the intent of the enclosed scenarios better than plain scenarios would on their own.
@@ -71,6 +89,22 @@ Drive supported behavior through executable specifications first, then implement
 - If scenarios under one `Rule` need different business-language summaries, they are probably not the same rule.
 - A `Rule` may contain one scenario or many; choose it for clarity of intent, not for scenario count.
 - Prefer a new feature instead of another `Rule` when the scenarios no longer describe the same behavioral promise.
+
+Example:
+
+```gherkin
+Feature: Deployment target configuration
+
+  Rule: SSH targets must declare an SSH address
+
+    Scenario: Missing sshTarget is rejected
+      Given target config:
+        """
+        type: ssh
+        """
+      When the deployment target configuration is parsed
+      Then the deployment target configuration is rejected with "SSH targets must define sshTarget"
+```
 
 ## CLI, Build, And Deployment Coverage
 
