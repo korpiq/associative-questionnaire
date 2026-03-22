@@ -35,6 +35,7 @@
 
 - When working interactively with user, do not commit until user accepts.
 - When working through TODO items, use the `todo-driven-work` skill.
+- A TODO step is not complete until its tracking update, dry-refactoring handoff, and commit are done.
 - When working independently, avoid custom or narrowly targeted verification commands that the user is not present to approve; prefer the full standard test set instead.
 
 ### Commits
