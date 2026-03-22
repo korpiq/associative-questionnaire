@@ -302,3 +302,6 @@
 
 99. Moved container deployment tarball extraction into the running container.
     Updated the Docker-backed container deployment specs to require an explicit install step after container startup, kept the runtime image generic by removing deployable-asset baking from the Dockerfile, added a helper and CLI that stream the prepared tarball into the live container and extract it there with `docker exec`, aligned the manual and visual helper scripts with the same runtime install flow, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test`.
+
+100. Persisted survey form state in browser local storage per page URL.
+    Added executable coverage for edit persistence, same-URL reload restore, default override, submit retention, and rolling-expiry cleanup, updated the generated survey page script to store form state under the full page URL in `localStorage` with a 30-day rolling timestamp, restored saved answers before associative visual setup so linked lines come back too, and verified the result with the standard `npm run check` and `npm test` commands.
