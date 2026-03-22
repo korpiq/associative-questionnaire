@@ -26,6 +26,7 @@ trap cleanup EXIT
 
 cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
+node --import tsx src/cli/install-prepared-container-target.ts sample --container-name "${CONTAINER_NAME}"
 sleep 2
 
 curl --fail --silent "${SURVEY_URL}" | grep "Submit survey" >/dev/null

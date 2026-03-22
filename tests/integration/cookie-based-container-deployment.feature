@@ -5,6 +5,7 @@ Feature: Cookie-based container deployment test flow
     And I prepare container assets for the sample target for the cookie-based container deployment test
     And I build the cookie-based sample container image
     And I start the cookie-based sample container
+    And I install the prepared sample target into the running cookie-based container
 
   Scenario: The prepared container image reports zero respondents, saves one cookie-identified response, and reports one respondent
     Given the cookie-based sample survey page contains "Associative survey example"

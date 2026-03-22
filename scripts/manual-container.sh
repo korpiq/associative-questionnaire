@@ -17,6 +17,7 @@ REPORT_URL="${TARGET_SURVEY_REPORT_URL}"
 docker build -t "${IMAGE_TAG}" .
 docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
+node --import tsx src/cli/install-prepared-container-target.ts sample --container-name "${CONTAINER_NAME}"
 
 cat <<EOF
 Container is running.

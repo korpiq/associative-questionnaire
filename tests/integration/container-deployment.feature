@@ -5,6 +5,7 @@ Feature: Container deployment test flow
     And I prepare container assets for the sample target
     And I build the sample container image
     And I start the sample container
+    And I install the prepared sample target into the running container
     Then the sample survey page contains "Submit survey"
     When I submit one survey response through the sample saver CGI
     Then the saver response contains "Survey saved"

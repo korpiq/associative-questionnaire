@@ -103,6 +103,17 @@ describeFeature(feature, ({ Scenario }) => {
         runCommand('docker', ['run', '-d', '--name', containerName, '-p', `${port}:8080`, imageTag])
       })
 
+      And('I install the prepared sample target into the running container', () => {
+        runCommand('node', [
+          '--import',
+          'tsx',
+          'src/cli/install-prepared-container-target.ts',
+          'sample',
+          '--container-name',
+          containerName
+        ])
+      })
+
       Then('the sample survey page contains {string}', async (_ctx, expected) => {
         await waitForBodyContains(surveyUrls.publicUrl, expected)
       })

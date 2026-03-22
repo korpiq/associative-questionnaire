@@ -106,6 +106,17 @@ describeFeature(feature, ({ Background, Scenario }) => {
       cleanupContainer()
       runCommand('docker', ['run', '-d', '--name', containerName, '-p', `${port}:8080`, imageTag])
     })
+
+    And('I install the prepared sample target into the running cookie-based container', () => {
+      runCommand('node', [
+        '--import',
+        'tsx',
+        'src/cli/install-prepared-container-target.ts',
+        'sample',
+        '--container-name',
+        containerName
+      ])
+    })
   })
 
   Scenario(

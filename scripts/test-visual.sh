@@ -55,6 +55,9 @@ docker build -t "${IMAGE_TAG}" .
 
 cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
+node --import tsx src/cli/install-prepared-container-target.ts sample \
+  --container-name "${CONTAINER_NAME}" \
+  --tarball-path "deploy/generated/container-image.tar.gz"
 
 wait_for_contains "${SURVEY_URL}" "Correctness showcase"
 wait_for_report_contains "Correct: 2 (66.66666666666666%)"

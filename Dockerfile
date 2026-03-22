@@ -1,9 +1,7 @@
 FROM node:20-alpine
 
 RUN apk add --no-cache busybox-extras
-
-COPY deploy/generated/container-image.tar.gz /tmp/deployable-container.tar.gz
-RUN tar -xzf /tmp/deployable-container.tar.gz -C / && rm /tmp/deployable-container.tar.gz
+RUN mkdir -p /srv/www
 
 ENV HOME=/home/app
 EXPOSE 8080

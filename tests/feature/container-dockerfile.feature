@@ -1,8 +1,8 @@
-Feature: Container Dockerfile uses the deployable tarball
-  Scenario: The runtime image copies only the prepared container tarball
+Feature: Container Dockerfile stays generic
+  Scenario: The runtime image does not bake in prepared deployment assets
     When the container Dockerfile is inspected
     Then the Dockerfile copy instructions are:
       """
-      [COPY deploy/generated/container-image.tar.gz /tmp/deployable-container.tar.gz]
+      []
       """
-    And the Dockerfile extracts and removes the deployable tarball
+    And the Dockerfile does not extract a deployable tarball at build time

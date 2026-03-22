@@ -18,7 +18,7 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('The runtime image copies only the prepared container tarball', ({ When, Then, And }) => {
+  Scenario('The runtime image does not bake in prepared deployment assets', ({ When, Then, And }) => {
     When('the container Dockerfile is inspected', () => {
       dockerfileContents = readFileSync(join(process.cwd(), 'Dockerfile'), 'utf8')
     })
@@ -32,10 +32,9 @@ describeFeature(feature, ({ Scenario }) => {
       expect(copyLines).toEqual(parseYamlDocString(docString))
     })
 
-    And('the Dockerfile extracts and removes the deployable tarball', () => {
-      expect(dockerfileContents).toContain(
-        'RUN tar -xzf /tmp/deployable-container.tar.gz -C / && rm /tmp/deployable-container.tar.gz'
-      )
+    And('the Dockerfile does not extract a deployable tarball at build time', () => {
+      expect(dockerfileContents).not.toContain('deployable-container.tar.gz')
+      expect(dockerfileContents).not.toContain('tar -xzf')
     })
   })
 })
