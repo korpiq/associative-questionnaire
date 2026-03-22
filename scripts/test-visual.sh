@@ -26,6 +26,10 @@ wait_for_contains() {
   done
 }
 
+wait_for_report_contains() {
+  wait_for_contains "${REPORT_URL}" "$1"
+}
+
 extract_form_action() {
   local survey_url="$1"
   local survey_html
@@ -53,8 +57,8 @@ cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
 
 wait_for_contains "${SURVEY_URL}" "Correctness showcase"
-wait_for_contains "${REPORT_URL}" "Correct: 2 (66.66666666666666%)"
-wait_for_contains "${REPORT_URL}" "Incorrect: 1 (33.33333333333333%)"
+wait_for_report_contains "Correct: 2 (66.66666666666666%)"
+wait_for_report_contains "Incorrect: 1 (33.33333333333333%)"
 
 FORM_ACTION="$(extract_form_action "${SURVEY_URL}")"
 
@@ -65,7 +69,7 @@ curl --fail --silent --show-error \
   --data 'favorite-color=blue&hobbies=music&notes=Visual+submit&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
   "${FORM_ACTION}" >/dev/null
 
-wait_for_contains "${REPORT_URL}" "Respondents: 4"
+wait_for_report_contains "Respondents: 4"
 
 echo "Visual showcase smoke check passed."
 echo "Visual showcase submit check passed."
