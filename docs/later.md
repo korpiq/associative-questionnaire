@@ -2,16 +2,9 @@
 
 I stopped at the remaining items because I’m not confident they are narrow enough yet:
 •
-scripts/test-visual.sh now needs a deliberate redesign around the current tarball-only container build, plus the manual-helper behavior you specified
-•
-remove or narrow the old shell-script test entrypoints after their replacement Gherkin coverage is verified depends on resolving what stays for the visual helper
-•
 in general, try to follow DRY harder and avoid corner cases... are too broad to verify as discrete TODO completions without turning them into concrete tasks
 
 Needs clarification before I’d claim confidence:
-•
-scripts/test-visual.sh: is this supposed to remain a manual helper, or is it required supported automated test coverage? Right now it behaves like a manual/demo script more than a CI-style test.
-•
 deployment scripting section: the container side says it “may have to” copy/extract/remove tarball. That is still a design direction, not a precise acceptance criterion. I’d want confirmation whether you want:
 ◦
 parity with SSH, meaning the container runtime should also deploy by extracting a tarball into target paths via a setup step, or

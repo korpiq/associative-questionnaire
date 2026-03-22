@@ -24,6 +24,7 @@
 
 - Keep the `executable-specs` skill as the primary source for automated test-writing instructions.
 - Use the `executable-specs` skill for automated test coverage changes, including CLI, build, and deployment behavior.
+- Keep `test:visual` as a manual exploration tool, and give manual tooling its own executable-spec smoke coverage outside the main test suite.
 
 ### Code And Files
 
