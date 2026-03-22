@@ -3,6 +3,8 @@ import { spawnSync } from 'node:child_process'
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { afterAll, expect } from 'vitest'
 
+import { installPreparedContainerTarget } from './install-prepared-container-target'
+
 const feature = await loadFeature('tests/integration/cookie-based-container-deployment.feature')
 
 describeFeature(feature, ({ Background, Scenario }) => {
@@ -108,14 +110,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
     })
 
     And('I install the prepared sample target into the running cookie-based container', () => {
-      runCommand('node', [
-        '--import',
-        'tsx',
-        'src/cli/install-prepared-container-target.ts',
-        'sample',
-        '--container-name',
-        containerName
-      ])
+      installPreparedContainerTarget(containerName)
     })
   })
 
