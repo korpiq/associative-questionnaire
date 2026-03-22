@@ -296,3 +296,6 @@
 
 97. Kept `test-visual.sh` as a manual helper and added tooling smoke coverage.
     Added a dedicated `tests/tooling` executable spec plus `npm run test:tooling`, updated the visual launcher to build the current tarball-based container image, fixed `prepare:visual` to emit the per-survey deployable layout and CGI assets that the helper actually serves, and verified the result with `npm run check`, `npm test`, and `npm run test:tooling`.
+
+98. Covered and fixed the visual launcher submit flow on the configured port.
+    Extended the tooling executable spec to require a real submit-path check and the configured survey/report URLs, updated `scripts/test-visual.sh` to extract the rendered form action before posting one response through the actual saver CGI, and verified the result with the standard `npm run check`, `npm run test:tooling`, and `npm test` commands.
