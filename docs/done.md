@@ -287,3 +287,6 @@
 
 96. Added an `executable-specs` skill for repository-wide automated coverage.
     Created `.agents/skills/executable-specs` from `docs/testing.md`, `AGENTS.md`, `README.md`, and the deployment/runtime docs so test work across product behavior, CLI flows, build output, and deployment support is driven through executable specifications implemented as Gherkin features with sibling `@amiceli/vitest-cucumber` step specs, updated `AGENTS.md` to point testing changes at the skill, and retired the overlapping TODO items for separate Gherkin and CLI-integration testing skills.
+
+97. Kept `test-visual.sh` as a manual helper and added tooling smoke coverage.
+    Added a dedicated `tests/tooling` executable spec plus `npm run test:tooling`, updated the visual launcher to build the current tarball-based container image, fixed `prepare:visual` to emit the per-survey deployable layout and CGI assets that the helper actually serves, and verified the result with `npm run check`, `npm test`, and `npm run test:tooling`.

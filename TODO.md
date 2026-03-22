@@ -1,6 +1,5 @@
 # TODO
 
-- decide whether `scripts/test-visual.sh` is supported automated test coverage or an intentionally manual helper, and if it is supported, turn it into Gherkin feature coverage under `tests/integration`
 - remove or narrow the old shell-script test entrypoints after their replacement Gherkin coverage is verified
 - replace the remaining standalone `tests/*.test.ts` coverage with Gherkin feature files and sibling `specs/*.spec.ts` step specs so the test tree matches `docs/testing.md`
 - turn the README/docs/testing/docs tracking alignment rules from `AGENTS.md` into a `repo-doc-alignment` skill under `.agents/skills`

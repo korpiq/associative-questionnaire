@@ -21,6 +21,7 @@
     "test:container": "bash scripts/test-container.sh",
     "test:integration": "bash scripts/test-integration.sh",
     "test:ssh-deployment": "bash scripts/test-ssh-deployment.sh",
+    "test:tooling": "vitest run --config vitest.tooling.config.ts",
     "test:visual": "bash scripts/test-visual.sh",
     "test:watch": "vitest"
   },

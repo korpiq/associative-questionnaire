@@ -3,7 +3,7 @@ set -euo pipefail
 
 IMAGE_TAG="associative-survey:visual"
 CONTAINER_NAME="associative-survey-visual"
-PORT="18082"
+PORT="18083"
 
 cleanup() {
   docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
@@ -28,19 +28,21 @@ wait_for_contains() {
 trap cleanup EXIT
 
 npm run build
+npm run prepare:visual
 
-docker build --build-arg PREPARE_COMMAND=prepare:visual -t "${IMAGE_TAG}" .
+docker build -t "${IMAGE_TAG}" .
 
 cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
 
-wait_for_contains "http://127.0.0.1:${PORT}/surveys/visual-showcase.html" "Correctness showcase"
-wait_for_contains "http://127.0.0.1:${PORT}/cgi-bin/report-survey.js?surveyName=visual-showcase" "Correct: 2 (66.66666666666666%)"
-wait_for_contains "http://127.0.0.1:${PORT}/cgi-bin/report-survey.js?surveyName=visual-showcase" "Incorrect: 1 (33.33333333333333%)"
+wait_for_contains "http://127.0.0.1:${PORT}/surveys/visual-showcase/" "Correctness showcase"
+wait_for_contains "http://127.0.0.1:${PORT}/cgi-bin/visual-showcase/report.cgi" "Correct: 2 (66.66666666666666%)"
+wait_for_contains "http://127.0.0.1:${PORT}/cgi-bin/visual-showcase/report.cgi" "Incorrect: 1 (33.33333333333333%)"
 
+echo "Visual showcase smoke check passed."
 echo "Visual showcase container is running."
-echo "Survey: http://127.0.0.1:${PORT}/surveys/visual-showcase.html"
-echo "Report: http://127.0.0.1:${PORT}/cgi-bin/report-survey.js?surveyName=visual-showcase"
+echo "Survey: http://127.0.0.1:${PORT}/surveys/visual-showcase/"
+echo "Report: http://127.0.0.1:${PORT}/cgi-bin/visual-showcase/report.cgi"
 echo "Stop it with: docker rm -f ${CONTAINER_NAME}"
 
 trap - EXIT

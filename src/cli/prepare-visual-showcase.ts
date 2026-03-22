@@ -1,4 +1,4 @@
-import { chmodSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { buildSync } from 'esbuild'
 
@@ -10,28 +10,23 @@ import {
   prepareReporterCgiAsset,
   prepareSaverCgiAsset
 } from '../index'
+import { createTarGzFromDirectory } from '../deploy/create-tar-gz-from-directory'
 
 function ensureDirectory(path: string): void {
   mkdirSync(path, { recursive: true })
 }
 
-function buildSharedCgiSettings(dataDir: string): {
-  surveysDataDir: string
-  answersDataDir: string
-} {
-  return {
-    surveysDataDir: dataDir.endsWith('/') ? `${dataDir}surveys` : `${dataDir}/surveys`,
-    answersDataDir: dataDir.endsWith('/') ? `${dataDir}answers` : `${dataDir}/answers`
-  }
+function resolveContainerPath(containerRoot: string, absoluteTargetPath: string): string {
+  return join(containerRoot, absoluteTargetPath.replace(/^\/+/, ''))
 }
 
 function main(): void {
   const workspaceRoot = process.cwd()
   const generatedRoot = resolve(workspaceRoot, 'deploy/generated')
   const generatedTargetSettingsPath = join(generatedRoot, 'container-target-settings.json')
+  const containerRoot = join(generatedRoot, 'root')
+  const tarballPath = join(generatedRoot, 'container-image.tar.gz')
   const publicRoot = join(generatedRoot, 'public')
-  const publicCgiRoot = join(publicRoot, 'cgi-bin')
-  const publicSurveyRoot = join(publicRoot, 'surveys')
   const runtimeRoot = join(generatedRoot, 'runtime')
   const runtimeSurveyRoot = join(runtimeRoot, 'surveys')
   const runtimeAnswerRoot = join(runtimeRoot, 'answers')
@@ -53,11 +48,29 @@ function main(): void {
   const templatePath = generatedSurvey.templatePath
   const surveyName = generatedSurvey.surveyName
   const surveyAnswerRoot = join(runtimeAnswerRoot, surveyName)
+  const publicCgiRoot = join(publicRoot, 'cgi-bin', surveyName)
+  const publicSurveyRoot = join(publicRoot, 'surveys', surveyName)
+  const containerPublicSurveyRoot = resolveContainerPath(containerRoot, generatedSurvey.publicDir)
+  const containerCgiRoot = resolveContainerPath(containerRoot, generatedSurvey.cgiDir)
+  const containerPrivateSurveyPath = resolveContainerPath(
+    containerRoot,
+    generatedSurvey.privateSurveyPath
+  )
+  const containerPrivateAnswersRoot = resolveContainerPath(
+    containerRoot,
+    generatedSurvey.privateAnswersDir
+  )
 
   ensureDirectory(publicCgiRoot)
   ensureDirectory(publicSurveyRoot)
   ensureDirectory(runtimeSurveyRoot)
   ensureDirectory(surveyAnswerRoot)
+  rmSync(containerRoot, { recursive: true, force: true })
+  rmSync(tarballPath, { force: true })
+  ensureDirectory(containerPublicSurveyRoot)
+  ensureDirectory(containerCgiRoot)
+  ensureDirectory(dirname(containerPrivateSurveyPath))
+  ensureDirectory(containerPrivateAnswersRoot)
 
   buildSync({
     entryPoints: [resolve(workspaceRoot, 'src/runtime-cgi.ts')],
@@ -76,7 +89,9 @@ function main(): void {
   })
 
   writeFileSync(join(publicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
+  writeFileSync(join(containerPublicSurveyRoot, generatedSurvey.publicHtmlFilename), surveyHtml)
   copyFileSync(surveyPath, join(runtimeSurveyRoot, `${surveyName}.json`))
+  copyFileSync(surveyPath, containerPrivateSurveyPath)
   writeFileSync(generatedTargetSettingsPath, JSON.stringify(generatedTargetSettings, null, 2))
 
   const seededAnswers = [
@@ -135,31 +150,46 @@ function main(): void {
 
   seededAnswers.forEach(({ filename, answerFile }) => {
     writeFileSync(join(surveyAnswerRoot, filename), JSON.stringify(answerFile, null, 2))
+    writeFileSync(
+      join(containerPrivateAnswersRoot, filename),
+      JSON.stringify(answerFile, null, 2)
+    )
   })
-  const sharedCgiSettings = buildSharedCgiSettings(deploymentTarget.dataDir)
-
   const saveScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/save-survey.js')
   const reporterScriptTemplatePath = resolve(workspaceRoot, 'deploy/templates/report-survey.template.js')
-  const saveScriptTargetPath = join(publicCgiRoot, 'save-survey.js')
-  const reportScriptTargetPath = join(publicCgiRoot, 'report-survey.js')
+  const saveScriptTargetPath = join(publicCgiRoot, generatedSurvey.saveCgiFilename)
+  const reportScriptTargetPath = join(publicCgiRoot, generatedSurvey.reportCgiFilename)
 
   writeFileSync(
     saveScriptTargetPath,
     prepareSaverCgiAsset({
       saverScriptTemplate: readFileSync(saveScriptTemplatePath, 'utf8'),
-      saverCgiSettings: sharedCgiSettings
+      saverCgiSettings: generatedSurvey
     })
   )
   chmodSync(saveScriptTargetPath, 0o755)
+  writeFileSync(
+    join(containerCgiRoot, generatedSurvey.saveCgiFilename),
+    readFileSync(saveScriptTargetPath, 'utf8')
+  )
+  chmodSync(join(containerCgiRoot, generatedSurvey.saveCgiFilename), 0o755)
 
   const preparedReporter = prepareReporterCgiAsset({
     reporterScriptTemplate: readFileSync(reporterScriptTemplatePath, 'utf8'),
-    reporterCgiSettings: sharedCgiSettings
+    reporterCgiSettings: generatedSurvey
   })
 
   ensureDirectory(dirname(reportScriptTargetPath))
   writeFileSync(reportScriptTargetPath, preparedReporter.preparedReporterScript)
   chmodSync(reportScriptTargetPath, 0o755)
+  const containerReportScriptPath = join(containerCgiRoot, generatedSurvey.reportCgiFilename)
+  writeFileSync(containerReportScriptPath, preparedReporter.preparedReporterScript)
+  chmodSync(containerReportScriptPath, 0o755)
+
+  createTarGzFromDirectory({
+    sourceDirectory: containerRoot,
+    tarballPath
+  })
 
   console.log(
     JSON.stringify(
@@ -169,6 +199,8 @@ function main(): void {
         runtimeAnswerRoot,
         runtimeBundlePath,
         generatedTargetSettingsPath,
+        containerRoot,
+        tarballPath,
         surveyName,
         saveScriptTargetPath,
         reportScriptTargetPath
