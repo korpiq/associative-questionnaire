@@ -55,6 +55,14 @@ function normalizeTargetName(targetName: string): string {
   return targetName
 }
 
+function ensureDeploymentPathDoesNotUseTilde(path: string): string {
+  if (path.includes('~')) {
+    throw new Error('Deployment paths must not use ~')
+  }
+
+  return path
+}
+
 export function parseDeploymentTargetConfig(input: {
   targetName: string
   targetConfigurationJson: string
@@ -83,9 +91,9 @@ export function parseDeploymentTargetConfig(input: {
 
   const baseConfig = {
     targetName,
-    publicDir: parsedConfig.publicDir,
-    cgiDir: parsedConfig.cgiDir,
-    dataDir: parsedConfig.dataDir,
+    publicDir: ensureDeploymentPathDoesNotUseTilde(parsedConfig.publicDir),
+    cgiDir: ensureDeploymentPathDoesNotUseTilde(parsedConfig.cgiDir),
+    dataDir: ensureDeploymentPathDoesNotUseTilde(parsedConfig.dataDir),
     baseUrl: parsedConfig.baseUrl,
     ...(parsedConfig.port === undefined ? {} : { port: parsedConfig.port }),
     staticUriPath: parsedConfig.staticUriPath,

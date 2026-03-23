@@ -17,9 +17,9 @@ Every `target.json` is one JSON object with:
 ```json
 {
   "type": "ssh",
-  "publicDir": "~/public_html/surveys",
-  "cgiDir": "~/public_html/cgi-bin",
-  "dataDir": "~/private/survey-data",
+  "publicDir": "public_html/surveys",
+  "cgiDir": "public_html/cgi-bin",
+  "dataDir": "private/survey-data",
   "publicBaseUrl": "https://example.test/surveys",
   "cgiBaseUrl": "https://example.test/cgi-bin",
   "nodeExecutable": "/usr/local/bin/node",
@@ -89,8 +89,9 @@ Container targets use `"type": "container"` and define `containerName` instead o
 ## Path rules
 
 - `publicDir`, `cgiDir`, and `dataDir` are plain target-host paths.
+- `publicDir`, `cgiDir`, and `dataDir` may be absolute paths or paths relative to the target working directory where deployment extraction runs.
 - Deployment may create missing survey subdirectories inside those target-wide roots.
-- `~` means the target user home directory when supported by the deployment transport.
+- `~` is not supported in deployment target paths.
 
 ## Deployment meaning
 
@@ -141,9 +142,9 @@ SSH host:
 {
   "type": "ssh",
   "sshTarget": "survey@example.test",
-  "publicDir": "~/sites/example.test/surveys",
-  "cgiDir": "~/sites/example.test/cgi-bin",
-  "dataDir": "~/private/associative-survey",
+  "publicDir": "sites/example.test/surveys",
+  "cgiDir": "sites/example.test/cgi-bin",
+  "dataDir": "private/associative-survey",
   "publicBaseUrl": "https://example.test/surveys",
   "cgiBaseUrl": "https://example.test/cgi-bin",
   "nodeExecutable": "/usr/local/bin/node",

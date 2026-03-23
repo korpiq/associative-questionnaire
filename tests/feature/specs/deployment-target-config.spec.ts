@@ -60,9 +60,13 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
 
   Scenario('A container target accepts the v2 target.json fields', () => {})
 
+  Scenario('An SSH target accepts relative deployment directories', () => {})
+
   Scenario('An SSH target requires an SSH address', () => {})
 
   Scenario('A container target requires a container name', () => {})
+
+  Scenario('A target deployment path must not use ~', () => {})
 
   Scenario('A target base URL excludes ports and paths', () => {})
 })

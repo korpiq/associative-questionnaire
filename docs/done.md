@@ -311,3 +311,6 @@
 
 102. Removed the generated client-side survey bootstrap hook.
     Removed the unused `data-survey-name` attribute from the generated form so browser restore logic stays local-storage-only, trimmed the stale generator docs that still described that hook, and verified the change with `npm run check` plus targeted `generate-survey-page` and `survey-local-storage` specs because the sandboxed full `npm test` run still fails in Docker-backed integration cases.
+
+103. Narrowed deployment target paths to absolute-or-relative without `~`.
+    Added executable coverage for accepting relative deployment directories and rejecting `~` in target paths, updated deployment target parsing plus the remaining SSH packaging helpers to stop expanding `~`, moved SSH-oriented fixtures to relative-path examples, aligned the deployment target contract doc with the new rule, and verified the step with `npm run check` plus targeted deployment specs while the sandboxed full `npm test` run still failed in Docker-backed integration cases.

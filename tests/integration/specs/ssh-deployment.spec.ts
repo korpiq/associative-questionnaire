@@ -99,9 +99,9 @@ describeFeature(feature, ({ Scenario }) => {
         {
           type: 'ssh',
           sshTarget: 'ssh-v2-test',
-          publicDir: '~/web-root/surveys',
-          cgiDir: '~/web-root/cgi-bin',
-          dataDir: '~/private-data',
+          publicDir: 'web-root/surveys',
+          cgiDir: 'web-root/cgi-bin',
+          dataDir: 'private-data',
           baseUrl: 'http://127.0.0.1',
           port: Number(httpPort),
           staticUriPath: '/surveys',

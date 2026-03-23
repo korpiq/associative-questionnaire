@@ -6,9 +6,9 @@ Feature: Parse deployment target configuration
       {
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicDir": "~/sites/example.test/www/surveys",
-        "cgiDir": "~/sites/example.test/www/cgi-bin",
-        "dataDir": "~/sites/example.test/www/data",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
         "baseUrl": "https://example.test",
         "staticUriPath": "/surveys",
         "cgiUriPath": "/cgi-bin",
@@ -23,9 +23,9 @@ Feature: Parse deployment target configuration
         "targetName": "example-vps",
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicDir": "~/sites/example.test/www/surveys",
-        "cgiDir": "~/sites/example.test/www/cgi-bin",
-        "dataDir": "~/sites/example.test/www/data",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
         "baseUrl": "https://example.test",
         "staticUriPath": "/surveys",
         "cgiUriPath": "/cgi-bin",
@@ -71,15 +71,50 @@ Feature: Parse deployment target configuration
       }
       """
 
+  Scenario: An SSH target accepts relative deployment directories
+    Given the target directory name is "example-vps"
+    And the target configuration JSON is:
+      """
+      {
+        "type": "ssh",
+        "sshTarget": "deploy@example.test",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi"
+      }
+      """
+    When the deployment target configuration is parsed
+    Then the parsed target configuration is:
+      """
+      {
+        "targetName": "example-vps",
+        "type": "ssh",
+        "sshTarget": "deploy@example.test",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi"
+      }
+      """
+
   Scenario: An SSH target requires an SSH address
     Given the target directory name is "example-vps"
     And the target configuration JSON is:
       """
       {
         "type": "ssh",
-        "publicDir": "~/sites/example.test/www/surveys",
-        "cgiDir": "~/sites/example.test/www/cgi-bin",
-        "dataDir": "~/sites/example.test/www/data",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
         "baseUrl": "https://example.test",
         "staticUriPath": "/surveys",
         "cgiUriPath": "/cgi-bin",
@@ -109,6 +144,26 @@ Feature: Parse deployment target configuration
     """
     When the deployment target configuration is parsed
     Then the deployment target configuration is rejected with "Container targets must define containerName"
+
+  Scenario: A target deployment path must not use ~
+    Given the target directory name is "example-vps"
+    And the target configuration JSON is:
+      """
+      {
+        "type": "ssh",
+        "sshTarget": "deploy@example.test",
+        "publicDir": "~/sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
+        "baseUrl": "https://example.test",
+        "staticUriPath": "/surveys",
+        "cgiUriPath": "/cgi-bin",
+        "nodeExecutable": "/usr/local/bin/node",
+        "cgiExtension": ".cgi"
+      }
+      """
+    When the deployment target configuration is parsed
+    Then the deployment target configuration is rejected with "Deployment paths must not use ~"
 
   Scenario: A target base URL excludes ports and paths
     Given the target directory name is "local-container"

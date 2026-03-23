@@ -2,7 +2,6 @@
 
 ## deployment v3
 
-- narrow the deployment-v3 target path contract so `publicDir`, `cgiDir`, and `dataDir` use no `~` and are either absolute or relative to the remote tar working directory, and remove `~` handling from deployment packaging and docs
 - add shared path readers for target-folder and survey-folder inputs, plus new `package:target` and `package:survey` CLIs
 - extract one shared deployment-v3 package builder that selects surveys by path and writes the canonical local `deploy/<targetName>/files/root/` and `deploy/<targetName>/files/home/` trees
 - update tarball generation to archive `files/root/` entries as absolute target paths and `files/home/` entries as relative target paths, and generate `deploy/<targetName>/deploy.sh` for direct `ssh` and `docker exec` tar streaming

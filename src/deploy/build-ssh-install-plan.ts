@@ -6,18 +6,6 @@ function quoteRemotePath(path: string): string {
   return `"${escaped}"`
 }
 
-function toRemoteShellPath(path: string): string {
-  if (path === '~') {
-    return '$HOME'
-  }
-
-  if (path.startsWith('~/')) {
-    return `$HOME/${path.slice(2)}`
-  }
-
-  return path
-}
-
 export function buildSshInstallPlan(input: {
   target: LoadedDeploymentTarget
 }): {
@@ -32,9 +20,9 @@ export function buildSshInstallPlan(input: {
     throw new Error('SSH install plans require an ssh target configuration')
   }
 
-  const remotePublicRoot = toRemoteShellPath(input.target.publicDir)
-  const remoteCgiRoot = toRemoteShellPath(input.target.cgiDir)
-  const remoteDataRoot = toRemoteShellPath(input.target.dataDir)
+  const remotePublicRoot = input.target.publicDir
+  const remoteCgiRoot = input.target.cgiDir
+  const remoteDataRoot = input.target.dataDir
   const remoteStagingRoot = `$HOME/.cache/associative-survey-deploy/${input.target.targetName}`
   const remoteScpTarballPath = `~/.cache/associative-survey-deploy/${input.target.targetName}/${input.target.targetName}.tar.gz`
   const remoteShellTarballPath = `${remoteStagingRoot}/${input.target.targetName}.tar.gz`

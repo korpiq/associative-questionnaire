@@ -7,9 +7,9 @@ Feature: Load deployment targets from the workspace
       {
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicDir": "~/sites/example.test/www/surveys",
-        "cgiDir": "~/sites/example.test/www/cgi-bin",
-        "dataDir": "~/sites/example.test/www/data",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
         "baseUrl": "https://example.test",
         "staticUriPath": "/surveys",
         "cgiUriPath": "/cgi-bin",

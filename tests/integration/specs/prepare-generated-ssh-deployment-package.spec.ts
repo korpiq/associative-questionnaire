@@ -29,9 +29,9 @@ describeFeature(feature, ({ Scenario }) => {
         {
           type: 'ssh',
           sshTarget: 'deploy@example.test',
-          publicDir: '~/sites/example.test/www/surveys',
-          cgiDir: '~/sites/example.test/www/cgi-bin',
-          dataDir: '~/sites/example.test/www/data',
+          publicDir: 'sites/example.test/www/surveys',
+          cgiDir: 'sites/example.test/www/cgi-bin',
+          dataDir: 'sites/example.test/www/data',
           baseUrl: 'https://example.test',
           staticUriPath: '/surveys',
           cgiUriPath: '/cgi-bin',
@@ -137,7 +137,7 @@ describeFeature(feature, ({ Scenario }) => {
     })
 
     And('the generated SSH deployment setup script uses the target home-relative directories', () => {
-      expect(readFileSync(setupScriptPath, 'utf8')).toContain('$HOME/sites/example.test/www/surveys')
+      expect(readFileSync(setupScriptPath, 'utf8')).toContain('sites/example.test/www/surveys')
     })
 
     And('the generated SSH deployment setup script restores CGI executability', () => {

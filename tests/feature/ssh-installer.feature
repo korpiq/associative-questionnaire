@@ -6,9 +6,9 @@ Feature: Build an SSH install plan from a target configuration
         "targetName": "example-vps",
         "type": "ssh",
         "sshTarget": "deploy@example.test",
-        "publicDir": "~/sites/example.test/www/surveys",
-        "cgiDir": "~/sites/example.test/www/cgi-bin",
-        "dataDir": "~/sites/example.test/www/data",
+        "publicDir": "sites/example.test/www/surveys",
+        "cgiDir": "sites/example.test/www/cgi-bin",
+        "dataDir": "sites/example.test/www/data",
         "baseUrl": "https://example.test",
         "staticUriPath": "/surveys",
         "cgiUriPath": "/cgi-bin",
@@ -26,9 +26,9 @@ Feature: Build an SSH install plan from a target configuration
       }
       """
     When the SSH install plan is built
-    Then the remote public root is "$HOME/sites/example.test/www/surveys"
-    And the remote CGI root is "$HOME/sites/example.test/www/cgi-bin"
-    And the remote data root is "$HOME/sites/example.test/www/data"
+    Then the remote public root is "sites/example.test/www/surveys"
+    And the remote CGI root is "sites/example.test/www/cgi-bin"
+    And the remote data root is "sites/example.test/www/data"
     And the remote SSH staging root is "$HOME/.cache/associative-survey-deploy/example-vps"
     And the local SSH deployment tarball is "deploy/generated/example-vps.tar.gz"
     And the SSH install commands are:
