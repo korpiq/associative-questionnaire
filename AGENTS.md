@@ -8,6 +8,13 @@
 - Repository-local reusable skills live under `.agents/skills`.
 - Whenever you identify a rule that should apply to how to work in this repository, add it to this `AGENTS.md` file.
 
+### Simplicity
+
+- Prefer the simplest change that can plausibly solve the actual problem.
+- Treat code, documentation, tests, and other text as ongoing maintenance cost; do not add any unless it is necessary.
+- When choosing between removing a requirement and adding code or text to support it, prefer removing or narrowing the requirement if that still satisfies the real need.
+- When you spot a chance to reduce existing code or text, or to avoid adding more, raise it with the user before proceeding with the heavier option.
+
 ### Tracking
 
 - Whenever you identify new work to be done, add it to `TODO.md`.
