@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path'
 import { buildGeneratedSurveyArtifacts } from './build-generated-survey-artifacts'
 import { buildGeneratedTargetSettings } from './build-generated-target-settings'
 import { createTarGzFromDirectory } from './create-tar-gz-from-directory'
+import { filterLoadedDeploymentTargetSurveys } from './filter-loaded-deployment-target-surveys'
 import { loadDeploymentTarget } from './load-deployment-target'
 
 function ensureDirectory(path: string): void {
@@ -34,6 +35,7 @@ export function prepareGeneratedContainerLayout(input: {
   workspaceDirectory: string
   targetName: string
   generatedRoot?: string
+  selectedSurveyDirectories?: string[]
 }): {
   generatedRoot: string
   containerRoot: string
@@ -46,10 +48,13 @@ export function prepareGeneratedContainerLayout(input: {
   const containerRoot = join(generatedRoot, 'root')
   const manifestPath = join(generatedRoot, 'container-target-settings.json')
   const tarballPath = join(generatedRoot, 'container-image.tar.gz')
-  const deploymentTarget = loadDeploymentTarget({
-    workspaceDirectory: input.workspaceDirectory,
-    targetName: input.targetName
-  })
+  const deploymentTarget = filterLoadedDeploymentTargetSurveys(
+    loadDeploymentTarget({
+      workspaceDirectory: input.workspaceDirectory,
+      targetName: input.targetName
+    }),
+    input.selectedSurveyDirectories
+  )
   const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
   const saveScriptTemplatePath = resolve(input.workspaceDirectory, 'deploy', 'templates', 'save-survey.js')
   const reporterScriptTemplatePath = resolve(

@@ -314,3 +314,6 @@
 
 103. Narrowed deployment target paths to absolute-or-relative without `~`.
     Added executable coverage for accepting relative deployment directories and rejecting `~` in target paths, updated deployment target parsing plus the remaining SSH packaging helpers to stop expanding `~`, moved SSH-oriented fixtures to relative-path examples, aligned the deployment target contract doc with the new rule, and verified the step with `npm run check` plus targeted deployment specs while the sandboxed full `npm test` run still failed in Docker-backed integration cases.
+
+104. Added path-based deployment packaging readers and package commands.
+    Added shared target-folder and survey-folder argument readers, introduced `package:target` and `package:survey` CLI entrypoints with callable implementations, taught the existing container and SSH package builders to filter surveys by selected survey directories, covered the new helpers through the tooling suite and the package commands through an integration spec, and verified the step with `npm run check`, `npm run test:tooling -- repository-helpers`, and the targeted package CLI spec while the sandboxed full `npm test` run still failed in Docker-backed integration cases.

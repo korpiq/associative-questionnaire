@@ -8,6 +8,8 @@ import { parse as parseYaml } from 'yaml'
 import { parseSurvey } from '../../../src'
 import { installGeneratedContainerRuntimeData } from '../../../src/deploy/install-generated-container-runtime-data'
 import { listTargetDeployedSurveys } from '../../../src/deploy/list-target-deployed-surveys'
+import { readSurveyDirectoryArgument } from '../../../src/cli/read-survey-directory-argument'
+import { readTargetDirectoryArgument } from '../../../src/cli/read-target-directory-argument'
 import type { LoadedDeploymentTarget } from '../../../src/deploy/load-deployment-target'
 import { readTargetNameArgument } from '../../../src/cli/read-target-name-argument'
 
@@ -16,6 +18,8 @@ const feature = await loadFeature('tests/tooling/repository-helpers.feature')
 describeFeature(feature, ({ Scenario, defineSteps }) => {
   const createdDirectories: string[] = []
   let resolvedTargetName = ''
+  let resolvedTargetDirectory: Record<string, string> | undefined
+  let resolvedSurveyDirectory: Record<string, string> | undefined
   let targetForListing: LoadedDeploymentTarget | undefined
   let listedSurveys: ReturnType<typeof listTargetDeployedSurveys> = []
   let workspaceDirectory = ''
@@ -30,19 +34,65 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
     return parseYaml(docString) as T
   }
 
+  function parseWorkspaceYamlDocString<T>(docString: string | null | undefined): T {
+    if (!docString) {
+      throw new Error('Expected a YAML doc string in the feature step')
+    }
+
+    return parseYaml(docString.replaceAll('/workspace', workspaceDirectory)) as T
+  }
+
   afterAll(() => {
     createdDirectories.forEach((directory) => {
       rmSync(directory, { recursive: true, force: true })
     })
   })
 
-  defineSteps(({ When, Then }) => {
+  defineSteps(({ Given, And, When, Then }) => {
+    Given('an isolated workspace for deployment path readers', () => {
+      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deployment-path-readers-'))
+      createdDirectories.push(workspaceDirectory)
+      resolvedTargetDirectory = undefined
+      resolvedSurveyDirectory = undefined
+    })
+
+    And('the isolated workspace has a target folder {string}', (_ctx, targetName) => {
+      const targetDirectory = join(workspaceDirectory, 'targets', targetName)
+
+      mkdirSync(targetDirectory, { recursive: true })
+      writeFileSync(join(targetDirectory, 'target.json'), '{}')
+    })
+
+    And('the isolated workspace has a survey folder {string} {string}', (_ctx, targetName, surveyName) => {
+      const surveyDirectory = join(workspaceDirectory, 'targets', targetName, 'surveys', surveyName)
+
+      mkdirSync(surveyDirectory, { recursive: true })
+      writeFileSync(join(surveyDirectory, 'survey.json'), '{}')
+      writeFileSync(join(surveyDirectory, 'template.html'), '{{> root}}')
+    })
+
     When('I read the target name from argv:', (_ctx, docString) => {
       resolvedTargetName = readTargetNameArgument(parseYamlDocString(docString), 'sample')
     })
 
     Then('the resolved target name is {string}', (_ctx, expected) => {
       expect(resolvedTargetName).toBe(expected)
+    })
+
+    When('I read the target directory from argv in that workspace:', (_ctx, docString) => {
+      resolvedTargetDirectory = readTargetDirectoryArgument(parseYamlDocString(docString), workspaceDirectory)
+    })
+
+    Then('the resolved target directory is:', (_ctx, docString) => {
+      expect(resolvedTargetDirectory).toEqual(parseWorkspaceYamlDocString(docString))
+    })
+
+    When('I read the survey directory from argv in that workspace:', (_ctx, docString) => {
+      resolvedSurveyDirectory = readSurveyDirectoryArgument(parseYamlDocString(docString), workspaceDirectory)
+    })
+
+    Then('the resolved survey directory is:', (_ctx, docString) => {
+      expect(resolvedSurveyDirectory).toEqual(parseWorkspaceYamlDocString(docString))
     })
   })
 
@@ -59,6 +109,10 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   Scenario('Target-name helper uses the provided target', () => {})
 
   Scenario('Target-name helper falls back to the default target', () => {})
+
+  Scenario('Target-directory helper resolves a target path inside targets', () => {})
+
+  Scenario('Survey-directory helper resolves a survey path inside targets', () => {})
 
   Scenario('Discovered target surveys map to generated public survey pages', ({ Given, When, Then }) => {
     Given('the loaded deployment target for target listing is:', (_ctx, docString) => {

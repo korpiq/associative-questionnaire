@@ -2,7 +2,6 @@
 
 ## deployment v3
 
-- add shared path readers for target-folder and survey-folder inputs, plus new `package:target` and `package:survey` CLIs
 - extract one shared deployment-v3 package builder that selects surveys by path and writes the canonical local `deploy/<targetName>/files/root/` and `deploy/<targetName>/files/home/` trees
 - update tarball generation to archive `files/root/` entries as absolute target paths and `files/home/` entries as relative target paths, and generate `deploy/<targetName>/deploy.sh` for direct `ssh` and `docker exec` tar streaming
 - add executable coverage for path-based packaging, identical local package file lists, generated tarball contents, and generated `deploy.sh`

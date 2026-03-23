@@ -17,6 +17,38 @@ Feature: Repository helper coverage
       """
     Then the resolved target name is "sample"
 
+  Scenario: Target-directory helper resolves a target path inside targets
+    Given an isolated workspace for deployment path readers
+    And the isolated workspace has a target folder "staging"
+    When I read the target directory from argv in that workspace:
+      """
+      [node, script, targets/staging]
+      """
+    Then the resolved target directory is:
+      """
+      {
+        targetDirectory: /workspace/targets/staging,
+        targetName: staging
+      }
+      """
+
+  Scenario: Survey-directory helper resolves a survey path inside targets
+    Given an isolated workspace for deployment path readers
+    And the isolated workspace has a survey folder "staging" "onboarding"
+    When I read the survey directory from argv in that workspace:
+      """
+      [node, script, targets/staging/surveys/onboarding]
+      """
+    Then the resolved survey directory is:
+      """
+      {
+        surveyDirectory: /workspace/targets/staging/surveys/onboarding,
+        surveyName: onboarding,
+        targetDirectory: /workspace/targets/staging,
+        targetName: staging
+      }
+      """
+
   Scenario: Discovered target surveys map to generated public survey pages
     Given the loaded deployment target for target listing is:
       """

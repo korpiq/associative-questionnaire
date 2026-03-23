@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path'
 import { buildGeneratedSurveyArtifacts } from './build-generated-survey-artifacts'
 import { buildGeneratedTargetSettings } from './build-generated-target-settings'
 import { createTarGzFromDirectory } from './create-tar-gz-from-directory'
+import { filterLoadedDeploymentTargetSurveys } from './filter-loaded-deployment-target-surveys'
 import { loadDeploymentTarget } from './load-deployment-target'
 
 function ensureDirectory(path: string): void {
@@ -61,6 +62,7 @@ export function prepareGeneratedSshDeploymentPackage(input: {
   workspaceDirectory: string
   targetName: string
   generatedRoot?: string
+  selectedSurveyDirectories?: string[]
 }): {
   generatedRoot: string
   packageRoot: string
@@ -75,10 +77,13 @@ export function prepareGeneratedSshDeploymentPackage(input: {
   const payloadDataRoot = join(packageRoot, 'payload', 'data')
   const setupScriptPath = join(packageRoot, 'setup.sh')
   const tarballPath = join(generatedRoot, `${input.targetName}.tar.gz`)
-  const deploymentTarget = loadDeploymentTarget({
-    workspaceDirectory: input.workspaceDirectory,
-    targetName: input.targetName
-  })
+  const deploymentTarget = filterLoadedDeploymentTargetSurveys(
+    loadDeploymentTarget({
+      workspaceDirectory: input.workspaceDirectory,
+      targetName: input.targetName
+    }),
+    input.selectedSurveyDirectories
+  )
 
   if (deploymentTarget.type !== 'ssh') {
     throw new Error('SSH deployment packages require an ssh target configuration')
