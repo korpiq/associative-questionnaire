@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(/home/kato/omat/associative-questionnaire/**)",
+      "Write(/home/kato/omat/associative-questionnaire/**)",
+      "Bash(npm:*)",
+      "Bash(docker:*)",
+      "Bash(git:*)"
+    ]
+  }
+}
