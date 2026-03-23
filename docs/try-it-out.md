@@ -20,7 +20,7 @@ What to check in the generated HTML:
 
 - the page contains a submit button
 - the form method is `post`
-- the form action includes the derived `surveyName`
+- the form action points at the configured saver URL
 - associative linking still works in the browser
 
 ## Simulate saver submission

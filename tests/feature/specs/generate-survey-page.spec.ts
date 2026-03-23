@@ -117,14 +117,6 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
       expect(generatedHtml).toContain(`method="${method}"`)
     })
 
-    Then('the result exposes the survey name {string}', (_ctx, surveyName) => {
-      expect(generatedHtml).toContain(`data-survey-name="${surveyName}"`)
-    })
-
-    And('the result exposes the survey name {string}', (_ctx, surveyName) => {
-      expect(generatedHtml).toContain(`data-survey-name="${surveyName}"`)
-    })
-
     And('the result contains the submit button text {string}', (_ctx, label) => {
       expect(generatedHtml).toContain(label)
     })
@@ -133,6 +125,4 @@ describeFeature(feature, ({ Scenario, defineSteps }) => {
   Scenario('Standalone page renders all supported question content', () => {})
 
   Scenario('Generated page uses native POST form submission', () => {})
-
-  Scenario('Generated page exposes the derived survey name', () => {})
 })

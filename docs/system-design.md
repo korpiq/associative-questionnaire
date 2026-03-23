@@ -46,7 +46,6 @@ Responsibilities:
 - render the survey into a self-contained HTML page
 - include a submit button
 - set the form submission target URL so the page can post to the shared CGI saver
-- include the derived `surveyName` in the generated page so the CGI and reporter can resolve the right files
 - submit only answer fields in the native browser form encoding
 
 ### 2. Shared CGI saver

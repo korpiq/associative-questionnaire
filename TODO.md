@@ -1,6 +1,5 @@
 # TODO
 
-- remove client-side code paths that prepare to load survey contents from outside local storage, as described in [docs/local-storage-design.md](./docs/local-storage-design.md)
 - turn survey sections into tabs with progress indicators and bottom navigation as described in [docs/survey-tabs-design.md](./docs/survey-tabs-design.md)
 - ensure survey submit behavior matches [docs/survey-tabs-design.md](/home/kato/omat/associative-questionnaire/docs/survey-tabs-design.md)
 - simplify custom CSS and JavaScript customization to the append-only behavior in [docs/custom-asset-overrides.md](./docs/custom-asset-overrides.md)

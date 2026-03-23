@@ -308,3 +308,6 @@
 
 101. Replaced the remaining standalone root-level Vitest files with executable specs.
     Added Gherkin coverage for survey normalization plus the remaining bootstrap and helper behaviors under the feature and tooling suites, deleted the replaced `tests/*.test.ts` files, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test` so the remaining automated coverage now follows the executable-spec layout.
+
+102. Removed the generated client-side survey bootstrap hook.
+    Removed the unused `data-survey-name` attribute from the generated form so browser restore logic stays local-storage-only, trimmed the stale generator docs that still described that hook, and verified the change with `npm run check` plus targeted `generate-survey-page` and `survey-local-storage` specs because the sandboxed full `npm test` run still fails in Docker-backed integration cases.
