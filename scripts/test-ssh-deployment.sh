@@ -15,6 +15,7 @@ cleanup() {
   docker rm -f "${HOST_CONTAINER}" >/dev/null 2>&1 || true
   rm -rf "${TEST_ROOT}"
   rm -rf "${TARGET_DIRECTORY}"
+  rm -rf "deploy/${TARGET_NAME}"
 }
 
 trap cleanup EXIT
@@ -27,10 +28,10 @@ cp -R targets/sample/surveys/survey "${TARGET_DIRECTORY}/surveys/"
 cat > "${TARGET_DIRECTORY}/target.json" <<EOF
 {
   "type": "ssh",
-  "sshTarget": "ssh-v2-test",
-  "publicDir": "~/web-root/surveys",
-  "cgiDir": "~/web-root/cgi-bin",
-  "dataDir": "~/private-data",
+  "sshTarget": "ssh-v3-test",
+  "publicDir": "web-root/surveys",
+  "cgiDir": "web-root/cgi-bin",
+  "dataDir": "private-data",
   "baseUrl": "http://127.0.0.1",
   "port": ${HTTP_PORT},
   "staticUriPath": "/surveys",
@@ -49,7 +50,7 @@ ssh-keygen -q -t ed25519 -N '' -f "${TEST_ROOT}/keys/id_ed25519" >/dev/null
 chmod 700 "${TEST_ROOT}/home/.ssh"
 
 cat > "${TEST_ROOT}/home/.ssh/config" <<EOF
-Host ssh-v2-test
+Host ssh-v3-test
   HostName 127.0.0.1
   Port ${SSH_PORT}
   User root
@@ -64,7 +65,7 @@ cp "${TEST_ROOT}/keys/id_ed25519.pub" "${TEST_ROOT}/authorized_keys"
 cat > "${TEST_ROOT}/Dockerfile" <<'EOF'
 FROM node:20-alpine
 
-RUN apk add --no-cache openssh-server busybox-extras
+RUN apk add --no-cache openssh-server busybox-extras tar
 RUN mkdir -p /root/.ssh /root/web-root/surveys /root/web-root/cgi-bin /root/private-data /var/run/sshd
 COPY authorized_keys /root/.ssh/authorized_keys
 RUN chmod 700 /root/.ssh \
@@ -86,9 +87,8 @@ docker build -t "${HOST_IMAGE}" "${TEST_ROOT}" >/dev/null
 docker run -d --name "${HOST_CONTAINER}" -p "${HTTP_PORT}:8080" -p "${SSH_PORT}:22" "${HOST_IMAGE}" >/dev/null
 sleep 2
 
-ASSOCIATIVE_SURVEY_SSH_CONFIG="${TEST_ROOT}/home/.ssh/config" \
-HOME="${TEST_ROOT}/home" \
-node --import tsx src/cli/install-vps-over-ssh.ts "${TARGET_NAME}"
+npm run package:target -- "targets/${TARGET_NAME}"
+HOME="${TEST_ROOT}/home" sh "deploy/${TARGET_NAME}/deploy.sh"
 
 curl --fail --silent "${SURVEY_URL}" | grep "Associative survey example" >/dev/null
 echo "survey page ok"

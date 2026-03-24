@@ -146,6 +146,7 @@ export function buildDeploymentPackage(input: {
   deployScriptPath: string
   filesRootDirectory: string
   filesHomeDirectory: string
+  selectedSurveys: string[]
 } {
   const generatedRoot =
     input.generatedRoot ?? resolve(input.workspaceDirectory, 'deploy')
@@ -207,6 +208,7 @@ export function buildDeploymentPackage(input: {
     tarballPath,
     deployScriptPath,
     filesRootDirectory,
-    filesHomeDirectory
+    filesHomeDirectory,
+    selectedSurveys: generatedTargetSettings.surveys.map((s) => s.surveyName)
   }
 }

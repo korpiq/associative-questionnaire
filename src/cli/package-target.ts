@@ -1,38 +1,22 @@
 import { pathToFileURL } from 'node:url'
 
-import { loadDeploymentTarget } from '../deploy/load-deployment-target'
-import { prepareGeneratedContainerLayout } from '../deploy/prepare-generated-container-layout'
-import { prepareGeneratedSshDeploymentPackage } from '../deploy/prepare-generated-ssh-deployment-package'
+import { buildDeploymentPackage } from '../deploy/build-deployment-package'
 import { readTargetDirectoryArgument } from './read-target-directory-argument'
 
 export function packageTargetFromCli(argv: string[], workspaceDirectory: string): {
   targetName: string
-  targetType: 'container' | 'ssh'
   tarballPath: string
+  deployScriptPath: string
   selectedSurveys: string[]
 } {
   const { targetName } = readTargetDirectoryArgument(argv, workspaceDirectory)
-  const target = loadDeploymentTarget({
-    workspaceDirectory,
-    targetName
-  })
-
-  const packageResult =
-    target.type === 'container'
-      ? prepareGeneratedContainerLayout({
-          workspaceDirectory,
-          targetName
-        })
-      : prepareGeneratedSshDeploymentPackage({
-          workspaceDirectory,
-          targetName
-        })
+  const result = buildDeploymentPackage({ workspaceDirectory, targetName })
 
   return {
     targetName,
-    targetType: target.type,
-    tarballPath: packageResult.tarballPath,
-    selectedSurveys: target.surveys.map((survey) => survey.surveyName)
+    tarballPath: result.tarballPath,
+    deployScriptPath: result.deployScriptPath,
+    selectedSurveys: result.selectedSurveys
   }
 }
 

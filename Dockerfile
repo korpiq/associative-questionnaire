@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache busybox-extras
+RUN apk add --no-cache busybox-extras tar
 RUN mkdir -p /srv/www
 
 ENV HOME=/home/app

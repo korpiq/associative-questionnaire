@@ -5,11 +5,34 @@ set -euo pipefail
 
 IMAGE_TAG="associative-survey:test"
 CONTAINER_NAME="associative-survey-test"
+TARGET_NAME="container-integration"
+TARGET_DIR="targets/${TARGET_NAME}"
 
 npm run build
-npm run prepare:container
 
-load_target_survey_urls sample survey
+# create a test-specific target so containerName matches the test container
+rm -rf "${TARGET_DIR}"
+mkdir -p "${TARGET_DIR}/surveys"
+cp -R targets/sample/surveys/survey "${TARGET_DIR}/surveys/"
+cat > "${TARGET_DIR}/target.json" <<EOF
+{
+  "type": "container",
+  "containerName": "${CONTAINER_NAME}",
+  "publicDir": "/srv/www/surveys",
+  "cgiDir": "/srv/www/cgi-bin",
+  "dataDir": "/srv/www/data",
+  "baseUrl": "http://127.0.0.1",
+  "port": 18080,
+  "staticUriPath": "/surveys",
+  "cgiUriPath": "/cgi-bin",
+  "nodeExecutable": "/usr/local/bin/node",
+  "cgiExtension": ".cgi"
+}
+EOF
+
+npm run package:target -- "${TARGET_DIR}"
+
+load_target_survey_urls "${TARGET_NAME}" survey
 PORT="${TARGET_SURVEY_PORT}"
 SURVEY_URL="${TARGET_SURVEY_PUBLIC_URL}"
 SAVE_URL="${TARGET_SURVEY_SAVE_URL}"
@@ -20,13 +43,14 @@ docker build -t "${IMAGE_TAG}" .
 cleanup() {
   docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
   docker rm -f associative-survey-debug >/dev/null 2>&1 || true
+  rm -rf "${TARGET_DIR}" "deploy/${TARGET_NAME}"
 }
 
 trap cleanup EXIT
 
 cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
-node --import tsx src/cli/install-prepared-container-target.ts sample --container-name "${CONTAINER_NAME}"
+sh "deploy/${TARGET_NAME}/deploy.sh"
 sleep 2
 
 curl --fail --silent "${SURVEY_URL}" | grep "Submit survey" >/dev/null

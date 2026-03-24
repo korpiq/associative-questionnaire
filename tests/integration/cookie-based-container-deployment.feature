@@ -2,10 +2,10 @@ Feature: Cookie-based container deployment test flow
   Background:
     Given the cookie-based container test resources are cleaned up
     And I build the project for the cookie-based container deployment test
-    And I prepare container assets for the sample target for the cookie-based container deployment test
+    And I package the cookie-based container integration deployment target
     And I build the cookie-based sample container image
     And I start the cookie-based sample container
-    And I install the prepared sample target into the running cookie-based container
+    And I deploy the cookie-based target using the generated deploy.sh
 
   Scenario: The prepared container image reports zero respondents, saves one cookie-identified response, and reports one respondent
     Given the cookie-based sample survey page contains "Associative survey example"

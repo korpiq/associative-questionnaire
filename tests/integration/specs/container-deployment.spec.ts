@@ -1,9 +1,9 @@
+import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { afterAll, expect } from 'vitest'
-
-import { installPreparedContainerTarget } from './install-prepared-container-target'
 
 const feature = await loadFeature('tests/integration/container-deployment.feature')
 
@@ -11,7 +11,9 @@ describeFeature(feature, ({ Scenario }) => {
   const imageTag = 'associative-survey:test'
   const containerName = 'associative-survey-test'
   const port = '18080'
+  const targetName = 'container-integration'
   let saverResponseBody = ''
+  let deployScriptPath = ''
   const surveyUrls = {
     publicUrl: `http://127.0.0.1:${port}/surveys/survey/`,
     saveUrl: `http://127.0.0.1:${port}/cgi-bin/survey/save.cgi`,
@@ -76,8 +78,45 @@ describeFeature(feature, ({ Scenario }) => {
     })
   }
 
+  function cleanupTarget(): void {
+    rmSync(join(process.cwd(), 'targets', targetName), { recursive: true, force: true })
+    rmSync(join(process.cwd(), 'deploy', targetName), { recursive: true, force: true })
+  }
+
+  function writeIntegrationTarget(): void {
+    const targetDirectory = join(process.cwd(), 'targets', targetName)
+
+    mkdirSync(join(targetDirectory, 'surveys'), { recursive: true })
+    writeFileSync(
+      join(targetDirectory, 'target.json'),
+      JSON.stringify(
+        {
+          type: 'container',
+          containerName,
+          publicDir: '/srv/www/surveys',
+          cgiDir: '/srv/www/cgi-bin',
+          dataDir: '/srv/www/data',
+          baseUrl: 'http://127.0.0.1',
+          port: Number(port),
+          staticUriPath: '/surveys',
+          cgiUriPath: '/cgi-bin',
+          nodeExecutable: '/usr/local/bin/node',
+          cgiExtension: '.cgi'
+        },
+        null,
+        2
+      )
+    )
+    cpSync(
+      join(process.cwd(), 'targets', 'sample', 'surveys', 'survey'),
+      join(targetDirectory, 'surveys', 'survey'),
+      { recursive: true }
+    )
+  }
+
   afterAll(() => {
     cleanupContainer()
+    cleanupTarget()
   })
 
   Scenario(
@@ -85,15 +124,22 @@ describeFeature(feature, ({ Scenario }) => {
     ({ Given, When, Then, And }) => {
       Given('the sample container test resources are cleaned up', () => {
         saverResponseBody = ''
+        deployScriptPath = ''
         cleanupContainer()
+        cleanupTarget()
       })
 
       When('I build the project for the container deployment test', () => {
         runCommand('npm', ['run', 'build'])
       })
 
-      And('I prepare container assets for the sample target', () => {
-        runCommand('npm', ['run', 'prepare:container'])
+      And('I package the container integration deployment target', () => {
+        writeIntegrationTarget()
+        const result = JSON.parse(
+          runCommand('node', ['--import', 'tsx', 'src/cli/package-target.ts', `targets/${targetName}`])
+        )
+
+        deployScriptPath = result.deployScriptPath as string
       })
 
       And('I build the sample container image', () => {
@@ -105,8 +151,8 @@ describeFeature(feature, ({ Scenario }) => {
         runCommand('docker', ['run', '-d', '--name', containerName, '-p', `${port}:8080`, imageTag])
       })
 
-      And('I install the prepared sample target into the running container', () => {
-        installPreparedContainerTarget(containerName)
+      And('I deploy using the generated container integration deploy.sh', () => {
+        runCommand('sh', [deployScriptPath])
       })
 
       Then('the sample survey page contains {string}', async (_ctx, expected) => {

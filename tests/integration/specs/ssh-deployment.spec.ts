@@ -83,6 +83,8 @@ describeFeature(feature, ({ Scenario }) => {
     if (targetDirectory) {
       rmSync(targetDirectory, { recursive: true, force: true })
     }
+
+    rmSync(join(process.cwd(), 'deploy', targetName), { recursive: true, force: true })
   }
 
   function writeTargetFiles(): void {
@@ -98,7 +100,7 @@ describeFeature(feature, ({ Scenario }) => {
       JSON.stringify(
         {
           type: 'ssh',
-          sshTarget: 'ssh-v2-test',
+          sshTarget: 'ssh-v3-test',
           publicDir: 'web-root/surveys',
           cgiDir: 'web-root/cgi-bin',
           dataDir: 'private-data',
@@ -132,7 +134,7 @@ describeFeature(feature, ({ Scenario }) => {
     writeFileSync(
       join(testRoot, 'home', '.ssh', 'config'),
       [
-        'Host ssh-v2-test',
+        'Host ssh-v3-test',
         '  HostName 127.0.0.1',
         `  Port ${sshPort}`,
         '  User root',
@@ -153,7 +155,7 @@ describeFeature(feature, ({ Scenario }) => {
       [
         'FROM node:20-alpine',
         '',
-        'RUN apk add --no-cache openssh-server busybox-extras',
+        'RUN apk add --no-cache openssh-server busybox-extras tar',
         'RUN mkdir -p /root/.ssh /root/web-root/surveys /root/web-root/cgi-bin /root/private-data /var/run/sshd',
         'COPY authorized_keys /root/.ssh/authorized_keys',
         'RUN chmod 700 /root/.ssh \\',
@@ -209,17 +211,12 @@ describeFeature(feature, ({ Scenario }) => {
       ])
     })
 
-    And('I install the SSH deployment target through the CLI', () => {
+    And('I package and deploy the SSH integration target using the generated deploy.sh', () => {
+      runCommand('node', ['--import', 'tsx', 'src/cli/package-target.ts', `targets/${targetName}`])
       runCommand(
-        'node',
-        ['--import', 'tsx', 'src/cli/install-vps-over-ssh.ts', targetName],
-        {
-          env: {
-            ...process.env,
-            ASSOCIATIVE_SURVEY_SSH_CONFIG: join(testRoot, 'home', '.ssh', 'config'),
-            HOME: join(testRoot, 'home')
-          }
-        }
+        'sh',
+        [join(process.cwd(), 'deploy', targetName, 'deploy.sh')],
+        { env: { ...process.env, HOME: join(testRoot, 'home') } }
       )
     })
 

@@ -5,9 +5,12 @@ set -euo pipefail
 
 IMAGE_TAG="associative-survey:visual"
 CONTAINER_NAME="associative-survey-visual"
+TARGET_NAME="visual-test"
+TARGET_DIR="targets/${TARGET_NAME}"
 
 cleanup() {
   docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
+  rm -rf "${TARGET_DIR}" "deploy/${TARGET_NAME}"
 }
 
 wait_for_contains() {
@@ -44,9 +47,30 @@ extract_form_action() {
 trap cleanup EXIT
 
 npm run build
-npm run prepare:visual
 
-load_target_survey_urls sample visual-showcase VISUAL_SURVEY
+# create a visual-test target pointing to the visual-showcase survey
+rm -rf "${TARGET_DIR}"
+mkdir -p "${TARGET_DIR}/surveys"
+cp -R targets/sample/surveys/visual-showcase "${TARGET_DIR}/surveys/"
+cat > "${TARGET_DIR}/target.json" <<EOF
+{
+  "type": "container",
+  "containerName": "${CONTAINER_NAME}",
+  "publicDir": "/srv/www/surveys",
+  "cgiDir": "/srv/www/cgi-bin",
+  "dataDir": "/srv/www/data",
+  "baseUrl": "http://127.0.0.1",
+  "port": 18083,
+  "staticUriPath": "/surveys",
+  "cgiUriPath": "/cgi-bin",
+  "nodeExecutable": "/usr/local/bin/node",
+  "cgiExtension": ".cgi"
+}
+EOF
+
+npm run package:target -- "${TARGET_DIR}"
+
+load_target_survey_urls "${TARGET_NAME}" visual-showcase VISUAL_SURVEY
 PORT="${VISUAL_SURVEY_PORT}"
 SURVEY_URL="${VISUAL_SURVEY_PUBLIC_URL}"
 REPORT_URL="${VISUAL_SURVEY_REPORT_URL}"
@@ -55,9 +79,19 @@ docker build -t "${IMAGE_TAG}" .
 
 cleanup
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
-node --import tsx src/cli/install-prepared-container-target.ts sample \
-  --container-name "${CONTAINER_NAME}" \
-  --tarball-path "deploy/generated/container-image.tar.gz"
+sh "deploy/${TARGET_NAME}/deploy.sh"
+
+# seed pre-existing showcase answers into the deployed container
+docker exec "${CONTAINER_NAME}" mkdir -p /srv/www/data/visual-showcase/answers
+docker exec "${CONTAINER_NAME}" sh -c 'cat > /srv/www/data/visual-showcase/answers/showcase-1.json' <<'EOF'
+{"surveyTitle":"Correctness showcase","answers":{"favorite-color":{"type":"single-choice","value":"blue"},"hobbies":{"type":"multi-choice","value":["music","sports"]},"notes":{"type":"free-text","value":"Calm"},"matches":{"type":"associative","value":[{"left":"1","right":"A"},{"left":"2","right":"B"}]}}}
+EOF
+docker exec "${CONTAINER_NAME}" sh -c 'cat > /srv/www/data/visual-showcase/answers/showcase-2.json' <<'EOF'
+{"surveyTitle":"Correctness showcase","answers":{"favorite-color":{"type":"single-choice","value":"red"},"hobbies":{"type":"multi-choice","value":["music"]},"notes":{"type":"free-text","value":"Loud"},"matches":{"type":"associative","value":[{"left":"1","right":"B"}]}}}
+EOF
+docker exec "${CONTAINER_NAME}" sh -c 'cat > /srv/www/data/visual-showcase/answers/showcase-3.json' <<'EOF'
+{"surveyTitle":"Correctness showcase","answers":{"favorite-color":{"type":"single-choice","value":"blue"},"hobbies":{"type":"multi-choice","value":["sports"]},"notes":{"type":"free-text","value":"Precise"},"matches":{"type":"associative","value":[{"left":"1","right":"A"},{"left":"2","right":"A"}]}}}
+EOF
 
 wait_for_contains "${SURVEY_URL}" "Correctness showcase"
 wait_for_report_contains "Correct: 2 (66.66666666666666%)"
