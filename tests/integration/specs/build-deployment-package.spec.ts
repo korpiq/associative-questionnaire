@@ -1,5 +1,6 @@
-import { existsSync, mkdtempSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { gunzipSync } from 'node:zlib'
 
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { afterAll, expect } from 'vitest'
@@ -134,6 +135,29 @@ describeFeature(feature, ({ Scenario }) => {
     writeSurvey(targetDirectory, 'basic')
   }
 
+  function listTarEntries(tarGzContents: Buffer): string[] {
+    const tarContents = gunzipSync(tarGzContents)
+    const entries: string[] = []
+    let offset = 0
+
+    while (offset + 512 <= tarContents.length) {
+      const header = tarContents.subarray(offset, offset + 512)
+      const name = header.subarray(0, 100).toString('utf8').replace(/\0.*$/, '')
+
+      if (!name) {
+        break
+      }
+
+      const sizeOctal = header.subarray(124, 136).toString('utf8').replace(/\0.*$/, '').trim()
+      const size = sizeOctal ? Number.parseInt(sizeOctal, 8) : 0
+
+      entries.push(name)
+      offset += 512 + Math.ceil(size / 512) * 512
+    }
+
+    return entries
+  }
+
   function listFilesUnder(directory: string): string[] {
     const entries: string[] = []
 
@@ -224,6 +248,122 @@ describeFeature(feature, ({ Scenario }) => {
       expect(
         existsSync(join(result.filesHomeDirectory, 'sites', 'example.test', 'www', 'data', 'basic', 'survey.json'))
       ).toBe(true)
+    })
+  })
+
+  Scenario('Tarball archives files/root entries as absolute target paths', ({ Given, And, When, Then }) => {
+    Given('an isolated workspace for v3 deployment package building', () => {
+      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
+      createdWorkspaceDirectories.push(workspaceDirectory)
+      targetName = 'container-target'
+    })
+
+    And('the isolated workspace has a container target with absolute paths and one survey', () => {
+      writeTemplates()
+      writeContainerTarget(targetName)
+    })
+
+    When('I build the deployment package for that target', () => {
+      result = buildDeploymentPackage({ workspaceDirectory, targetName })
+    })
+
+    Then('the deployment package tarball contains the public survey file as an absolute path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('/app/surveys/basic/index.html')
+    })
+
+    And('the deployment package tarball contains the CGI survey file as an absolute path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('/app/cgi-bin/basic/save.cgi')
+    })
+
+    And('the deployment package tarball contains the private survey file as an absolute path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('/app/data/basic/survey.json')
+    })
+  })
+
+  Scenario('Tarball archives files/home entries as relative target paths', ({ Given, And, When, Then }) => {
+    Given('an isolated workspace for v3 deployment package building', () => {
+      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
+      createdWorkspaceDirectories.push(workspaceDirectory)
+      targetName = 'ssh-target'
+    })
+
+    And('the isolated workspace has an SSH target with relative paths and one survey', () => {
+      writeTemplates()
+      writeSshTarget(targetName)
+    })
+
+    When('I build the deployment package for that target', () => {
+      result = buildDeploymentPackage({ workspaceDirectory, targetName })
+    })
+
+    Then('the deployment package tarball contains the public survey file as a relative path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('sites/example.test/www/surveys/basic/index.html')
+    })
+
+    And('the deployment package tarball contains the CGI survey file as a relative path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('sites/example.test/www/cgi-bin/basic/save.cgi')
+    })
+
+    And('the deployment package tarball contains the private survey file as a relative path', () => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
+
+      expect(entries).toContain('sites/example.test/www/data/basic/survey.json')
+    })
+  })
+
+  Scenario('Generated deploy.sh streams the tarball into SSH', ({ Given, And, When, Then }) => {
+    Given('an isolated workspace for v3 deployment package building', () => {
+      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
+      createdWorkspaceDirectories.push(workspaceDirectory)
+      targetName = 'ssh-target'
+    })
+
+    And('the isolated workspace has an SSH target with relative paths and one survey', () => {
+      writeTemplates()
+      writeSshTarget(targetName)
+    })
+
+    When('I build the deployment package for that target', () => {
+      result = buildDeploymentPackage({ workspaceDirectory, targetName })
+    })
+
+    Then('the deployment package deploy.sh streams the tarball into ssh', () => {
+      const deployScript = readFileSync(result.deployScriptPath, 'utf8')
+
+      expect(deployScript).toContain('ssh deploy@example.test tar xPzvf - < package.tar.gz')
+    })
+  })
+
+  Scenario('Generated deploy.sh streams the tarball into docker exec', ({ Given, And, When, Then }) => {
+    Given('an isolated workspace for v3 deployment package building', () => {
+      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
+      createdWorkspaceDirectories.push(workspaceDirectory)
+      targetName = 'container-target'
+    })
+
+    And('the isolated workspace has a container target with absolute paths and one survey', () => {
+      writeTemplates()
+      writeContainerTarget(targetName)
+    })
+
+    When('I build the deployment package for that target', () => {
+      result = buildDeploymentPackage({ workspaceDirectory, targetName })
+    })
+
+    Then('the deployment package deploy.sh streams the tarball into docker exec', () => {
+      const deployScript = readFileSync(result.deployScriptPath, 'utf8')
+
+      expect(deployScript).toContain('docker exec -i test-container tar xPzvf - < package.tar.gz')
     })
   })
 
