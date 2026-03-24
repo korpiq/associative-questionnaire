@@ -1,80 +1,61 @@
 # VPS Deployment
 
-This project can be deployed to a VPS-style Linux server where static survey pages and CGI scripts are installed by one user, while the web server process uses a different home directory.
+Deployment v3 uses two explicit steps:
 
-See [ssh.md](/home/kato/omat/associative-questionnaire/docs/deployment/ssh.md) for the SSH-hosting constraints, the `/./` path split rule, and the planned `targets/<target-name>/target.json` deployment configuration model.
+1. generate deployment artifacts in this workspace
+2. run the generated `deploy.sh` from this workspace
 
-## Prepare deployment assets
-
-From the repository root:
+For an SSH target, package either the whole target or one survey:
 
 ```bash
 npm run build
-npm run prepare:container -- <target-name>
+npm run package:target -- targets/<target-name>
 ```
 
-That prepares:
-
-- generated survey page under `deploy/generated/public/surveys/`
-- CGI scripts under `deploy/generated/public/cgi-bin/`
-- runtime seed survey JSON under `deploy/generated/runtime/surveys/`
-- generated target settings manifest under `deploy/generated/container-target-settings.json`
-- reporter protection secret under `.deploy/reporter-protection-secret.txt`
-
-## Install by SSH
-
-If the remote target is configured under `targets/<target-name>/target.json`, install it with:
+or:
 
 ```bash
-npm run install:ssh -- <target-name>
+npm run build
+npm run package:survey -- targets/<target-name>/surveys/<survey-name>
 ```
 
-That command:
-
-- runs `npm run build`
-- runs `npm run prepare:container -- <target-name>`
-- loads the SSH target config from `targets/<target-name>/target.json`
-- copies generated survey pages to the configured `publicPath`
-- copies generated CGI scripts to the configured `cgiPath`
-- copies seed survey JSON files to `dataDir/surveys`
-- copies the local reporter protection secret to `protectionFile`
-- makes the remote CGI scripts executable
-
-If the web server executes CGI scripts with a different effective home directory than the SSH account, use the manual steps below instead.
-
-## Install public files
-
-Copy the prepared public tree to the web root served by your CGI-capable server:
-
-- `deploy/generated/public/surveys/`
-- `deploy/generated/public/cgi-bin/`
-
-The CGI scripts are plain JavaScript and must stay executable.
-
-## Install runtime seed survey JSON
-
-Copy the prepared seed survey JSON from `deploy/generated/runtime/surveys/` into the configured runtime data directory under:
+Both commands generate:
 
 ```text
-<dataDir>/surveys/
+deploy/<target-name>/
+  deploy.sh
+  package.tar.gz
+  files/
+    root/...
+    home/...
 ```
 
-If the deploy user home and the web server process home differ, do not place runtime data under the deploy user home by accident. The runtime data must live under the configured shared data path seen by the CGI process.
+Deploy by running:
 
-## Runtime directories
-
-At runtime the system uses the configured `dataDir`:
-
-```text
-<dataDir>/
-  surveys/
-  answers/
+```bash
+sh deploy/<target-name>/deploy.sh
 ```
 
-The saver creates `answers/<surveyName>/` on demand. The reporter reads stored survey JSON from `surveys/`.
+The generated script streams `package.tar.gz` into `ssh <sshTarget> tar xPzvf -`.
 
-## Protected reporter secret
+## Target path rules
 
-The deploy preparation step generates `.deploy/reporter-protection-secret.txt` locally in the workspace, injects the same secret into the prepared reporter CGI script, and the SSH installer copies that secret to the configured remote `protectionFile`.
+For deployment v3, `publicDir`, `cgiDir`, and `dataDir` in `target.json` must be either:
 
-Keep the local secret file available for future protected survey administration.
+- absolute target paths
+- relative paths under the remote default directory where `tar` runs
+
+Do not use `~` in deployment paths.
+
+## Runtime layout
+
+Each packaged survey installs:
+
+- public HTML under `<publicDir>/<surveyName>/`
+- saver and reporter CGI files under `<cgiDir>/<surveyName>/`
+- seed survey JSON under `<dataDir>/<surveyName>/survey.json`
+- saved answers under `<dataDir>/<surveyName>/answers/`
+
+## Verification status
+
+The SSH deployment flow was updated to deployment v3, but live Docker/SSH verification could not be completed in the sandbox. Check [docs/deployment-v3-implementation.md](/home/kato/omat/associative-questionnaire/docs/deployment-v3-implementation.md) before relying on it.

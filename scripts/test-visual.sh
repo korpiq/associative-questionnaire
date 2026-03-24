@@ -8,8 +8,12 @@ CONTAINER_NAME="associative-survey-visual"
 TARGET_NAME="visual-test"
 TARGET_DIR="targets/${TARGET_NAME}"
 
-cleanup() {
+cleanup_container() {
   docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
+}
+
+cleanup() {
+  cleanup_container
   rm -rf "${TARGET_DIR}" "deploy/${TARGET_NAME}"
 }
 
@@ -77,7 +81,7 @@ REPORT_URL="${VISUAL_SURVEY_REPORT_URL}"
 
 docker build -t "${IMAGE_TAG}" .
 
-cleanup
+cleanup_container
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
 sh "deploy/${TARGET_NAME}/deploy.sh"
 

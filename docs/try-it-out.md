@@ -78,33 +78,34 @@ npm test
 npm run check
 ```
 
-## Run the container and answer the seeded survey
+## Run the container and answer the packaged survey
 
-Build the current image:
+Generate the deployment package for the sample target and build the container image:
 
 ```bash
 npm run build
-npm run prepare:container
+npm run package:target -- targets/sample
 docker build -t associative-survey:test .
 ```
 
-Run the container:
+Start the container and deploy the generated package:
 
 ```bash
 docker rm -f associative-survey-local >/dev/null 2>&1 || true
 docker run -d --name associative-survey-local -p 18080:8080 associative-survey:test
+sh deploy/sample/deploy.sh
 ```
 
-Open the seeded survey page in a browser:
+Open the packaged survey page in a browser:
 
 ```text
-http://127.0.0.1:18080/surveys/survey.html
+http://127.0.0.1:18080/surveys/survey/
 ```
 
-Fill in some answers and submit the form. The seeded survey is stored as `survey`, so the built-in report URL is:
+Fill in some answers and submit the form. The built-in report URL is:
 
 ```text
-http://127.0.0.1:18080/cgi-bin/report-survey.js?surveyName=survey
+http://127.0.0.1:18080/cgi-bin/survey/report.cgi
 ```
 
 Open that report URL in the browser after submitting. You should see:
@@ -123,30 +124,24 @@ curl --fail --silent --show-error \
   -X POST \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'favorite-color=blue&notes=Container+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
-  'http://127.0.0.1:18080/cgi-bin/save-survey.js?surveyName=survey'
+  'http://127.0.0.1:18080/cgi-bin/survey/save.cgi'
 ```
 
 Then fetch the report:
 
 ```bash
-curl --fail --silent 'http://127.0.0.1:18080/cgi-bin/report-survey.js?surveyName=survey'
+curl --fail --silent 'http://127.0.0.1:18080/cgi-bin/survey/report.cgi'
 ```
 
 ## Use the automated container test
 
-The repository also includes an end-to-end container test:
+The repository also includes an end-to-end container smoke test:
 
 ```bash
 npm run test:container
 ```
 
 That command builds the image, runs the container, submits one answer, and verifies that the report shows one respondent.
-
-There is also a broader integration test that seeds two surveys into one container and checks that each report updates independently as more answers are submitted:
-
-```bash
-npm run test:integration
-```
 
 For manual visual verification of correctness reporting across question types, start the seeded showcase container:
 
@@ -155,6 +150,8 @@ npm run test:visual
 ```
 
 That command builds a dedicated image, starts a container with prefilled answers, verifies the report is reachable, and prints the survey URL, report URL, and stop command. It leaves the container running for inspection.
+
+See [docs/deployment-v3-implementation.md](/home/kato/omat/associative-questionnaire/docs/deployment-v3-implementation.md) for Docker and SSH verification caveats in the current sandboxed workspace.
 
 ## Stop the container
 

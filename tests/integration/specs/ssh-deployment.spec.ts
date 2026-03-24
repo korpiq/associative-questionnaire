@@ -216,7 +216,12 @@ describeFeature(feature, ({ Scenario }) => {
       runCommand(
         'sh',
         [join(process.cwd(), 'deploy', targetName, 'deploy.sh')],
-        { env: { ...process.env, HOME: join(testRoot, 'home') } }
+        {
+          env: {
+            ...process.env,
+            ASSOCIATIVE_SURVEY_SSH_CONFIG: join(testRoot, 'home', '.ssh', 'config')
+          }
+        }
       )
     })
 

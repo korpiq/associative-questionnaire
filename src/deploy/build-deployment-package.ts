@@ -127,12 +127,22 @@ function createDeploymentTarGz(input: {
 
 function renderDeployScript(target: ReturnType<typeof loadDeploymentTarget>): string {
   const tarCommand = 'tar xPzvf - < package.tar.gz'
-  const transport =
-    target.type === 'ssh'
-      ? `ssh ${target.sshTarget} ${tarCommand}`
-      : `docker exec -i ${target.containerName} ${tarCommand}`
+  const lines = ['#!/usr/bin/env sh', 'set -eu', '', 'SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)', '']
 
-  return ['#!/usr/bin/env sh', 'set -eu', '', 'SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)', '', `cd "$SCRIPT_DIR" && ${transport}`, ''].join('\n')
+  if (target.type === 'ssh') {
+    lines.push(
+      'if [ -n "${ASSOCIATIVE_SURVEY_SSH_CONFIG:-}" ]; then',
+      `  cd "$SCRIPT_DIR" && ssh -F "$ASSOCIATIVE_SURVEY_SSH_CONFIG" ${target.sshTarget} ${tarCommand}`,
+      'else',
+      `  cd "$SCRIPT_DIR" && ssh ${target.sshTarget} ${tarCommand}`,
+      'fi',
+      ''
+    )
+  } else {
+    lines.push(`cd "$SCRIPT_DIR" && docker exec -i ${target.containerName} ${tarCommand}`, '')
+  }
+
+  return lines.join('\n')
 }
 
 export function buildDeploymentPackage(input: {

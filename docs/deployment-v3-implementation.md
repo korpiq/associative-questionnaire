@@ -10,7 +10,7 @@ The following changes were made during automated implementation but could not be
 
 ### SSH deployment test
 
-`tests/integration/ssh-deployment.feature` was updated to use `package:target` + `sh deploy/ssh-integration/deploy.sh` with `HOME` pointing to the test SSH config. The target now uses `sshTarget: "ssh-v3-test"` and the SSH config is written with that alias. The previous flow used `install-vps-over-ssh.ts` with `ASSOCIATIVE_SURVEY_SSH_CONFIG`.
+`tests/integration/ssh-deployment.feature` was updated to use `package:target` + `sh deploy/ssh-integration/deploy.sh` with `ASSOCIATIVE_SURVEY_SSH_CONFIG` pointing to the test SSH config. The target now uses `sshTarget: "ssh-v3-test"` and the SSH config is written with that alias. The previous flow used `install-vps-over-ssh.ts` with the same SSH-config environment variable.
 
 ### test-visual.sh
 

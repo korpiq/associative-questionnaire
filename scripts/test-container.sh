@@ -40,15 +40,19 @@ REPORT_URL="${TARGET_SURVEY_REPORT_URL}"
 
 docker build -t "${IMAGE_TAG}" .
 
-cleanup() {
+cleanup_container() {
   docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
   docker rm -f associative-survey-debug >/dev/null 2>&1 || true
+}
+
+cleanup() {
+  cleanup_container
   rm -rf "${TARGET_DIR}" "deploy/${TARGET_NAME}"
 }
 
 trap cleanup EXIT
 
-cleanup
+cleanup_container
 docker run -d --name "${CONTAINER_NAME}" -p "${PORT}:8080" "${IMAGE_TAG}" >/dev/null
 sh "deploy/${TARGET_NAME}/deploy.sh"
 sleep 2

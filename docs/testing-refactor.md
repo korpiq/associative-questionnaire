@@ -17,14 +17,14 @@ The current test layout is between two models:
 - `vitest.config.ts` includes `tests/feature/specs/**/*.spec.ts`, `tests/integration/specs/**/*.spec.ts`, and every `tests/**/*.test.ts`.
 - `vitest.tooling.config.ts` separately includes `tests/tooling/specs/**/*.spec.ts`.
 - `npm test` currently runs almost everything in the main Vitest config.
-- `npm run test:integration` is still a shell wrapper instead of the intended executable-spec suite entrypoint.
+- there is no dedicated `npm run test:integration` suite command yet.
 - Tooling coverage is split between `tests/tooling` and standalone `tests/*.test.ts` files such as `normalize-survey.test.ts`, `read-target-name-argument.test.ts`, `list-target-deployed-surveys.test.ts`, `install-generated-container-runtime-data.test.ts`, and `index.test.ts`.
 
 This makes the supported test surface harder to reason about:
 
 - directory purpose is not yet the same thing as command purpose;
 - some tooling tests still live outside `tests/tooling`;
-- integration still has legacy shell-script entrypoints;
+- integration still depends partly on legacy shell-script entrypoints outside the main test command surface;
 - `npm test` has no explicit changed-code selection rule.
 
 ## Target Shape
@@ -57,7 +57,7 @@ Expected include pattern:
 tests/integration/specs/**/*.spec.ts
 ```
 
-This command should replace the current shell-wrapper meaning of `test:integration`.
+This command should provide the dedicated integration-suite entrypoint.
 
 ### Tooling
 
@@ -115,7 +115,7 @@ Notes:
 
 - `test:tooling` already has the right broad shape and can likely keep its current config file.
 - `vitest.config.ts` can either disappear or become a thin shared base imported by the suite-specific configs.
-- `test:integration` should stop pointing to shell scripts once the Gherkin integration specs fully own that coverage.
+- `test:integration` should be introduced only once the Gherkin integration specs fully own that coverage.
 
 ## Test Relocation Rules
 
@@ -153,7 +153,7 @@ This logic should stay explicit in code rather than inferred indirectly from Vit
 
 1. Introduce suite-specific Vitest configs for features and integration.
 2. Add `test:features` and `test:all`.
-3. Replace the shell-backed meaning of `test:integration` with the integration spec suite.
+3. Introduce `test:integration` as the integration spec suite entrypoint.
 4. Migrate remaining standalone `tests/*.test.ts` files into `tests/tooling` executable specs or otherwise place them under the correct suite.
 5. Add a relevant-test selector script for `npm test`.
 6. Update `docs/testing.md`, `README.md`, and any task-tracking docs to describe the new command contract.

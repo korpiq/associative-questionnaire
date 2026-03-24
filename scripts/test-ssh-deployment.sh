@@ -88,7 +88,7 @@ docker run -d --name "${HOST_CONTAINER}" -p "${HTTP_PORT}:8080" -p "${SSH_PORT}:
 sleep 2
 
 npm run package:target -- "targets/${TARGET_NAME}"
-HOME="${TEST_ROOT}/home" sh "deploy/${TARGET_NAME}/deploy.sh"
+ASSOCIATIVE_SURVEY_SSH_CONFIG="${TEST_ROOT}/home/.ssh/config" sh "deploy/${TARGET_NAME}/deploy.sh"
 
 curl --fail --silent "${SURVEY_URL}" | grep "Associative survey example" >/dev/null
 echo "survey page ok"
