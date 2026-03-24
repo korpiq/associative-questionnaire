@@ -36,7 +36,7 @@ describeFeature(feature, ({ Scenario }) => {
   )
 
   function writeTemplates(): void {
-    const templateDirectory = join(workspaceDirectory, 'deploy', 'templates')
+    const templateDirectory = join(workspaceDirectory, 'templates')
 
     mkdirSync(templateDirectory, { recursive: true })
     writeFileSync(

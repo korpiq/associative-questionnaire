@@ -36,7 +36,7 @@ describeFeature(feature, ({ Scenario }) => {
 
     mkdirSync(join(workspaceDirectory, 'dist', 'src'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'deploy', 'generated', 'runtime'), { recursive: true })
-    mkdirSync(join(workspaceDirectory, 'deploy', 'templates'), { recursive: true })
+    mkdirSync(join(workspaceDirectory, 'templates'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'node_modules', 'example-package'), { recursive: true })
 
     writeFileSync(
@@ -60,11 +60,11 @@ describeFeature(feature, ({ Scenario }) => {
       'export {}\n'
     )
     writeFileSync(
-      join(workspaceDirectory, 'deploy', 'templates', 'save-survey.js'),
+      join(workspaceDirectory, 'templates', 'save-survey.js'),
       '#!/usr/bin/env node\n'
     )
     writeFileSync(
-      join(workspaceDirectory, 'deploy', 'templates', 'report-survey.template.js'),
+      join(workspaceDirectory, 'templates', 'report-survey.template.js'),
       '#!/usr/bin/env node\n'
     )
     writeFileSync(join(workspaceDirectory, 'node_modules', 'example-package', 'package.json'), '{}\n')
@@ -78,7 +78,7 @@ describeFeature(feature, ({ Scenario }) => {
 
   Scenario(
     'Generated build directories and node_modules are removed',
-    ({ Given, When, Then, And, But }) => {
+    ({ Given, When, Then, And }) => {
       Given('an isolated workspace has generated build artifacts and installed dependencies', () => {
         commandOutput = ''
         commandError = null
@@ -112,13 +112,6 @@ describeFeature(feature, ({ Scenario }) => {
         expect(existsSync(join(workspaceDirectory, 'dist'))).toBe(false)
         expect(existsSync(join(workspaceDirectory, 'deploy', 'generated'))).toBe(false)
         expect(existsSync(join(workspaceDirectory, 'node_modules'))).toBe(false)
-      })
-
-      But('the isolated workspace tracked deploy templates still exist', () => {
-        expect(existsSync(join(workspaceDirectory, 'deploy', 'templates', 'save-survey.js'))).toBe(true)
-        expect(
-          existsSync(join(workspaceDirectory, 'deploy', 'templates', 'report-survey.template.js'))
-        ).toBe(true)
       })
     }
   )

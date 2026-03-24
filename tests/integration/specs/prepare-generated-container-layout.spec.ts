@@ -16,7 +16,7 @@ describeFeature(feature, ({ Scenario }) => {
   function writeSurveyWorkspace(): void {
     const targetDirectory = join(workspaceDirectory, 'targets', 'example')
     const surveyDirectory = join(targetDirectory, 'surveys', 'basic')
-    const templateDirectory = join(workspaceDirectory, 'deploy', 'templates')
+    const templateDirectory = join(workspaceDirectory, 'templates')
 
     mkdirSync(surveyDirectory, { recursive: true })
     mkdirSync(templateDirectory, { recursive: true })

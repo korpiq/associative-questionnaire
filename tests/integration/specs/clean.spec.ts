@@ -32,7 +32,7 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
-  Scenario('Generated build directories are removed', ({ Given, When, Then, And, But }) => {
+  Scenario('Generated build directories are removed', ({ Given, When, Then, And }) => {
     Given('the workspace has generated build artifacts', () => {
       commandOutput = ''
       commandError = null
@@ -63,11 +63,6 @@ describeFeature(feature, ({ Scenario }) => {
       expect(commandError).toBeNull()
       expect(existsSync(join(process.cwd(), 'dist'))).toBe(false)
       expect(existsSync(join(process.cwd(), 'deploy', 'generated'))).toBe(false)
-    })
-
-    But('the tracked deploy templates still exist', () => {
-      expect(existsSync(join(process.cwd(), 'deploy', 'templates', 'save-survey.js'))).toBe(true)
-      expect(existsSync(join(process.cwd(), 'deploy', 'templates', 'report-survey.template.js'))).toBe(true)
     })
   })
 })

@@ -4,4 +4,3 @@ Feature: Clean generated workspace artifacts
     When I run "npm --silent run clean"
     Then the command output is empty
     And the generated build artifacts are removed
-    But the tracked deploy templates still exist

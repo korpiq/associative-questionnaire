@@ -3,7 +3,7 @@ dist/
 coverage/
 .manual-home/
 .deploy/
-deploy/generated/
+deploy/*
 targets/*
 !targets/sample/
 !targets/sample/**

@@ -56,10 +56,9 @@ export function prepareGeneratedContainerLayout(input: {
     input.selectedSurveyDirectories
   )
   const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
-  const saveScriptTemplatePath = resolve(input.workspaceDirectory, 'deploy', 'templates', 'save-survey.js')
+  const saveScriptTemplatePath = resolve(input.workspaceDirectory, 'templates', 'save-survey.js')
   const reporterScriptTemplatePath = resolve(
     input.workspaceDirectory,
-    'deploy',
     'templates',
     'report-survey.template.js'
   )
@@ -68,6 +67,7 @@ export function prepareGeneratedContainerLayout(input: {
 
   rmSync(containerRoot, { recursive: true, force: true })
   rmSync(tarballPath, { force: true })
+  ensureDirectory(containerRoot)
 
   generatedTargetSettings.surveys.forEach((surveySettings) => {
     const artifacts = buildGeneratedSurveyArtifacts({

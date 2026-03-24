@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 
 function padToTarBlock(buffer: Buffer): Buffer {
@@ -55,6 +55,7 @@ export function createTarGzFromDirectory(input: {
   tarballPath: string
 }): void {
   const buffers: Buffer[] = []
+  mkdirSync(resolve(input.tarballPath, '..'), { recursive: true })
 
   function appendEntry(absolutePath: string, relativePath: string): void {
     const stats = statSync(absolutePath)

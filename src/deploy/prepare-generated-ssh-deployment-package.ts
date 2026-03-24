@@ -91,16 +91,17 @@ export function prepareGeneratedSshDeploymentPackage(input: {
 
   const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
   const saverScriptTemplate = readFileSync(
-    resolve(input.workspaceDirectory, 'deploy', 'templates', 'save-survey.js'),
+    resolve(input.workspaceDirectory, 'templates', 'save-survey.js'),
     'utf8'
   )
   const reporterScriptTemplate = readFileSync(
-    resolve(input.workspaceDirectory, 'deploy', 'templates', 'report-survey.template.js'),
+    resolve(input.workspaceDirectory, 'templates', 'report-survey.template.js'),
     'utf8'
   )
 
   rmSync(packageRoot, { recursive: true, force: true })
   rmSync(tarballPath, { force: true })
+  ensureDirectory(packageRoot)
 
   generatedTargetSettings.surveys.forEach((surveySettings) => {
     const artifacts = buildGeneratedSurveyArtifacts({

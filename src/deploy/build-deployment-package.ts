@@ -78,6 +78,7 @@ function createDeploymentTarGz(input: {
   tarballPath: string
 }): void {
   const buffers: Buffer[] = []
+  ensureDirectory(resolve(input.tarballPath, '..'))
 
   function appendEntry(absolutePath: string, tarEntryName: string): void {
     const stats = statSync(absolutePath)
@@ -176,17 +177,19 @@ export function buildDeploymentPackage(input: {
   )
   const generatedTargetSettings = buildGeneratedTargetSettings(deploymentTarget)
   const saverScriptTemplate = readFileSync(
-    resolve(input.workspaceDirectory, 'deploy', 'templates', 'save-survey.js'),
+    resolve(input.workspaceDirectory, 'templates', 'save-survey.js'),
     'utf8'
   )
   const reporterScriptTemplate = readFileSync(
-    resolve(input.workspaceDirectory, 'deploy', 'templates', 'report-survey.template.js'),
+    resolve(input.workspaceDirectory, 'templates', 'report-survey.template.js'),
     'utf8'
   )
 
   rmSync(filesRootDirectory, { recursive: true, force: true })
   rmSync(filesHomeDirectory, { recursive: true, force: true })
   rmSync(tarballPath, { force: true })
+  ensureDirectory(filesRootDirectory)
+  ensureDirectory(filesHomeDirectory)
 
   generatedTargetSettings.surveys.forEach((surveySettings) => {
     const artifacts = buildGeneratedSurveyArtifacts({
@@ -207,9 +210,8 @@ export function buildDeploymentPackage(input: {
     writeArtifactFiles(dataRoot, surveySettings.privateDataDir, artifacts.privateFiles)
   })
 
-  createDeploymentTarGz({ filesRootDirectory, filesHomeDirectory, tarballPath })
-
   ensureDirectory(packageDirectory)
+  createDeploymentTarGz({ filesRootDirectory, filesHomeDirectory, tarballPath })
   writeFileSync(deployScriptPath, renderDeployScript(deploymentTarget))
   chmodSync(deployScriptPath, 0o755)
 
