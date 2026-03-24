@@ -13,6 +13,7 @@ describeFeature(feature, ({ Scenario }) => {
   const port = '18080'
   const targetName = 'container-integration'
   let saverResponseBody = ''
+  let saverRedirectLocation = ''
   let deployScriptPath = ''
   const surveyUrls = {
     publicUrl: `http://127.0.0.1:${port}/surveys/survey/`,
@@ -65,6 +66,26 @@ describeFeature(feature, ({ Scenario }) => {
     }
 
     return body
+  }
+
+  async function postSaver(
+    url: string,
+    init?: RequestInit
+  ): Promise<{ body: string; location: string | null }> {
+    const response = await fetch(url, {
+      ...init,
+      redirect: 'manual'
+    })
+    const body = await response.text()
+
+    if (response.status !== 303) {
+      throw new Error(`Expected redirect response, got ${response.status} ${response.statusText}\n${body}`)
+    }
+
+    return {
+      body,
+      location: response.headers.get('location')
+    }
   }
 
   function cleanupContainer(): void {
@@ -124,6 +145,7 @@ describeFeature(feature, ({ Scenario }) => {
     ({ Given, When, Then, And }) => {
       Given('the sample container test resources are cleaned up', () => {
         saverResponseBody = ''
+        saverRedirectLocation = ''
         deployScriptPath = ''
         cleanupContainer()
         cleanupTarget()
@@ -160,17 +182,21 @@ describeFeature(feature, ({ Scenario }) => {
       })
 
       When('I submit one survey response through the sample saver CGI', async () => {
-        saverResponseBody = await fetchBody(surveyUrls.saveUrl, {
+        const response = await postSaver(surveyUrls.saveUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
           body: 'favorite-color=blue&notes=Container+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D'
         })
+
+        saverRedirectLocation = response.location ?? ''
+        saverResponseBody = response.body
       })
 
-      Then('the saver response contains {string}', (_ctx, expected) => {
-        expect(saverResponseBody).toContain(expected)
+      Then('the saver redirects to the generated success page', () => {
+        expect(saverRedirectLocation).toBe(`${surveyUrls.publicUrl}ok.html`)
+        expect(saverResponseBody).toBe('')
       })
 
       And('the sample report page contains {string}', async (_ctx, expected) => {

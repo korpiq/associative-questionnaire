@@ -28,6 +28,8 @@ Feature: Build generated per-survey deployment artifacts
       """
       #!/usr/local/bin/node --experimental-specifier-resolution=node
       export const kind = "save";
+      export const defaultOk = "__DEFAULT_OK_URL__";
+      export const defaultFail = "__DEFAULT_FAIL_URL__";
       """
     And the reporter CGI template is:
       """
@@ -43,6 +45,8 @@ Feature: Build generated per-survey deployment artifacts
         "publicDir": "/srv/sites/example.test/www/surveys/basic",
         "publicUrl": "https://example.test/basic/",
         "publicHtmlFilename": "index.html",
+        "okUrl": "https://example.test/basic/ok.html",
+        "failUrl": "https://example.test/basic/fail.html",
         "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
         "saveCgiFilename": "save.cgi",
         "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",
@@ -74,7 +78,7 @@ Feature: Build generated per-survey deployment artifacts
       """
       {
         "index.html": [
-          "action=\"https://example.test/cgi-bin/basic/save.cgi?ok=https%3A%2F%2Fexample.test%2Fbasic%2Fok.html&fail=https%3A%2F%2Fexample.test%2Fbasic%2Ffail.html\"",
+          "action=\"https://example.test/cgi-bin/basic/save.cgi\"",
           "<title>Example survey</title>"
         ],
         "ok.html": [
@@ -91,10 +95,21 @@ Feature: Build generated per-survey deployment artifacts
       """
       {
         "save.cgi": [
-          'var kind = "save"'
+          'var kind = "save"',
+          'https://example.test/basic/ok.html',
+          'https://example.test/basic/fail.html'
         ],
         "report.cgi": [
           'var kind = "report"'
+        ]
+      }
+      """
+    And the generated CGI artifacts omit:
+      """
+      {
+        "save.cgi": [
+          "survey.json",
+          "zod/v3/external.js"
         ]
       }
       """

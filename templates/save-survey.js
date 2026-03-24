@@ -1,16 +1,12 @@
 #!/usr/local/bin/node --experimental-specifier-resolution=node
 
-import { readFileSync } from 'node:fs'
-import {
-  renderSaverCgiResponse
-} from '../cgi/render-saver-cgi-response'
+import { basename, dirname, resolve } from 'node:path'
+import { renderSaverCgiResponse } from '../cgi/render-saver-cgi-response'
 import { resolveRespondentCookie } from '../cgi/respondent-cookie'
-import { resolveCgiScriptRuntimePaths } from '../cgi/resolve-cgi-script-runtime-paths'
 import { saveSurveyAnswerSubmission } from '../cgi/save-survey-answer-submission'
-import { parseSurvey } from '../schema/survey'
-
-const PRIVATE_SURVEY_RELATIVE_PATH = '__PRIVATE_SURVEY_RELATIVE_PATH__'
 const PRIVATE_ANSWERS_RELATIVE_PATH = '__PRIVATE_ANSWERS_RELATIVE_PATH__'
+const DEFAULT_OK_URL = '__DEFAULT_OK_URL__'
+const DEFAULT_FAIL_URL = '__DEFAULT_FAIL_URL__'
 
 function toOptional(value) {
   return value === null || value === '' ? undefined : value
@@ -42,29 +38,27 @@ const query = new URLSearchParams(process.env.QUERY_STRING || '')
 
 async function main() {
   try {
-    const runtimePaths = resolveCgiScriptRuntimePaths(
-      process.env.SCRIPT_FILENAME || '',
-      PRIVATE_SURVEY_RELATIVE_PATH,
-      PRIVATE_ANSWERS_RELATIVE_PATH
-    )
+    const scriptFilename = process.env.SCRIPT_FILENAME || ''
+    if (!scriptFilename) {
+      throw new Error('Missing SCRIPT_FILENAME')
+    }
+
+    const scriptDirectory = dirname(scriptFilename)
     const requestBody = await readRequestBody()
-    const survey = parseSurvey(JSON.parse(readFileSync(runtimePaths.privateSurveyPath, 'utf8')))
     const respondent = resolveRespondentCookie(process.env.HTTP_COOKIE)
 
     saveSurveyAnswerSubmission({
-      survey,
-      surveyName: runtimePaths.surveyName,
+      surveyName: basename(scriptDirectory),
       requestBody,
       respondentId: respondent.respondentId,
       effectiveHomeDirectory: '',
-      surveyAnswersDirectory: runtimePaths.privateAnswersDir
+      surveyAnswersDirectory: resolve(scriptDirectory, PRIVATE_ANSWERS_RELATIVE_PATH)
     })
 
     writeResponse(
       renderSaverCgiResponse({
         success: true,
-        ok: toOptional(query.get('ok')),
-        css: toOptional(query.get('css')),
+        ok: toOptional(query.get('ok')) || DEFAULT_OK_URL,
         setCookieHeader: respondent.setCookieHeader
       })
     )
@@ -73,8 +67,7 @@ async function main() {
       renderSaverCgiResponse({
         success: false,
         message: error instanceof Error ? error.message : String(error),
-        fail: toOptional(query.get('fail')),
-        css: toOptional(query.get('css'))
+        fail: toOptional(query.get('fail')) || DEFAULT_FAIL_URL
       })
     )
   }

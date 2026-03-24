@@ -30,19 +30,18 @@ function renderHtmlPage(input: {
   ].join('')
 }
 
-function renderRedirectPage(location: string): string {
-  return [
-    '<!DOCTYPE html>',
-    '<html>',
-    '<head>',
-    '<title>Redirecting</title>',
-    `<meta http-equiv="refresh" content="0;url=${escapeHtml(location)}">`,
-    '</head>',
-    '<body>',
-    `<p>Redirecting to <a href="${escapeHtml(location)}">${escapeHtml(location)}</a>.</p>`,
-    '</body>',
-    '</html>'
-  ].join('')
+export function renderSaverResultPage(input: {
+  success: boolean
+  message?: string
+  css?: string
+}): string {
+  return renderHtmlPage({
+    title: input.success ? 'Survey saved' : 'Survey save failed',
+    message: input.message ?? (
+      input.success ? 'Your answers have been stored.' : 'Your answers could not be stored.'
+    ),
+    ...(input.css ? { css: input.css } : {})
+  })
 }
 
 export function renderSaverCgiResponse(input: {
@@ -50,60 +49,36 @@ export function renderSaverCgiResponse(input: {
   message?: string
   ok?: string
   fail?: string
-  css?: string
   setCookieHeader?: string
 }): {
   statusCode: number
   headers: Record<string, string>
   body: string
 } {
-  if (input.success && input.ok) {
+  if (input.success) {
+    if (!input.ok) {
+      throw new Error('Successful saver responses must include ok')
+    }
+
     return {
       statusCode: 303,
       headers: {
-        'Content-Type': 'text/html; charset=utf-8',
         Location: input.ok,
         ...(input.setCookieHeader ? { 'Set-Cookie': input.setCookieHeader } : {})
       },
-      body: renderRedirectPage(input.ok)
+      body: ''
     }
   }
 
-  if (!input.success && input.fail) {
-    return {
-      statusCode: 303,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        Location: input.fail
-      },
-      body: renderRedirectPage(input.fail)
-    }
-  }
-
-  if (input.success) {
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        ...(input.setCookieHeader ? { 'Set-Cookie': input.setCookieHeader } : {})
-      },
-      body: renderHtmlPage({
-        title: 'Survey saved',
-        message: input.message ?? 'Your answers have been stored.',
-        ...(input.css ? { css: input.css } : {})
-      })
-    }
+  if (!input.fail) {
+    throw new Error('Failed saver responses must include fail')
   }
 
   return {
-    statusCode: 400,
+    statusCode: 303,
     headers: {
-      'Content-Type': 'text/html; charset=utf-8'
+      Location: input.fail
     },
-    body: renderHtmlPage({
-      title: 'Survey save failed',
-      message: input.message ?? 'Your answers could not be stored.',
-      ...(input.css ? { css: input.css } : {})
-    })
+    body: ''
   }
 }

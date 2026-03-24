@@ -19,6 +19,8 @@ describeFeature(feature, ({ Scenario }) => {
     publicDir: '',
     publicUrl: '',
     publicHtmlFilename: '',
+    okUrl: '',
+    failUrl: '',
     cgiDir: '',
     saveCgiFilename: '',
     saveUrl: '',
@@ -128,6 +130,18 @@ describeFeature(feature, ({ Scenario }) => {
 
         expectedFragments.forEach((text) => {
           expect(contents).toContain(text)
+        })
+      })
+    })
+
+    And('the generated CGI artifacts omit:', (_ctx, docString) => {
+      const omittedFragmentsByPath = parseYamlDocString<Record<string, string[]>>(docString)
+
+      Object.entries(omittedFragmentsByPath).forEach(([relativePath, omittedFragments]) => {
+        const contents = getArtifactContents('cgiFiles', relativePath)
+
+        omittedFragments.forEach((text) => {
+          expect(contents).not.toContain(text)
         })
       })
     })

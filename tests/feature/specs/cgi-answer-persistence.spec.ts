@@ -5,7 +5,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { afterAll, expect } from 'vitest'
 import { parse as parseYaml } from 'yaml'
 
-import { parseSurvey, saveSurveyAnswerSubmission } from '../../../src'
+import { saveSurveyAnswerSubmission } from '../../../src'
 
 const feature = await loadFeature('tests/feature/cgi-answer-persistence.feature')
 
@@ -13,7 +13,6 @@ describeFeature(feature, ({ Scenario }) => {
   const createdHomeDirectories: string[] = []
   let effectiveHomeDirectory = ''
   let surveyName = ''
-  let surveyInput: unknown
   let requestBody = ''
   let replacementRequestBody = ''
   let respondentId = ''
@@ -33,12 +32,11 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('A valid survey submission is written into the survey answers directory', ({ Given, And, When, Then }) => {
+  Scenario('A survey submission is written into the survey answers directory', ({ Given, And, When, Then }) => {
     Given('an empty saver home directory', () => {
       effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-saver-home-'))
       createdHomeDirectories.push(effectiveHomeDirectory)
       surveyName = ''
-      surveyInput = undefined
       requestBody = ''
       replacementRequestBody = ''
       respondentId = ''
@@ -47,10 +45,6 @@ describeFeature(feature, ({ Scenario }) => {
 
     And('the survey name is {string}', (_ctx, value) => {
       surveyName = value
-    })
-
-    And('survey content:', (_ctx, docString) => {
-      surveyInput = parseYamlDocString(docString)
     })
 
     And('the URL-encoded request body is:', (_ctx, docString) => {
@@ -63,7 +57,6 @@ describeFeature(feature, ({ Scenario }) => {
 
     When('the survey submission is saved', () => {
       const result = saveSurveyAnswerSubmission({
-        survey: parseSurvey(surveyInput),
         surveyName,
         requestBody,
         respondentId,
@@ -103,7 +96,6 @@ describeFeature(feature, ({ Scenario }) => {
       effectiveHomeDirectory = mkdtempSync(join(process.cwd(), '.test-saver-home-'))
       createdHomeDirectories.push(effectiveHomeDirectory)
       surveyName = ''
-      surveyInput = undefined
       requestBody = ''
       replacementRequestBody = ''
       respondentId = ''
@@ -112,10 +104,6 @@ describeFeature(feature, ({ Scenario }) => {
 
     And('the survey name is {string}', (_ctx, value) => {
       surveyName = value
-    })
-
-    And('survey content:', (_ctx, docString) => {
-      surveyInput = parseYamlDocString(docString)
     })
 
     And('the first URL-encoded request body is:', (_ctx, docString) => {
@@ -132,7 +120,6 @@ describeFeature(feature, ({ Scenario }) => {
 
     When('the first survey submission is saved', () => {
       saveSurveyAnswerSubmission({
-        survey: parseSurvey(surveyInput),
         surveyName,
         requestBody,
         respondentId,
@@ -142,7 +129,6 @@ describeFeature(feature, ({ Scenario }) => {
 
     And('the replacement survey submission is saved', () => {
       const result = saveSurveyAnswerSubmission({
-        survey: parseSurvey(surveyInput),
         surveyName,
         requestBody: replacementRequestBody,
         respondentId,

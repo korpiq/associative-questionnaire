@@ -16,15 +16,27 @@ describeFeature(feature, ({ Scenario }) => {
       cwd: process.cwd(),
       encoding: 'utf8'
     })
+    const deletedResult = spawnSync('git', ['ls-files', '--deleted', 'tests/feature'], {
+      cwd: process.cwd(),
+      encoding: 'utf8'
+    })
 
-    if (result.status !== 0) {
+    if (result.status !== 0 || deletedResult.status !== 0) {
       throw new Error(`git ls-files failed: ${result.stderr}`)
     }
+
+    const deletedFiles = new Set(
+      deletedResult.stdout
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+    )
 
     return result.stdout
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line.endsWith('.feature'))
+      .filter((line) => !deletedFiles.has(line))
       .sort()
   }
 

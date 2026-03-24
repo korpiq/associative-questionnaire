@@ -1,32 +1,7 @@
-Feature: Persist saved survey answers through the shared saver path
-  Scenario: A valid survey submission is written into the survey answers directory
+Feature: Persist raw saved survey submissions through the shared saver path
+  Scenario: A survey submission is written into the survey answers directory
     Given an empty saver home directory
     And the survey name is "example-survey"
-    And survey content:
-      """
-      {
-        title: Example survey,
-        sections: {
-          basics: {
-            title: Basics,
-            questions: {
-              favorite-color: {
-                title: Favorite color,
-                type: single-choice,
-                content: {
-                  red: Red,
-                  blue: Blue
-                }
-              },
-              notes: {
-                title: Notes,
-                type: free-text
-              }
-            }
-          }
-        }
-      }
-      """
     And the URL-encoded request body is:
       """
       favorite-color=blue&notes=First+note
@@ -37,48 +12,13 @@ Feature: Persist saved survey answers through the shared saver path
     And the saved answer file contains:
       """
       {
-        surveyTitle: Example survey,
-        answers: {
-          favorite-color: {
-            type: single-choice,
-            value: blue
-          },
-          notes: {
-            type: free-text,
-            value: First note
-          }
-        }
+        requestBody: favorite-color=blue&notes=First+note
       }
       """
 
   Scenario: Saving again for the same respondent replaces the existing survey answer file
     Given an empty saver home directory
     And the survey name is "example-survey"
-    And survey content:
-      """
-      {
-        title: Example survey,
-        sections: {
-          basics: {
-            title: Basics,
-            questions: {
-              favorite-color: {
-                title: Favorite color,
-                type: single-choice,
-                content: {
-                  red: Red,
-                  blue: Blue
-                }
-              },
-              notes: {
-                title: Notes,
-                type: free-text
-              }
-            }
-          }
-        }
-      }
-      """
     And the first URL-encoded request body is:
       """
       favorite-color=red&notes=First+note
@@ -94,16 +34,6 @@ Feature: Persist saved survey answers through the shared saver path
     And the saved answer file contains:
       """
       {
-        surveyTitle: Example survey,
-        answers: {
-          favorite-color: {
-            type: single-choice,
-            value: blue
-          },
-          notes: {
-            type: free-text,
-            value: Updated note
-          }
-        }
+        requestBody: favorite-color=blue&notes=Updated+note
       }
       """

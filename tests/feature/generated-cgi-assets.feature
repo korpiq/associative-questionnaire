@@ -1,18 +1,11 @@
 Feature: Prepare target-based CGI assets
-  Scenario: A saver CGI asset injects per-survey private data paths
+  Scenario: A saver CGI asset injects the per-survey answers path and built-in redirect URLs
     Given the saver CGI template is:
       """
-      import { resolveCgiScriptRuntimePaths } from "../cgi/resolve-cgi-script-runtime-paths";
-      const PRIVATE_SURVEY_RELATIVE_PATH = "__PRIVATE_SURVEY_RELATIVE_PATH__";
       const PRIVATE_ANSWERS_RELATIVE_PATH = "__PRIVATE_ANSWERS_RELATIVE_PATH__";
-      export function readSaverPaths() {
-        return resolveCgiScriptRuntimePaths(
-          process.env.SCRIPT_FILENAME || "",
-          PRIVATE_SURVEY_RELATIVE_PATH,
-          PRIVATE_ANSWERS_RELATIVE_PATH
-        );
-      }
-      export { PRIVATE_SURVEY_RELATIVE_PATH, PRIVATE_ANSWERS_RELATIVE_PATH };
+      const DEFAULT_OK_URL = "__DEFAULT_OK_URL__";
+      const DEFAULT_FAIL_URL = "__DEFAULT_FAIL_URL__";
+      export { PRIVATE_ANSWERS_RELATIVE_PATH, DEFAULT_OK_URL, DEFAULT_FAIL_URL };
       """
     And the saver CGI settings are:
       """
@@ -23,6 +16,8 @@ Feature: Prepare target-based CGI assets
         "publicDir": "/srv/sites/example.test/www/surveys/basic",
         "publicUrl": "https://example.test/basic/",
         "publicHtmlFilename": "index.html",
+        "okUrl": "https://example.test/basic/ok.html",
+        "failUrl": "https://example.test/basic/fail.html",
         "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
         "saveCgiFilename": "save.cgi",
         "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",
@@ -37,17 +32,17 @@ Feature: Prepare target-based CGI assets
     Then the prepared saver CGI asset omits:
       """
       [
-        "../cgi/resolve-cgi-script-runtime-paths",
-        "__PRIVATE_SURVEY_RELATIVE_PATH__",
-        "__PRIVATE_ANSWERS_RELATIVE_PATH__"
+        "__PRIVATE_ANSWERS_RELATIVE_PATH__",
+        "__DEFAULT_OK_URL__",
+        "__DEFAULT_FAIL_URL__"
       ]
       """
     And the prepared saver CGI asset contains:
       """
       [
-        "process.env.SCRIPT_FILENAME",
-        "../../data/basic/survey.json",
-        "../../data/basic/answers"
+        "../../data/basic/answers",
+        "https://example.test/basic/ok.html",
+        "https://example.test/basic/fail.html"
       ]
       """
 
@@ -75,6 +70,8 @@ Feature: Prepare target-based CGI assets
         "publicDir": "/srv/sites/example.test/www/surveys/basic",
         "publicUrl": "https://example.test/basic/",
         "publicHtmlFilename": "index.html",
+        "okUrl": "https://example.test/basic/ok.html",
+        "failUrl": "https://example.test/basic/fail.html",
         "cgiDir": "/srv/sites/example.test/www/cgi-bin/basic",
         "saveCgiFilename": "save.cgi",
         "saveUrl": "https://example.test/cgi-bin/basic/save.cgi",

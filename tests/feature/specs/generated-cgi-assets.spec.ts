@@ -16,6 +16,8 @@ describeFeature(feature, ({ Scenario }) => {
     publicDir: '',
     publicUrl: '',
     publicHtmlFilename: '',
+    okUrl: '',
+    failUrl: '',
     cgiDir: '',
     saveCgiFilename: '',
     saveUrl: '',
@@ -34,6 +36,8 @@ describeFeature(feature, ({ Scenario }) => {
     publicDir: '',
     publicUrl: '',
     publicHtmlFilename: '',
+    okUrl: '',
+    failUrl: '',
     cgiDir: '',
     saveCgiFilename: '',
     saveUrl: '',
@@ -53,7 +57,9 @@ describeFeature(feature, ({ Scenario }) => {
     return parseYaml(docString) as T
   }
 
-  Scenario('A saver CGI asset injects per-survey private data paths', ({ Given, And, When, Then }) => {
+  Scenario(
+    'A saver CGI asset injects the per-survey answers path and built-in redirect URLs',
+    ({ Given, And, When, Then }) => {
     Given('the saver CGI template is:', (_ctx, docString) => {
       saverCgiTemplate = docString ?? ''
       saverCgiSettings = {
@@ -63,6 +69,8 @@ describeFeature(feature, ({ Scenario }) => {
         publicDir: '',
         publicUrl: '',
         publicHtmlFilename: '',
+        okUrl: '',
+        failUrl: '',
         cgiDir: '',
         saveCgiFilename: '',
         saveUrl: '',
@@ -97,7 +105,8 @@ describeFeature(feature, ({ Scenario }) => {
         expect(preparedSaverCgiAsset).toContain(text)
       })
     })
-  })
+    }
+  )
 
   Scenario(
     'A reporter CGI asset injects survey name and per-survey private data paths',
@@ -111,6 +120,8 @@ describeFeature(feature, ({ Scenario }) => {
           publicDir: '',
           publicUrl: '',
           publicHtmlFilename: '',
+          okUrl: '',
+          failUrl: '',
           cgiDir: '',
           saveCgiFilename: '',
           saveUrl: '',

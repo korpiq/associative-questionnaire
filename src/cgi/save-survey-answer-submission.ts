@@ -1,13 +1,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
-import type { Survey } from '../schema/survey'
-
 import { ensureSurveyAnswerStorage, ensureSurveyAnswerStorageAtRoot } from './ensure-survey-answer-storage'
-import { normalizeSurveyAnswerRequestBody } from './normalize-survey-answer-request-body'
 
 export function saveSurveyAnswerSubmission(input: {
-  survey: Survey
   surveyName: string
   requestBody: string
   respondentId: string
@@ -17,7 +13,6 @@ export function saveSurveyAnswerSubmission(input: {
 }): {
   savedAnswerFilePath: string
 } {
-  const answerFile = normalizeSurveyAnswerRequestBody(input.survey, input.requestBody)
   const respondentFilename = `${input.respondentId}.json`
   const surveyAnswersDirectory =
     input.surveyAnswersDirectory ??
@@ -28,7 +23,7 @@ export function saveSurveyAnswerSubmission(input: {
   mkdirSync(dirname(join(surveyAnswersDirectory, respondentFilename)), { recursive: true })
   const savedAnswerFilePath = join(surveyAnswersDirectory, respondentFilename)
 
-  writeFileSync(savedAnswerFilePath, JSON.stringify(answerFile))
+  writeFileSync(savedAnswerFilePath, JSON.stringify({ requestBody: input.requestBody }))
 
   return {
     savedAnswerFilePath

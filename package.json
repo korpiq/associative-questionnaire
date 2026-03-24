@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "check": "tsc --noEmit --project tsconfig.json",
-    "clean": "rm -rf dist deploy/generated",
+    "clean": "rm -rf dist deploy",
     "generate": "node --import tsx src/cli/generate-survey-html.ts",
     "manual:save": "node --import tsx src/cli/manual-save-survey.ts",
     "nuke": "npm run clean --silent && rm -rf node_modules",

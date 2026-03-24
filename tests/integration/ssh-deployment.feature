@@ -7,7 +7,7 @@ Feature: SSH deployment test flow
     And I package and deploy the SSH integration target using the generated deploy.sh
     Then the deployed SSH survey page contains "Associative survey example"
     When I submit one survey response through the deployed SSH saver CGI
-    Then the deployed SSH saver response contains "Survey saved"
+    Then the deployed SSH saver redirects to the generated success page
     And the deployed SSH report page contains "Respondents: 1"
     And the deployed SSH host has the public survey file
     And the deployed SSH host has the saver CGI file

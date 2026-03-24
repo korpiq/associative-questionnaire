@@ -35,7 +35,7 @@ describeFeature(feature, ({ Scenario }) => {
     createdWorkspaceDirectories.push(workspaceDirectory)
 
     mkdirSync(join(workspaceDirectory, 'dist', 'src'), { recursive: true })
-    mkdirSync(join(workspaceDirectory, 'deploy', 'generated', 'runtime'), { recursive: true })
+    mkdirSync(join(workspaceDirectory, 'deploy', 'sample'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'templates'), { recursive: true })
     mkdirSync(join(workspaceDirectory, 'node_modules', 'example-package'), { recursive: true })
 
@@ -56,7 +56,7 @@ describeFeature(feature, ({ Scenario }) => {
     )
     writeFileSync(join(workspaceDirectory, 'dist', 'src', 'index.js'), 'export {}\n')
     writeFileSync(
-      join(workspaceDirectory, 'deploy', 'generated', 'runtime', 'runtime-cgi.js'),
+      join(workspaceDirectory, 'deploy', 'sample', 'deploy.sh'),
       'export {}\n'
     )
     writeFileSync(
@@ -85,7 +85,7 @@ describeFeature(feature, ({ Scenario }) => {
         writeIsolatedWorkspace()
 
         expect(existsSync(join(workspaceDirectory, 'dist'))).toBe(true)
-        expect(existsSync(join(workspaceDirectory, 'deploy', 'generated'))).toBe(true)
+        expect(existsSync(join(workspaceDirectory, 'deploy', 'sample'))).toBe(true)
         expect(existsSync(join(workspaceDirectory, 'node_modules'))).toBe(true)
       })
 
@@ -110,7 +110,7 @@ describeFeature(feature, ({ Scenario }) => {
       And('the isolated workspace generated build artifacts are removed', () => {
         expect(commandError).toBeNull()
         expect(existsSync(join(workspaceDirectory, 'dist'))).toBe(false)
-        expect(existsSync(join(workspaceDirectory, 'deploy', 'generated'))).toBe(false)
+        expect(existsSync(join(workspaceDirectory, 'deploy'))).toBe(false)
         expect(existsSync(join(workspaceDirectory, 'node_modules'))).toBe(false)
       })
     }

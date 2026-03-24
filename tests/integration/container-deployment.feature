@@ -8,5 +8,5 @@ Feature: Container deployment test flow
     And I deploy using the generated container integration deploy.sh
     Then the sample survey page contains "Submit survey"
     When I submit one survey response through the sample saver CGI
-    Then the saver response contains "Survey saved"
+    Then the saver redirects to the generated success page
     And the sample report page contains "Respondents: 1"

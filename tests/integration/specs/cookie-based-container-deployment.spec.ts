@@ -13,6 +13,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
   const port = '18081'
   const targetName = 'cookie-integration'
   let saverResponseBody = ''
+  let saverRedirectLocation = ''
   let returnedCookie = ''
   let deployScriptPath = ''
   const surveyUrls = {
@@ -59,10 +60,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
     await waitForBodyContains(surveyUrls.reportUrl, expected)
   }
 
-  async function fetchResponse(
-    url: string,
-    init?: RequestInit
-  ): Promise<{ body: string; setCookie: string | null }> {
+  async function fetchBody(url: string, init?: RequestInit): Promise<string> {
     const response = await fetch(url, init)
     const body = await response.text()
 
@@ -70,8 +68,30 @@ describeFeature(feature, ({ Background, Scenario }) => {
       throw new Error(`Request failed: ${response.status} ${response.statusText}\n${body}`)
     }
 
+    return body
+  }
+
+  async function fetchResponse(
+    url: string,
+    init?: RequestInit
+  ): Promise<{ body: string; location: string | null; setCookie: string | null }> {
+    const response = await fetch(url, {
+      ...init,
+      redirect: 'manual'
+    })
+    const body = await response.text()
+
+    if (![200, 303].includes(response.status)) {
+      throw new Error(`Request failed: ${response.status} ${response.statusText}\n${body}`)
+    }
+
+    const location = response.headers.get('location')
+    const responseBody =
+      response.status === 303 && location ? await fetchBody(location) : body
+
     return {
-      body,
+      body: responseBody,
+      location,
       setCookie: response.headers.get('set-cookie')
     }
   }
@@ -127,6 +147,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
   Background(({ Given, And }) => {
     Given('the cookie-based container test resources are cleaned up', () => {
       saverResponseBody = ''
+      saverRedirectLocation = ''
       returnedCookie = ''
       deployScriptPath = ''
       cleanupContainer()
@@ -179,6 +200,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
         })
 
         saverResponseBody = response.body
+        saverRedirectLocation = response.location ?? ''
         returnedCookie = response.setCookie?.split(';')[0] ?? ''
       })
 
@@ -192,6 +214,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
         })
 
         saverResponseBody = response.body
+        saverRedirectLocation = response.location ?? ''
         returnedCookie = response.setCookie?.split(';')[0] ?? ''
       })
 
@@ -203,16 +226,19 @@ describeFeature(feature, ({ Background, Scenario }) => {
         expect(returnedCookie).toMatch(/^associativeSurveyRespondentId=/)
       })
 
-      And('the cookie-based saver response contains {string}', (_ctx, expected) => {
-        expect(saverResponseBody).toContain(expected)
+      And('the cookie-based saver redirects to the generated success page', () => {
+        expect(saverRedirectLocation).toBe(`${surveyUrls.publicUrl}ok.html`)
+        expect(saverResponseBody).toContain('Survey saved')
       })
 
-      Then('the cookie-based saver response still contains {string}', (_ctx, expected) => {
-        expect(saverResponseBody).toContain(expected)
+      Then('the cookie-based saver still redirects to the generated success page', () => {
+        expect(saverRedirectLocation).toBe(`${surveyUrls.publicUrl}ok.html`)
+        expect(saverResponseBody).toContain('Survey saved')
       })
 
-      And('the cookie-based saver response again contains {string}', (_ctx, expected) => {
-        expect(saverResponseBody).toContain(expected)
+      And('the cookie-based saver again redirects to the generated success page', () => {
+        expect(saverRedirectLocation).toBe(`${surveyUrls.publicUrl}ok.html`)
+        expect(saverResponseBody).toContain('Survey saved')
       })
 
       And('the cookie-based sample report page later contains {string}', expectReportPageContains)
@@ -232,6 +258,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
         })
 
         saverResponseBody = response.body
+        saverRedirectLocation = response.location ?? ''
       })
     }
   )

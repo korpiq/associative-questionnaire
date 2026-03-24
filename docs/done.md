@@ -258,6 +258,7 @@
 86. Switched the container image to consume only the prepared deployable tarball.
     Extracted shared tarball creation for deployment packaging, updated container preparation to emit `deploy/generated/container-image.tar.gz`, changed the Dockerfile to copy only that tarball into the image and extract it in place, added Dockerfile feature coverage for the tarball-only copy rule, and verified the change with `npm run check`, the targeted Dockerfile spec, and `npm run test:container`.
 
+
 87. Split target URL configuration in `target.json`.
     Replaced separate public and CGI base URLs with `baseUrl`, optional `port`, `staticUriPath`, and `cgiUriPath`, updated generated target settings plus the tracked target, fixtures, and executable specs to the split contract, and kept validation errors readable while the full suite and typecheck stayed green.
 
@@ -320,3 +321,9 @@
 
 105. Finished the deployment-v3 package-and-deploy flow and removed the replaced v2 entrypoints.
     Switched the remaining deployment helper scripts and SSH integration coverage to the generated `deploy.sh`, taught SSH deployment scripts to honor `ASSOCIATIVE_SURVEY_SSH_CONFIG`, fixed the container and visual smoke scripts so they preserve generated deployment artifacts long enough to run `deploy.sh`, removed the obsolete preparation and installation CLIs plus duplicate manual/integration shell wrappers, rewrote the live deployment docs around `package:target` or `package:survey` followed by `deploy/<targetName>/deploy.sh`, and verified the result with `npm run check` in the sandbox plus outside-sandbox runs of `npm test`, `npm run test:container`, `npm run test:ssh-deployment`, and `npm run test:visual`.
+
+106. Made generated surveys always use their built-in success and failure pages.
+    Added per-survey `okUrl` and `failUrl` to the generated deployment settings, changed generated survey HTML to post directly to `save.cgi`, injected the built-in `ok.html` and `fail.html` URLs into generated `save.cgi` as default redirects, updated the cookie-based deployment test to assert the redirecting saver contract correctly, and verified the change with `npm run check`, focused deployment specs, and a full outside-sandbox `npm test`.
+
+107. Reduced generated saver CGI to cookie handling, raw submission storage, and redirects.
+    Replaced saver-side answer normalization with raw `requestBody` persistence under the respondent cookie id, moved raw-submission normalization and validation to reporter resolution, removed the built-in saver HTML fallback from the supported contract, deleted the obsolete saver-side request parsing and normalization feature files, tightened generated saver coverage so `save.cgi` no longer references `survey.json` or bundled `zod`, and verified the result with `npm run check` plus outside-sandbox runs of `npm test`, `npm run test:container`, `npm run test:ssh-deployment`, `npm run test:visual`, and `npm run package:target -- targets/kapsi`.

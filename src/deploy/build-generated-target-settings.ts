@@ -7,6 +7,8 @@ export type GeneratedSurveyDeploymentSettings = {
   publicDir: string
   publicUrl: string
   publicHtmlFilename: string
+  okUrl: string
+  failUrl: string
   cgiDir: string
   saveCgiFilename: string
   saveUrl: string
@@ -97,6 +99,8 @@ export function buildGeneratedTargetSettings(
         publicDir,
         publicUrl: ensureTrailingSlash(buildSurveyUrl(target, target.staticUriPath, survey.surveyName)),
         publicHtmlFilename: 'index.html',
+        okUrl: buildSurveyUrl(target, target.staticUriPath, survey.surveyName, 'ok.html'),
+        failUrl: buildSurveyUrl(target, target.staticUriPath, survey.surveyName, 'fail.html'),
         cgiDir,
         saveCgiFilename,
         saveUrl,

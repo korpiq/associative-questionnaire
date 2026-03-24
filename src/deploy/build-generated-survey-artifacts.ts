@@ -1,4 +1,4 @@
-import { renderSaverCgiResponse } from '../cgi/render-saver-cgi-response'
+import { renderSaverResultPage } from '../cgi/render-saver-cgi-response'
 import { generateSurveyHtml } from '../generator/generate-survey-html'
 import { parseSurvey } from '../schema/survey'
 
@@ -18,13 +18,7 @@ export type GeneratedSurveyArtifacts = {
 }
 
 function buildSaveFormAction(surveySettings: GeneratedSurveyDeploymentSettings): string {
-  const okUrl = new URL('ok.html', surveySettings.publicUrl).toString()
-  const failUrl = new URL('fail.html', surveySettings.publicUrl).toString()
-
-  return `${surveySettings.saveUrl}?${new URLSearchParams({
-    ok: okUrl,
-    fail: failUrl
-  }).toString()}`
+  return surveySettings.saveUrl
 }
 
 function rewriteScriptShebang(scriptTemplate: string, nodeExecutable: string): string {
@@ -68,8 +62,8 @@ export function buildGeneratedSurveyArtifacts(input: {
     surveyName: input.surveySettings.surveyName,
     formAction: buildSaveFormAction(input.surveySettings)
   })
-  const okPage = renderSaverCgiResponse({ success: true }).body
-  const failPage = renderSaverCgiResponse({ success: false }).body
+  const okPage = renderSaverResultPage({ success: true })
+  const failPage = renderSaverResultPage({ success: false })
   const rewrittenSaverTemplate = rewriteScriptShebang(input.saverScriptTemplate, input.nodeExecutable)
   const rewrittenReporterTemplate = rewriteScriptShebang(
     input.reporterScriptTemplate,

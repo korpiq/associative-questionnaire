@@ -1,30 +1,18 @@
-Feature: Render saver CGI HTML responses
-  Scenario: Built-in success page
-    Given a successful saver outcome
-    When the saver CGI response is rendered
-    Then the CGI response status code is 200
-    And the CGI response content type is "text/html; charset=utf-8"
-    And the CGI response body contains "Survey saved"
-    And the CGI response body contains "Your answers have been stored."
-
-  Scenario: Success response sets the respondent cookie
+Feature: Render saver CGI redirect responses
+  Scenario: Success redirect sets the respondent cookie
     Given a successful saver outcome
     And the saver response parameters are:
       """
       {
+        ok: "https://example.test/thanks.html",
         setCookieHeader: "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"
       }
       """
     When the saver CGI response is rendered
-    Then the CGI response status code is 200
+    Then the CGI response status code is 303
+    And the CGI response header "Location" is "https://example.test/thanks.html"
     And the CGI response header "Set-Cookie" is "associativeSurveyRespondentId=0123456789abcdef0123456789abcdef; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax"
-
-  Scenario: Built-in failure page
-    Given a failed saver outcome with message "Survey save failed"
-    When the saver CGI response is rendered
-    Then the CGI response status code is 400
-    And the CGI response content type is "text/html; charset=utf-8"
-    And the CGI response body contains "Survey save failed"
+    And the CGI response body is empty
 
   Scenario: Success redirect
     Given a successful saver outcome
@@ -37,7 +25,7 @@ Feature: Render saver CGI HTML responses
     When the saver CGI response is rendered
     Then the CGI response status code is 303
     And the CGI response header "Location" is "https://example.test/thanks.html"
-    And the CGI response body contains "Redirecting"
+    And the CGI response body is empty
 
   Scenario: Failure redirect
     Given a failed saver outcome with message "Survey save failed"
@@ -50,19 +38,14 @@ Feature: Render saver CGI HTML responses
     When the saver CGI response is rendered
     Then the CGI response status code is 303
     And the CGI response header "Location" is "https://example.test/error.html"
-    And the CGI response body contains "Redirecting"
+    And the CGI response body is empty
 
-  Scenario: Built-in page with custom stylesheet
+  Scenario: Missing success redirect is rejected
     Given a successful saver outcome
-    And the saver response parameters are:
-      """
-      {
-        css: "https://example.test/saver.css"
-      }
-      """
     When the saver CGI response is rendered
-    Then the CGI response status code is 200
-    And the CGI response body contains:
-      """
-      <link rel="stylesheet" href="https://example.test/saver.css">
-      """
+    Then rendering the saver CGI response is rejected with "Successful saver responses must include ok"
+
+  Scenario: Missing failure redirect is rejected
+    Given a failed saver outcome with message "Survey save failed"
+    When the saver CGI response is rendered
+    Then rendering the saver CGI response is rejected with "Failed saver responses must include fail"

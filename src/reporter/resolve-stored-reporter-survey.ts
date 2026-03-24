@@ -2,8 +2,24 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { parseAnswerFile, parseSurvey, type AnswerFile, type Survey } from '../schema/survey'
+import { normalizeSurveyAnswerRequestBody } from '../cgi/normalize-survey-answer-request-body'
 
 import { getReporterRuntimePaths, getReporterRuntimePathsFromDataDir } from './runtime-paths'
+
+function resolveStoredAnswerFile(survey: Survey, answerFilePath: string): AnswerFile {
+  const storedAnswer = JSON.parse(readFileSync(answerFilePath, 'utf8')) as unknown
+
+  if (
+    typeof storedAnswer === 'object' &&
+    storedAnswer !== null &&
+    'requestBody' in storedAnswer &&
+    typeof storedAnswer.requestBody === 'string'
+  ) {
+    return normalizeSurveyAnswerRequestBody(survey, storedAnswer.requestBody)
+  }
+
+  return parseAnswerFile(storedAnswer)
+}
 
 export function resolveStoredReporterSurveyFromPaths(input: {
   surveyFilePath: string
@@ -20,7 +36,7 @@ export function resolveStoredReporterSurveyFromPaths(input: {
     ? readdirSync(input.answerDirectoryPath).map((filename) => join(input.answerDirectoryPath, filename))
     : []
   const validatedAnswerFiles = answerFilePaths.map((answerFilePath) =>
-    parseAnswerFile(JSON.parse(readFileSync(answerFilePath, 'utf8')))
+    resolveStoredAnswerFile(survey, answerFilePath)
   )
 
   return {

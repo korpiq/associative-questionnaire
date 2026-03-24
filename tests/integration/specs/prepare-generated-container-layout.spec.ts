@@ -129,7 +129,7 @@ describeFeature(feature, ({ Scenario }) => {
 
       And('the generated survey page posts to the configured survey CGI URL', () => {
         expect(readFileSync(join(publicSurveyDirectory(), 'index.html'), 'utf8')).toContain(
-          'action="https://example.test/cgi-bin/basic/save.cgi?ok=https%3A%2F%2Fexample.test%2Fsurveys%2Fbasic%2Fok.html&fail=https%3A%2F%2Fexample.test%2Fsurveys%2Fbasic%2Ffail.html"'
+          'action="https://example.test/cgi-bin/basic/save.cgi"'
         )
       })
 

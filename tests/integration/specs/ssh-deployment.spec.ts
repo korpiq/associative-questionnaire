@@ -18,6 +18,7 @@ describeFeature(feature, ({ Scenario }) => {
   let testRoot = ''
   let targetDirectory = ''
   let saverResponseBody = ''
+  let saverRedirectLocation = ''
   let surveyUrls = {
     publicUrl: '',
     saveUrl: '',
@@ -68,6 +69,26 @@ describeFeature(feature, ({ Scenario }) => {
     }
 
     return body
+  }
+
+  async function postSaver(
+    url: string,
+    init?: RequestInit
+  ): Promise<{ body: string; location: string | null }> {
+    const response = await fetch(url, {
+      ...init,
+      redirect: 'manual'
+    })
+    const body = await response.text()
+
+    if (response.status !== 303) {
+      throw new Error(`Expected redirect response, got ${response.status} ${response.statusText}\n${body}`)
+    }
+
+    return {
+      body,
+      location: response.headers.get('location')
+    }
   }
 
   function cleanup(): void {
@@ -183,6 +204,7 @@ describeFeature(feature, ({ Scenario }) => {
   Scenario('A survey is deployed over SSH and works from the remote host', ({ Given, And, When, Then }) => {
     Given('the SSH deployment test resources are cleaned up', () => {
       saverResponseBody = ''
+      saverRedirectLocation = ''
       testRoot = join(process.cwd(), '.test-ssh-deployment')
       targetDirectory = join(process.cwd(), 'targets', targetName)
       cleanup()
@@ -230,7 +252,7 @@ describeFeature(feature, ({ Scenario }) => {
     })
 
     When('I submit one survey response through the deployed SSH saver CGI', async () => {
-      saverResponseBody = await fetchBody(surveyUrls.saveUrl, {
+      const response = await postSaver(surveyUrls.saveUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -238,10 +260,14 @@ describeFeature(feature, ({ Scenario }) => {
         },
         body: 'favorite-color=blue&notes=SSH+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D'
       })
+
+      saverRedirectLocation = response.location ?? ''
+      saverResponseBody = response.body
     })
 
-    Then('the deployed SSH saver response contains {string}', (_ctx, expected) => {
-      expect(saverResponseBody).toContain(expected)
+    Then('the deployed SSH saver redirects to the generated success page', () => {
+      expect(saverRedirectLocation).toBe(`${surveyUrls.publicUrl}ok.html`)
+      expect(saverResponseBody).toBe('')
     })
 
     And('the deployed SSH report page contains {string}', async (_ctx, expected) => {

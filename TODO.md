@@ -1,7 +1,5 @@
 # TODO
 
-## after deployment v3
-
 - turn survey sections into tabs with progress indicators and bottom navigation as described in [docs/survey-tabs-design.md](./docs/survey-tabs-design.md)
 - ensure survey submit behavior matches [docs/survey-tabs-design.md](/home/kato/omat/associative-questionnaire/docs/survey-tabs-design.md)
 - simplify custom CSS and JavaScript customization to the append-only behavior in [docs/custom-asset-overrides.md](./docs/custom-asset-overrides.md)

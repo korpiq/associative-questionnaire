@@ -7,8 +7,9 @@ import { relative } from 'node:path'
 
 const SURVEYS_DATA_DIR_PLACEHOLDER = '__SURVEYS_DATA_DIR__'
 const ANSWERS_DATA_DIR_PLACEHOLDER = '__ANSWERS_DATA_DIR__'
-const PRIVATE_SURVEY_RELATIVE_PATH_PLACEHOLDER = '__PRIVATE_SURVEY_RELATIVE_PATH__'
 const PRIVATE_ANSWERS_RELATIVE_PATH_PLACEHOLDER = '__PRIVATE_ANSWERS_RELATIVE_PATH__'
+const DEFAULT_OK_URL_PLACEHOLDER = '__DEFAULT_OK_URL__'
+const DEFAULT_FAIL_URL_PLACEHOLDER = '__DEFAULT_FAIL_URL__'
 
 function hasPerSurveyPrivatePaths(
   settings: GeneratedSaverCgiSettings | GeneratedSurveyDeploymentSettings
@@ -21,10 +22,6 @@ export function prepareSaverCgiAsset(input: {
   saverCgiSettings: GeneratedSaverCgiSettings | GeneratedSurveyDeploymentSettings
 }): string {
   if (hasPerSurveyPrivatePaths(input.saverCgiSettings)) {
-    const privateSurveyRelativePath = relative(
-      input.saverCgiSettings.cgiDir,
-      input.saverCgiSettings.privateSurveyPath
-    )
     const privateAnswersRelativePath = relative(
       input.saverCgiSettings.cgiDir,
       input.saverCgiSettings.privateAnswersDir
@@ -32,8 +29,9 @@ export function prepareSaverCgiAsset(input: {
 
     return bundleGeneratedCgiSource(
       input.saverScriptTemplate
-        .replaceAll(PRIVATE_SURVEY_RELATIVE_PATH_PLACEHOLDER, privateSurveyRelativePath)
         .replaceAll(PRIVATE_ANSWERS_RELATIVE_PATH_PLACEHOLDER, privateAnswersRelativePath)
+        .replaceAll(DEFAULT_OK_URL_PLACEHOLDER, input.saverCgiSettings.okUrl)
+        .replaceAll(DEFAULT_FAIL_URL_PLACEHOLDER, input.saverCgiSettings.failUrl)
     )
   }
 
