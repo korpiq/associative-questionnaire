@@ -127,7 +127,7 @@ function createDeploymentTarGz(input: {
 }
 
 function renderDeployScript(target: ReturnType<typeof loadDeploymentTarget>): string {
-  const tarCommand = 'tar xPzvf - < package.tar.gz'
+  const tarCommand = 'tar xPzvf - --keep-directory-symlink < package.tar.gz'
   const lines = ['#!/usr/bin/env sh', 'set -eu', '', 'SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)', '']
 
   if (target.type === 'ssh') {

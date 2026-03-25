@@ -11,7 +11,6 @@ export { resolveCgiScriptRuntimePaths } from './cgi/resolve-cgi-script-runtime-p
 export { ensureSurveyAnswerStorage } from './cgi/ensure-survey-answer-storage'
 export { renderSaverCgiResponse } from './cgi/render-saver-cgi-response'
 export { saveSurveyAnswerSubmission } from './cgi/save-survey-answer-submission'
-export { buildSshInstallPlan } from './deploy/build-ssh-install-plan'
 export { buildGeneratedSurveyArtifacts } from './deploy/build-generated-survey-artifacts'
 export { buildGeneratedTargetSettings } from './deploy/build-generated-target-settings'
 export { installContainerTarball } from './deploy/install-container-tarball'
