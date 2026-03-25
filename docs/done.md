@@ -330,3 +330,6 @@
 
 107. Reduced generated saver CGI to cookie handling, raw submission storage, and redirects.
     Replaced saver-side answer normalization with raw `requestBody` persistence under the respondent cookie id, moved raw-submission normalization and validation to reporter resolution, removed the built-in saver HTML fallback from the supported contract, deleted the obsolete saver-side request parsing and normalization feature files, tightened generated saver coverage so `save.cgi` no longer references `survey.json` or bundled `zod`, and verified the result with `npm run check` plus outside-sandbox runs of `npm test`, `npm run test:container`, `npm run test:ssh-deployment`, `npm run test:visual`, and `npm run package:target -- targets/kapsi`.
+
+108. Declared the CGI bundler dependency directly.
+    Added `esbuild` as a direct dev dependency so `src/deploy/bundle-generated-cgi-source.ts` no longer relies on whatever transitive version `tsx` or `vitest` happen to install after `npm run nuke`, and verified the fix with the standard `npm run check` and `npm test` commands plus `npm run package:target -- targets/kapsi`.
