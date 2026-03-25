@@ -47,6 +47,7 @@ describeFeature(feature, ({ Scenario }) => {
       join(templateDirectory, 'report-survey.template.js'),
       '#!/usr/local/bin/node\nexport const kind = "report";\n'
     )
+    writeFileSync(join(templateDirectory, 'index.html'), '')
   }
 
   function writeSurvey(targetDirectory: string, surveyName: string): void {
@@ -340,7 +341,7 @@ describeFeature(feature, ({ Scenario }) => {
     Then('the deployment package deploy.sh streams the tarball into ssh', () => {
       const deployScript = readFileSync(result.deployScriptPath, 'utf8')
 
-      expect(deployScript).toContain('ssh deploy@example.test tar xPzvf - < package.tar.gz')
+      expect(deployScript).toContain('ssh deploy@example.test tar xPzvf - --keep-directory-symlink < package.tar.gz')
     })
   })
 
@@ -363,7 +364,7 @@ describeFeature(feature, ({ Scenario }) => {
     Then('the deployment package deploy.sh streams the tarball into docker exec', () => {
       const deployScript = readFileSync(result.deployScriptPath, 'utf8')
 
-      expect(deployScript).toContain('docker exec -i test-container tar xPzvf - < package.tar.gz')
+      expect(deployScript).toContain('docker exec -i test-container tar xPzvf - --keep-directory-symlink < package.tar.gz')
     })
   })
 

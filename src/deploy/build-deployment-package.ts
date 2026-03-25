@@ -210,6 +210,14 @@ export function buildDeploymentPackage(input: {
     writeArtifactFiles(dataRoot, surveySettings.privateDataDir, artifacts.privateFiles)
   })
 
+  const targetIndexHtmlPath = resolve(input.workspaceDirectory, 'targets', input.targetName, 'index.html')
+  const indexHtmlContents = existsSync(targetIndexHtmlPath)
+    ? readFileSync(targetIndexHtmlPath, 'utf8')
+    : readFileSync(resolve(input.workspaceDirectory, 'templates', 'index.html'), 'utf8')
+  const publicIndexRoot = isAbsolute(deploymentTarget.publicDir) ? filesRootDirectory : filesHomeDirectory
+
+  writeArtifactFiles(publicIndexRoot, deploymentTarget.publicDir, [{ relativePath: 'index.html', contents: indexHtmlContents }])
+
   ensureDirectory(packageDirectory)
   createDeploymentTarGz({ filesRootDirectory, filesHomeDirectory, tarballPath })
   writeFileSync(deployScriptPath, renderDeployScript(deploymentTarget))
