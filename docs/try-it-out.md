@@ -1,75 +1,36 @@
 # Try It Out
 
-This project includes a runnable local saver path and a deployable container path from the repository root.
-
 ## Generate a survey page
 
-Generate the basic example HTML:
+Generate a standalone HTML page from the sample survey:
 
 ```bash
-npm run generate -- docs/examples/basic/survey.json docs/examples/basic/template.html associative-survey-example.html https://example.test/cgi-bin/save-survey.js
+npm run generate -- targets/sample/surveys/survey/survey.json targets/sample/surveys/survey/template.html survey.html https://example.test/cgi-bin/survey/save.cgi
 ```
 
-Generate the snippet override example HTML:
-
-```bash
-npm run generate -- docs/examples/snippet-overrides/survey.json docs/examples/snippet-overrides/template.html associative-survey-snippet-overrides.html https://example.test/cgi-bin/save-survey.js
-```
-
-What to check in the generated HTML:
-
-- the page contains a submit button
-- the form method is `post`
-- the form action points at the configured saver URL
-- associative linking still works in the browser
+Open `survey.html` in a browser to inspect the result.
 
 ## Simulate saver submission
 
-The `manual:save` helper exercises the current saver path without needing a CGI wrapper yet.
+The `manual:save` helper exercises the saver path without a CGI wrapper.
 
 Save one answer into a workspace-local home directory:
 
 ```bash
-npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=blue&notes=Manual+note' .manual-home
+npm run manual:save -- targets/sample/surveys/survey/survey.json 'favorite-color=blue&notes=Manual+note' .manual-home
 ```
 
-The command prints JSON containing the saved answer file path:
-
-```json
-{
-  "savedAnswerFilePath": "/abs/path/to/.manual-home/.local/share/associative-survey/answers/survey/<hash>.json"
-}
-```
-
-Inspect the saved answer file under:
+The command prints the saved answer file path. Inspect it under:
 
 ```text
 .manual-home/.local/share/associative-survey/answers/survey/
 ```
 
-The default manual helper respondent id is:
-
-- `0123456789abcdef0123456789abcdef`
-
-Override them if needed:
+Override the respondent id if needed:
 
 ```bash
-MANUAL_RESPONDENT_ID=abcdefabcdefabcdefabcdefabcdefab npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=Other+client' .manual-home
+MANUAL_RESPONDENT_ID=abcdefabcdefabcdefabcdefabcdefab npm run manual:save -- targets/sample/surveys/survey/survey.json 'favorite-color=red' .manual-home
 ```
-
-## Verify replacement behavior
-
-Run the helper twice with the same home directory and same respondent id, but a different request body:
-
-```bash
-npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=red&notes=First+note' .manual-home
-```
-
-```bash
-npm run manual:save -- docs/examples/basic/survey.json 'favorite-color=blue&notes=Updated+note' .manual-home
-```
-
-The reported path should stay the same, and the JSON file content should reflect the second submission.
 
 ## Run the automated checks
 
@@ -80,81 +41,20 @@ npm run check
 
 ## Run the container and answer the packaged survey
 
-Generate the deployment package for the sample target and build the container image:
-
-```bash
-npm run build
-npm run package:target -- targets/sample
-docker build -t associative-survey:test .
-```
-
-Start the container and deploy the generated package:
-
-```bash
-docker rm -f associative-survey-local >/dev/null 2>&1 || true
-docker run -d --name associative-survey-local -p 18080:8080 associative-survey:test
-sh deploy/sample/deploy.sh
-```
-
-Open the packaged survey page in a browser:
-
-```text
-http://127.0.0.1:18080/surveys/survey/
-```
-
-Fill in some answers and submit the form. The built-in report URL is:
-
-```text
-http://127.0.0.1:18080/cgi-bin/survey/report.cgi
-```
-
-Open that report URL in the browser after submitting. You should see:
-
-- the survey title
-- `Respondents: 1` after one submission
-- per-question counts and percentages
-- visual percentage bars
-
-## Submit to the container without a browser
-
-If you want a quick non-interactive check, submit one response with `curl`:
-
-```bash
-curl --fail --silent --show-error \
-  -X POST \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data 'favorite-color=blue&notes=Container+note&matches=%5B%7B%22left%22%3A%221%22%2C%22right%22%3A%22A%22%7D%5D' \
-  'http://127.0.0.1:18080/cgi-bin/survey/save.cgi'
-```
-
-Then fetch the report:
-
-```bash
-curl --fail --silent 'http://127.0.0.1:18080/cgi-bin/survey/report.cgi'
-```
+See `docs/deployment.md` for the full container deployment walkthrough using `targets/sample`.
 
 ## Use the automated container test
-
-The repository also includes an end-to-end container smoke test:
 
 ```bash
 npm run test:container
 ```
 
-That command builds the image, runs the container, submits one answer, and verifies that the report shows one respondent.
+Builds the image, runs the container, submits one answer, and verifies the report shows one respondent.
 
-For manual visual verification of correctness reporting across question types, start the seeded showcase container:
+For manual visual verification:
 
 ```bash
 npm run test:visual
 ```
 
-That command builds a dedicated image, starts a container with prefilled answers, verifies the report is reachable, and prints the survey URL, report URL, and stop command. It leaves the container running for inspection.
-
-See [docs/deployment-v3-implementation.md](/home/kato/omat/associative-questionnaire/docs/deployment-v3-implementation.md) for Docker and SSH verification caveats in the current sandboxed workspace.
-
-## Stop the container
-
-```bash
-docker rm -f associative-survey-local
-```
+Starts a seeded showcase container and prints the survey URL, report URL, and stop command.
