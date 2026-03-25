@@ -16,8 +16,8 @@ Work through TODO items as the repository's primary execution queue. Keep scope 
 5. Run the repository's standard verification commands and confirm the new or changed specification fails in the intended way before implementing the subject behavior.
 6. Implement the selected step.
 7. Run the repository's standard verification commands again and confirm the full suite is green.
-8. Invoke the `dry-refactoring` skill so it preserves the verified task result in a commit and performs one DRY-improvement round.
-9. After the task result and any accepted DRY follow-up are complete, remove the step from `TODO.md` and add a matching entry to `docs/done.md`.
+8. Move the step from `TODO.md` to `docs/done.md` so the tracking update is ready to commit.
+9. Invoke the `dry-refactoring` skill; its first action is to commit any uncommitted files, so the tracking update and task result land in the same commit.
 10. Confirm the current TODO step and its refactoring have both been committed before taking the next TODO item.
 11. Continue in order until reaching the end or until the next step is no longer confidently completable.
 
@@ -30,6 +30,6 @@ Work through TODO items as the repository's primary execution queue. Keep scope 
 - Start implementation by adding or modifying executable specifications that match the intended outcome.
 - Verify that the new or changed specifications fail in the intended way before implementing the subject behavior.
 - When working through several TODO items alone, do not batch them into one task-result commit.
-- A verified TODO result is not complete until it has been handed to `dry-refactoring` and committed.
+- A verified TODO result is not complete until it has been handed to `dry-refactoring` and committed with the tracking update (TODO → done.md) included in that same commit.
 - Do not start the next TODO item until the current one has completed its tracking update, dry-refactoring handoff, and commit.
 - If a step cannot be completed confidently, stop on that boundary rather than guessing.

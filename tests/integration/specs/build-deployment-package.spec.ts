@@ -188,7 +188,7 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
-  Scenario('Absolute target paths write files under files/root', ({ Given, And, When, Then }) => {
+  Scenario('Tarball archives absolute-path entries for a container target', ({ Given, And, When, Then }) => {
     Given('an isolated workspace for v3 deployment package building', () => {
       workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
       createdWorkspaceDirectories.push(workspaceDirectory)
@@ -204,20 +204,14 @@ describeFeature(feature, ({ Scenario }) => {
       result = buildDeploymentPackage({ workspaceDirectory, targetName })
     })
 
-    Then('the deployment package has a public survey file under files/root', () => {
-      expect(existsSync(join(result.filesRootDirectory, 'app', 'surveys', 'basic', 'index.html'))).toBe(true)
-    })
+    Then('the deployment package tarball entries are:', (_ctx, docString) => {
+      const entries = listTarEntries(readFileSync(result.tarballPath))
 
-    And('the deployment package has a CGI survey file under files/root', () => {
-      expect(existsSync(join(result.filesRootDirectory, 'app', 'cgi-bin', 'basic', 'save.cgi'))).toBe(true)
-    })
-
-    And('the deployment package has a private survey file under files/root', () => {
-      expect(existsSync(join(result.filesRootDirectory, 'app', 'data', 'basic', 'survey.json'))).toBe(true)
+      expect(entries.join('\n')).toBe((docString ?? '').trim())
     })
   })
 
-  Scenario('Relative target paths write files under files/home', ({ Given, And, When, Then }) => {
+  Scenario('Tarball archives relative-path entries for an SSH target', ({ Given, And, When, Then }) => {
     Given('an isolated workspace for v3 deployment package building', () => {
       workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
       createdWorkspaceDirectories.push(workspaceDirectory)
@@ -233,92 +227,10 @@ describeFeature(feature, ({ Scenario }) => {
       result = buildDeploymentPackage({ workspaceDirectory, targetName })
     })
 
-    Then('the deployment package has a public survey file under files/home', () => {
-      expect(
-        existsSync(join(result.filesHomeDirectory, 'sites', 'example.test', 'www', 'surveys', 'basic', 'index.html'))
-      ).toBe(true)
-    })
-
-    And('the deployment package has a CGI survey file under files/home', () => {
-      expect(
-        existsSync(join(result.filesHomeDirectory, 'sites', 'example.test', 'www', 'cgi-bin', 'basic', 'save.cgi'))
-      ).toBe(true)
-    })
-
-    And('the deployment package has a private survey file under files/home', () => {
-      expect(
-        existsSync(join(result.filesHomeDirectory, 'sites', 'example.test', 'www', 'data', 'basic', 'survey.json'))
-      ).toBe(true)
-    })
-  })
-
-  Scenario('Tarball archives files/root entries as absolute target paths', ({ Given, And, When, Then }) => {
-    Given('an isolated workspace for v3 deployment package building', () => {
-      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
-      createdWorkspaceDirectories.push(workspaceDirectory)
-      targetName = 'container-target'
-    })
-
-    And('the isolated workspace has a container target with absolute paths and one survey', () => {
-      writeTemplates()
-      writeContainerTarget(targetName)
-    })
-
-    When('I build the deployment package for that target', () => {
-      result = buildDeploymentPackage({ workspaceDirectory, targetName })
-    })
-
-    Then('the deployment package tarball contains the public survey file as an absolute path', () => {
+    Then('the deployment package tarball entries are:', (_ctx, docString) => {
       const entries = listTarEntries(readFileSync(result.tarballPath))
 
-      expect(entries).toContain('/app/surveys/basic/index.html')
-    })
-
-    And('the deployment package tarball contains the CGI survey file as an absolute path', () => {
-      const entries = listTarEntries(readFileSync(result.tarballPath))
-
-      expect(entries).toContain('/app/cgi-bin/basic/save.cgi')
-    })
-
-    And('the deployment package tarball contains the private survey file as an absolute path', () => {
-      const entries = listTarEntries(readFileSync(result.tarballPath))
-
-      expect(entries).toContain('/app/data/basic/survey.json')
-    })
-  })
-
-  Scenario('Tarball archives files/home entries as relative target paths', ({ Given, And, When, Then }) => {
-    Given('an isolated workspace for v3 deployment package building', () => {
-      workspaceDirectory = mkdtempSync(join(process.cwd(), '.test-deploy-pkg-'))
-      createdWorkspaceDirectories.push(workspaceDirectory)
-      targetName = 'ssh-target'
-    })
-
-    And('the isolated workspace has an SSH target with relative paths and one survey', () => {
-      writeTemplates()
-      writeSshTarget(targetName)
-    })
-
-    When('I build the deployment package for that target', () => {
-      result = buildDeploymentPackage({ workspaceDirectory, targetName })
-    })
-
-    Then('the deployment package tarball contains the public survey file as a relative path', () => {
-      const entries = listTarEntries(readFileSync(result.tarballPath))
-
-      expect(entries).toContain('sites/example.test/www/surveys/basic/index.html')
-    })
-
-    And('the deployment package tarball contains the CGI survey file as a relative path', () => {
-      const entries = listTarEntries(readFileSync(result.tarballPath))
-
-      expect(entries).toContain('sites/example.test/www/cgi-bin/basic/save.cgi')
-    })
-
-    And('the deployment package tarball contains the private survey file as a relative path', () => {
-      const entries = listTarEntries(readFileSync(result.tarballPath))
-
-      expect(entries).toContain('sites/example.test/www/data/basic/survey.json')
+      expect(entries.join('\n')).toBe((docString ?? '').trim())
     })
   })
 

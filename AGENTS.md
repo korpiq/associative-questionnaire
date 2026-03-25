@@ -45,7 +45,7 @@
 - When working interactively with user, do not commit until user accepts.
 - When planning TODO steps together, ask for all decisions that could block later implementation up front instead of deferring them.
 - When working through TODO items, use the `todo-driven-work` skill.
-- A TODO step is not complete until its tracking update, dry-refactoring handoff, and commit are done.
+- A TODO step is not complete until its dry-refactoring handoff and commit are done; move the step from TODO.md to docs/done.md before invoking dry-refactoring so the tracking update is included in dry-refactoring's initial task-result commit.
 - When working independently, avoid custom or narrowly targeted verification commands that the user is not present to approve; prefer the full standard test set instead.
 - For deployment v3, allow absolute and relative deployment target paths, trust the configured target environment without adding preflight checks, and remove old deployment docs and commands in one commit once the replacement flow is verified.
 

@@ -333,3 +333,12 @@
 
 111. Declared the CGI bundler dependency directly.
     Added `esbuild` as a direct dev dependency so `src/deploy/bundle-generated-cgi-source.ts` no longer relies on whatever transitive version `tsx` or `vitest` happen to install after `npm run nuke`, and verified the fix with the standard `npm run check` and `npm test` commands plus `npm run package:target -- targets/kapsi`.
+
+112. Removed the old SSH setup.sh deployment system and added --keep-directory-symlink to tar extraction.
+    Deleted `build-ssh-install-plan`, `prepare-generated-ssh-deployment-package`, their specs, and the orphaned `ssh-installer.feature`; removed the `buildSshInstallPlan` export from `src/index.ts`; added `--keep-directory-symlink` after the `-` file argument in the generated tar extraction command so existing directory symlinks on the target host (e.g. `sites/` on kapsi.fi) are preserved during extraction.
+
+113. Added index.html to publicDir in deployment packages to block directory listing.
+    Added an empty `templates/index.html` default; `buildDeploymentPackage` now writes `index.html` to the target-level `publicDir`, reading from the target directory first and falling back to the template; updated the integration spec workspace setup and the deploy-script tar-command assertion to match.
+
+114. Replaced per-file tarball assertions with a full content listing check.
+    Consolidated the four individual file-existence and tarball-contains scenarios into two scenarios (one per target type) that assert the complete sorted tar entry listing as a doc string, covering directories, all survey files, and the new root index.html in one readable snapshot; updated the todo-driven-work skill and AGENTS.md to require that tracking updates are included in the task commit rather than applied after it.
