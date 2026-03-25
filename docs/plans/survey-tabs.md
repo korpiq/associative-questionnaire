@@ -1,4 +1,6 @@
-# Survey Tabs Design
+# Survey Tabs Plan
+
+> This is one of several planned alternative page templates. The current page layout renders all sections on one continuous page. Tabs, and other alternative layouts, are separate future options.
 
 ## Goal
 
