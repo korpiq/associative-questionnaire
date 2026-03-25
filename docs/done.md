@@ -265,71 +265,71 @@
 88. Switched URL generation and tooling URL usage to one configured port source.
     Added target-setting coverage for non-default generated URLs, introduced one shared target-survey resolver plus CLI for reading public/save/report URLs and effective ports, switched the shell tooling and launcher expectations to those target-derived URLs, kept the Docker-backed integration specs on one per-spec port source, and verified the result with `npm run check`, `npm run test:tooling`, and the full suite.
 
-87. Turned generated container-layout integration coverage into a Gherkin feature test.
+89. Turned generated container-layout integration coverage into a Gherkin feature test.
     Added `tests/integration/prepare-generated-container-layout.feature` plus a matching step spec that prepares an isolated container target workspace, verifies the generated public, CGI, and private files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
 
-88. Turned generated SSH deployment-package integration coverage into a Gherkin feature test.
+90. Turned generated SSH deployment-package integration coverage into a Gherkin feature test.
     Added `tests/integration/prepare-generated-ssh-deployment-package.feature` plus a matching step spec that prepares an isolated SSH target workspace, verifies the generated setup script, tarball presence, and canonical per-survey payload files, and verified the replacement coverage with `npm run check` plus the targeted integration spec.
 
-89. Removed the replaced integration `.test.ts` files.
+91. Removed the replaced integration `.test.ts` files.
     Deleted the old generated container-layout and SSH deployment-package `.test.ts` files after their Gherkin replacements were in place, and verified the remaining replacement coverage with `npm run check` plus both targeted integration specs.
 
-90. Turned the container shell smoke test into Gherkin integration coverage.
+92. Turned the container shell smoke test into Gherkin integration coverage.
     Added `tests/integration/container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, container startup, save CGI submission, and report verification directly, and verified it with `npm run check` plus the targeted Docker-backed integration spec.
 
-91. Turned the cookie-based container shell integration test into Gherkin coverage.
+93. Turned the cookie-based container shell integration test into Gherkin coverage.
     Added `tests/integration/cookie-based-container-deployment.feature` plus a matching step spec that runs the real build, container preparation, Docker image build, zero-respondent report check, cookie-identified save CGI submission, and one-respondent report check directly, and verified it with the standard `npm run check` and `npm test` commands.
 
-92. Turned the SSH deployment shell test into Gherkin integration coverage.
+94. Turned the SSH deployment shell test into Gherkin integration coverage.
     Added `tests/integration/ssh-deployment.feature` plus a matching step spec that provisions the disposable SSH-and-HTTP host container, installs a generated target through the real SSH installer CLI, verifies the deployed survey/save/report flow, and checks the deployed public, CGI, and private files, and verified it with the standard `npm run check` and `npm test` commands.
 
-93. Inlined the trivial npm cleanup scripts in `package.json`.
+95. Inlined the trivial npm cleanup scripts in `package.json`.
     Replaced the `clean` and `nuke` wrapper shell scripts with direct `rm`-based npm script definitions, removed the obsolete wrapper files, updated the integration coverage to expect silent cleanup commands, and verified the change with the standard `npm run check` and `npm test` commands.
 
-94. Made `nuke` reuse `clean`.
+96. Made `nuke` reuse `clean`.
     Changed the `nuke` npm script to run `clean` first and remove `node_modules/` afterwards so build-artifact cleanup stays defined in one place, and verified the change with the standard `npm run check` and `npm test` commands.
 
-95. Added a `todo-driven-work` skill for the repository execution flow.
+97. Added a `todo-driven-work` skill for the repository execution flow.
     Created `.agents/skills/todo-driven-work` to capture the TODO-first workflow, per-step verification, done-tracking, and one-commit-per-verified-step discipline, and validated the skill structure with `quick_validate.py`.
 
-96. Added an `executable-specs` skill for repository-wide automated coverage.
+98. Added an `executable-specs` skill for repository-wide automated coverage.
     Created `.agents/skills/executable-specs` from `docs/testing.md`, `AGENTS.md`, `README.md`, and the deployment/runtime docs so test work across product behavior, CLI flows, build output, and deployment support is driven through executable specifications implemented as Gherkin features with sibling `@amiceli/vitest-cucumber` step specs, updated `AGENTS.md` to point testing changes at the skill, and retired the overlapping TODO items for separate Gherkin and CLI-integration testing skills.
 
-97. Kept `test-visual.sh` as a manual helper and added tooling smoke coverage.
+99. Kept `test-visual.sh` as a manual helper and added tooling smoke coverage.
     Added a dedicated `tests/tooling` executable spec plus `npm run test:tooling`, updated the visual launcher to build the current tarball-based container image, fixed `prepare:visual` to emit the per-survey deployable layout and CGI assets that the helper actually serves, and verified the result with `npm run check`, `npm test`, and `npm run test:tooling`.
 
-98. Covered and fixed the visual launcher submit flow on the configured port.
+100. Covered and fixed the visual launcher submit flow on the configured port.
     Extended the tooling executable spec to require a real submit-path check and the configured survey/report URLs, updated `scripts/test-visual.sh` to extract the rendered form action before posting one response through the actual saver CGI, and verified the result with the standard `npm run check`, `npm run test:tooling`, and `npm test` commands.
 
-99. Moved container deployment tarball extraction into the running container.
+101. Moved container deployment tarball extraction into the running container.
     Updated the Docker-backed container deployment specs to require an explicit install step after container startup, kept the runtime image generic by removing deployable-asset baking from the Dockerfile, added a helper and CLI that stream the prepared tarball into the live container and extract it there with `docker exec`, aligned the manual and visual helper scripts with the same runtime install flow, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test`.
 
-100. Persisted survey form state in browser local storage per page URL.
+102. Persisted survey form state in browser local storage per page URL.
     Added executable coverage for edit persistence, same-URL reload restore, default override, submit retention, and rolling-expiry cleanup, updated the generated survey page script to store form state under the full page URL in `localStorage` with a 30-day rolling timestamp, restored saved answers before associative visual setup so linked lines come back too, and verified the result with the standard `npm run check` and `npm test` commands.
 
-101. Replaced the remaining standalone root-level Vitest files with executable specs.
+103. Replaced the remaining standalone root-level Vitest files with executable specs.
     Added Gherkin coverage for survey normalization plus the remaining bootstrap and helper behaviors under the feature and tooling suites, deleted the replaced `tests/*.test.ts` files, and verified the result with `npm run check`, `npm run test:tooling`, and `npm test` so the remaining automated coverage now follows the executable-spec layout.
 
-102. Removed the generated client-side survey bootstrap hook.
+104. Removed the generated client-side survey bootstrap hook.
     Removed the unused `data-survey-name` attribute from the generated form so browser restore logic stays local-storage-only, trimmed the stale generator docs that still described that hook, and verified the change with `npm run check` plus targeted `generate-survey-page` and `survey-local-storage` specs because the sandboxed full `npm test` run still fails in Docker-backed integration cases.
 
-103. Narrowed deployment target paths to absolute-or-relative without `~`.
+105. Narrowed deployment target paths to absolute-or-relative without `~`.
     Added executable coverage for accepting relative deployment directories and rejecting `~` in target paths, updated deployment target parsing plus the remaining SSH packaging helpers to stop expanding `~`, moved SSH-oriented fixtures to relative-path examples, aligned the deployment target contract doc with the new rule, and verified the step with `npm run check` plus targeted deployment specs while the sandboxed full `npm test` run still failed in Docker-backed integration cases.
 
-104. Added path-based deployment packaging readers and package commands.
+106. Added path-based deployment packaging readers and package commands.
     Added shared target-folder and survey-folder argument readers, introduced `package:target` and `package:survey` CLI entrypoints with callable implementations, taught the existing container and SSH package builders to filter surveys by selected survey directories, covered the new helpers through the tooling suite and the package commands through an integration spec, and verified the step with `npm run check`, `npm run test:tooling -- repository-helpers`, and the targeted package CLI spec while the sandboxed full `npm test` run still failed in Docker-backed integration cases.
 
-105. Finished the deployment-v3 package-and-deploy flow and removed the replaced v2 entrypoints.
+107. Finished the deployment-v3 package-and-deploy flow and removed the replaced v2 entrypoints.
     Switched the remaining deployment helper scripts and SSH integration coverage to the generated `deploy.sh`, taught SSH deployment scripts to honor `ASSOCIATIVE_SURVEY_SSH_CONFIG`, fixed the container and visual smoke scripts so they preserve generated deployment artifacts long enough to run `deploy.sh`, removed the obsolete preparation and installation CLIs plus duplicate manual/integration shell wrappers, rewrote the live deployment docs around `package:target` or `package:survey` followed by `deploy/<targetName>/deploy.sh`, and verified the result with `npm run check` in the sandbox plus outside-sandbox runs of `npm test`, `npm run test:container`, `npm run test:ssh-deployment`, and `npm run test:visual`.
 
-106. Made generated surveys always use their built-in success and failure pages.
+108. Made generated surveys always use their built-in success and failure pages.
     Added per-survey `okUrl` and `failUrl` to the generated deployment settings, changed generated survey HTML to post directly to `save.cgi`, injected the built-in `ok.html` and `fail.html` URLs into generated `save.cgi` as default redirects, updated the cookie-based deployment test to assert the redirecting saver contract correctly, and verified the change with `npm run check`, focused deployment specs, and a full outside-sandbox `npm test`.
 
-108. Replaced obsolete documentation with a focused set of accurate docs.
+109. Replaced obsolete documentation with a focused set of accurate docs.
     Removed all deployment-v2/v3/vps/tarball planning docs, examples/, later.md, and cgi-reporter.md. Moved survey-tabs and testing-refactor plans to docs/plans/. Added docs/architecture.md (concise system overview), docs/configuration.md (target.json reference + targets/ layout), docs/deployment.md (package commands + deploy.sh workflow), docs/survey-page.md (local storage + association linker), updated docs/generator.md with survey.json schema and custom-asset docs, updated docs/try-it-out.md to use targets/sample, and rewrote README.md as a short quickstart with pointers.
 
-107. Reduced generated saver CGI to cookie handling, raw submission storage, and redirects.
+110. Reduced generated saver CGI to cookie handling, raw submission storage, and redirects.
     Replaced saver-side answer normalization with raw `requestBody` persistence under the respondent cookie id, moved raw-submission normalization and validation to reporter resolution, removed the built-in saver HTML fallback from the supported contract, deleted the obsolete saver-side request parsing and normalization feature files, tightened generated saver coverage so `save.cgi` no longer references `survey.json` or bundled `zod`, and verified the result with `npm run check` plus outside-sandbox runs of `npm test`, `npm run test:container`, `npm run test:ssh-deployment`, `npm run test:visual`, and `npm run package:target -- targets/kapsi`.
 
-108. Declared the CGI bundler dependency directly.
+111. Declared the CGI bundler dependency directly.
     Added `esbuild` as a direct dev dependency so `src/deploy/bundle-generated-cgi-source.ts` no longer relies on whatever transitive version `tsx` or `vitest` happen to install after `npm run nuke`, and verified the fix with the standard `npm run check` and `npm test` commands plus `npm run package:target -- targets/kapsi`.
